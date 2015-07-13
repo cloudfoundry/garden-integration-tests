@@ -15,8 +15,9 @@ var (
 	gardenClient garden.Client
 	container    garden.Container
 
-	gardenHost string
-	rootfs     string
+	gardenHost          string
+	rootfs              string
+	privilegedContainer bool
 )
 
 func TestGardenIntegrationTests(t *testing.T) {
@@ -24,6 +25,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 
 	BeforeEach(func() {
 		rootfs = ""
+		privilegedContainer = false
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
 	})
 
@@ -31,7 +33,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 		gardenClient = client.New(connection.New("tcp", gardenHost))
 
 		var err error
-		container, err = gardenClient.Create(garden.ContainerSpec{RootFSPath: rootfs})
+		container, err = gardenClient.Create(garden.ContainerSpec{RootFSPath: rootfs, Privileged: privilegedContainer})
 		Expect(err).ToNot(HaveOccurred())
 	})
 
@@ -40,4 +42,16 @@ func TestGardenIntegrationTests(t *testing.T) {
 	})
 
 	RunSpecs(t, "GardenIntegrationTests Suite")
+}
+
+func getContainerHandles() []string {
+	containers, err := gardenClient.Containers(nil)
+	Expect(err).ToNot(HaveOccurred())
+
+	handles := make([]string, len(containers))
+	for i, c := range containers {
+		handles[i] = c.Handle()
+	}
+
+	return handles
 }

@@ -37,6 +37,23 @@ var _ = Describe("Rootfses", func() {
 				process.Wait()
 				Expect(stdout).To(gbytes.Say("/usr/local/bin:/usr/bin:/bin:/from-dockerfile"))
 			})
+
+			It("$TEST is taken from the docker image", func() {
+				stdout := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "vcap",
+					Path: "/bin/sh",
+					Args: []string{"-c", "echo $TEST"},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(GinkgoWriter, stdout),
+					Stderr: GinkgoWriter,
+				})
+
+				Expect(err).ToNot(HaveOccurred())
+
+				process.Wait()
+				Expect(stdout).To(gbytes.Say("second-test-from-dockerfile:test-from-dockerfile"))
+			})
 		})
 	})
 })
