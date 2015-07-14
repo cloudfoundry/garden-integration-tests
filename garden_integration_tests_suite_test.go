@@ -12,12 +12,13 @@ import (
 )
 
 var (
+	gardenHost   string
 	gardenClient garden.Client
 	container    garden.Container
 
-	gardenHost          string
 	rootfs              string
 	privilegedContainer bool
+	properties          garden.Properties
 )
 
 func TestGardenIntegrationTests(t *testing.T) {
@@ -26,6 +27,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 	BeforeEach(func() {
 		rootfs = ""
 		privilegedContainer = false
+		properties = garden.Properties{}
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
 	})
 
@@ -33,7 +35,11 @@ func TestGardenIntegrationTests(t *testing.T) {
 		gardenClient = client.New(connection.New("tcp", gardenHost))
 
 		var err error
-		container, err = gardenClient.Create(garden.ContainerSpec{RootFSPath: rootfs, Privileged: privilegedContainer})
+		container, err = gardenClient.Create(garden.ContainerSpec{
+			RootFSPath: rootfs,
+			Privileged: privilegedContainer,
+			Properties: properties,
+		})
 		Expect(err).ToNot(HaveOccurred())
 	})
 
