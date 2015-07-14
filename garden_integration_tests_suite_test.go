@@ -3,6 +3,7 @@ package garden_integration_tests_test
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
 	"github.com/cloudfoundry-incubator/garden/client"
@@ -23,6 +24,8 @@ var (
 
 func TestGardenIntegrationTests(t *testing.T) {
 	RegisterFailHandler(Fail)
+
+	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	BeforeEach(func() {
 		rootfs = ""
