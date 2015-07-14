@@ -38,7 +38,7 @@ var _ = Describe("Limits", func() {
 	Describe("LimitDisk", func() {
 		Context("when quotas are enabled and there is a disk limit", func() {
 			var quotaLimit garden.DiskLimits
-			const BTRFS_WAIT_TIME = 90
+			const BTRFS_WAIT_TIME = 120
 
 			BeforeEach(func() {
 				quotaLimit = garden.DiskLimits{
