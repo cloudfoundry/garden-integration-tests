@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/garden"
@@ -41,6 +42,10 @@ var _ = Describe("Limits", func() {
 			const BTRFS_WAIT_TIME = 120
 
 			BeforeEach(func() {
+				if os.Getenv("BTRFS_SUPPORTED") == "" {
+					Skip("btrfs not available")
+				}
+
 				quotaLimit = garden.DiskLimits{
 					ByteSoft: 180 * 1024 * 1024,
 					ByteHard: 180 * 1024 * 1024,
