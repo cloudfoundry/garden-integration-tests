@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"io"
+	"os"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/garden"
@@ -484,6 +485,9 @@ var _ = Describe("Security", func() {
 			})
 
 			It("sees the root directory as owned by the container's root user", func() {
+				if os.Getenv("BTRFS_SUPPORTED") == "" {
+					Skip("Non-BTRFS drivers do not support making the container's root directory owned by container root")
+				}
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
 					User: "root",

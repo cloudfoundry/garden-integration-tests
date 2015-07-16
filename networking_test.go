@@ -33,7 +33,10 @@ var _ = Describe("Networking", func() {
 		gardenHostname := strings.Split(gardenHost, ":")[0]
 
 		hostPort, _, err := container.NetIn(0, 8080)
+		Expect(err).ToNot(HaveOccurred())
+
 		nc, err := gexec.Start(exec.Command("nc", gardenHostname, fmt.Sprintf("%d", hostPort)), GinkgoWriter, GinkgoWriter)
+		Expect(err).ToNot(HaveOccurred())
 		Eventually(nc).Should(gbytes.Say("hallo"))
 		Eventually(nc).Should(gexec.Exit(0))
 	})
