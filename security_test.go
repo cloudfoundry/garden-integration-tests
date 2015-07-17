@@ -459,7 +459,7 @@ var _ = Describe("Security", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
-					Args: []string{"-c", `ls -l /sbin | grep -v wsh | grep -v hook`},
+					Args: []string{"-c", `ls -l /sbin | grep -v wsh | grep -v hook | grep -v proc_starter | grep -v initd`},
 				}, garden.ProcessIO{Stdout: stdout})
 				Expect(err).ToNot(HaveOccurred())
 
