@@ -88,8 +88,8 @@ var _ = Describe("Limits", func() {
 						return metricsAfter.DiskStat.BytesUsed
 					}
 
-					expectedBytes := (diskUsage * 1024) + uint64(10*1024*1024)
-					Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedBytes, 1269760))
+					expectedBytes := (diskUsage * 1024) + uint64(6*1024*1024)
+					Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedBytes, uint64(4* 1024 *1024)))
 
 					process, err = container.Run(garden.ProcessSpec{
 						User: "vcap",
@@ -99,8 +99,8 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
-					expectedBytes = (diskUsage * 1024) + uint64(20*1024*1024)
-					Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedBytes, 1269760))
+					expectedBytes = (diskUsage * 1024) + uint64(6*1024*1024)
+					Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedBytes, uint64(4* 1024 *1024)))
 				})
 			})
 
@@ -184,7 +184,7 @@ var _ = Describe("Limits", func() {
 								return metricsAfter.DiskStat.BytesUsed
 							}
 
-							Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(10*1024*1024), 1024*1024))
+							Eventually(metrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(6*1024*1024), uint64(4*1024*1024)))
 
 							bytesUsed := metrics()
 
