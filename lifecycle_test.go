@@ -248,27 +248,89 @@ var _ = Describe("Lifecycle", func() {
 			Expect(process.Wait()).To(Equal(42))
 		})
 
-		It("sends a KILL signal to the process if requested", func() {
-			stdout := gbytes.NewBuffer()
-
-			process, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
-				Path: "sh",
-				Args: []string{"-c", `
-			while true; do
-				echo waiting
-				sleep 1
-			done
-		`},
-			}, garden.ProcessIO{
-				Stdout: io.MultiWriter(GinkgoWriter, stdout),
-				Stderr: GinkgoWriter,
+		Context("even when /bin/kill does not exist", func() {
+			JustBeforeEach(func() {
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "rm",
+					Args: []string{"/bin/kill"},
+				}, garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
 			})
-			Expect(err).ToNot(HaveOccurred())
 
-			Eventually(stdout).Should(gbytes.Say("waiting"))
-			Expect(process.Signal(garden.SignalKill)).To(Succeed())
-			Expect(process.Wait()).ToNot(Equal(0))
+			checkProcessIsGone := func(container garden.Container) {
+				stdout := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "vcap",
+					Path: "sh",
+					Args: []string{"-c", `
+						 ps ax -o args= | grep -q '^sh -c while'
+					 `},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(1))
+				Eventually(stdout).ShouldNot(gbytes.Say("waiting"))
+			}
+
+			It("sends a KILL signal to the process if requested", func(done Done) {
+				stdout := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "vcap",
+					Path: "sh",
+					Args: []string{"-c", `
+							while true; do
+							  echo waiting
+								sleep 1
+							done
+						`},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(GinkgoWriter, stdout),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Eventually(stdout).Should(gbytes.Say("waiting"))
+
+				Expect(process.Signal(garden.SignalKill)).To(Succeed())
+				Expect(process.Wait()).To(Equal(255))
+
+				checkProcessIsGone(container)
+
+				close(done)
+			}, 10.0)
+
+			It("sends a TERMINATE signal to the process if requested", func(done Done) {
+				stdout := gbytes.NewBuffer()
+
+				process, err := container.Run(garden.ProcessSpec{
+					User: "vcap",
+					Path: "sh",
+					Args: []string{"-c", `
+							while true; do
+							  echo waiting
+								sleep 1
+							done
+						`},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(GinkgoWriter, stdout),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Eventually(stdout).Should(gbytes.Say("waiting"))
+
+				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+				Expect(process.Wait()).To(Equal(255))
+
+				checkProcessIsGone(container)
+
+				close(done)
+			}, 10.0)
 		})
 
 		It("avoids a race condition when sending a kill signal", func(done Done) {
