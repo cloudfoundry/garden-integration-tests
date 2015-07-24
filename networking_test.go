@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
@@ -34,6 +35,9 @@ var _ = Describe("Networking", func() {
 
 		hostPort, _, err := container.NetIn(0, 8080)
 		Expect(err).ToNot(HaveOccurred())
+
+		// Allow nc time to start running.
+		time.Sleep(2 * time.Second)
 
 		nc, err := gexec.Start(exec.Command("nc", gardenHostname, fmt.Sprintf("%d", hostPort)), GinkgoWriter, GinkgoWriter)
 		Expect(err).ToNot(HaveOccurred())
