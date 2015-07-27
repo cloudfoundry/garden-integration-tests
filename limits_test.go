@@ -38,7 +38,10 @@ var _ = Describe("Limits", func() {
 
 	Describe("LimitDisk", func() {
 		Context("when quotas are enabled and there is a disk limit", func() {
-			var quotaLimit garden.DiskLimits
+			var byteSoftQuota uint64
+			var byteHardQuota uint64
+			var quotaScope garden.DiskLimitScope
+
 			const BTRFS_WAIT_TIME = 120
 
 			BeforeEach(func() {
@@ -46,14 +49,17 @@ var _ = Describe("Limits", func() {
 					Skip("btrfs not available")
 				}
 
-				quotaLimit = garden.DiskLimits{
-					ByteSoft: 180 * 1024 * 1024,
-					ByteHard: 180 * 1024 * 1024,
-				}
+				byteSoftQuota = 180 * 1024 * 1024
+				byteHardQuota = 180 * 1024 * 1024
+				quotaScope = garden.DiskLimitScopeTotal
 			})
 
 			JustBeforeEach(func() {
-				err := container.LimitDisk(quotaLimit)
+				err := container.LimitDisk(garden.DiskLimits{
+					ByteSoft: byteSoftQuota,
+					ByteHard: byteHardQuota,
+					Scope:    quotaScope,
+				})
 				Expect(err).ToNot(HaveOccurred())
 			})
 
@@ -118,27 +124,74 @@ var _ = Describe("Limits", func() {
 				BeforeEach(func() {
 					privilegedContainer = false
 					rootfs = "docker:///busybox"
-					quotaLimit = garden.DiskLimits{
-						ByteSoft: 10 * 1024 * 1024,
-						ByteHard: 10 * 1024 * 1024,
-					}
+					byteSoftQuota = 10 * 1024 * 1024
+					byteHardQuota = 10 * 1024 * 1024
+					quotaScope = garden.DiskLimitScopeTotal
 				})
 
 				It("reports the correct disk limit size of the container", func() {
 					limit, err := container.CurrentDiskLimits()
 					Expect(err).ToNot(HaveOccurred())
-					Expect(limit).To(Equal(quotaLimit))
+					Expect(limit).To(Equal(garden.DiskLimits{
+						ByteHard: byteHardQuota,
+						ByteSoft: byteSoftQuota,
+						Scope:    quotaScope,
+					}))
 				})
 
-				Context("and run a process that exceeds the quota", func() {
-					It("kills the process", func() {
-						dd, err := container.Run(garden.ProcessSpec{
-							User: "vcap",
-							Path: "dd",
-							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-						}, garden.ProcessIO{})
-						Expect(err).ToNot(HaveOccurred())
-						Expect(dd.Wait()).ToNot(Equal(0))
+				Context("when the scope is total (the default)", func() {
+					Context("and run a process that does not exceed the limit", func() {
+						It("does not kill the process", func() {
+							dd, err := container.Run(garden.ProcessSpec{
+								User: "root",
+								Path: "dd",
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=3"}, // should succeed, even though equivalent with 'total' scope does not
+							}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
+							Expect(err).ToNot(HaveOccurred())
+							Expect(dd.Wait()).To(Equal(0))
+						})
+					})
+
+					Context("and run a process that exceeds the quota due to the size of the rootfs", func() {
+						It("kills the process", func() {
+							dd, err := container.Run(garden.ProcessSpec{
+								User: "root",
+								Path: "dd",
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for a few MB
+							}, garden.ProcessIO{})
+							Expect(err).ToNot(HaveOccurred())
+							Expect(dd.Wait()).ToNot(Equal(0))
+						})
+					})
+				})
+
+				Context("when the scope is exclusive", func() {
+					BeforeEach(func() {
+						quotaScope = garden.DiskLimitScopeExclusive
+					})
+
+					Context("and run a process that would exceed the quota due to the size of the rootfs (but doesnt since this is not included)", func() {
+						It("does not kill the process", func() {
+							dd, err := container.Run(garden.ProcessSpec{
+								User: "root",
+								Path: "dd",
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
+							}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
+							Expect(err).ToNot(HaveOccurred())
+							Expect(dd.Wait()).To(Equal(0))
+						})
+					})
+
+					Context("and run a process that exceeds the quota", func() {
+						It("kills the process", func() {
+							dd, err := container.Run(garden.ProcessSpec{
+								User: "root",
+								Path: "dd",
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
+							}, garden.ProcessIO{})
+							Expect(err).ToNot(HaveOccurred())
+							Expect(dd.Wait()).ToNot(Equal(0))
+						})
 					})
 				})
 
@@ -149,10 +202,9 @@ var _ = Describe("Limits", func() {
 
 					Context("and run a process that exceeds the quota as bob", func() {
 						BeforeEach(func() {
-							quotaLimit = garden.DiskLimits{
-								ByteSoft: 10 * 1024 * 1024,
-								ByteHard: 10 * 1024 * 1024,
-							}
+							byteSoftQuota = 10 * 1024 * 1024
+							byteHardQuota = 10 * 1024 * 1024
+							quotaScope = garden.DiskLimitScopeTotal
 						})
 
 						It("kills the process", func() {
@@ -168,10 +220,9 @@ var _ = Describe("Limits", func() {
 
 					Context("and run a process that exceeds the quota as alice", func() {
 						BeforeEach(func() {
-							quotaLimit = garden.DiskLimits{
-								ByteSoft: 10 * 1024 * 1024,
-								ByteHard: 10 * 1024 * 1024,
-							}
+							byteSoftQuota = 10 * 1024 * 1024
+							byteHardQuota = 10 * 1024 * 1024
+							quotaScope = garden.DiskLimitScopeTotal
 						})
 
 						It("kills the process", func() {
@@ -206,12 +257,10 @@ var _ = Describe("Limits", func() {
 
 							bytesUsed := totalMetrics()
 
-							quotaLimit = garden.DiskLimits{
+							err := container.LimitDisk(garden.DiskLimits{
 								ByteSoft: 10*1024*1024 + bytesUsed,
 								ByteHard: 10*1024*1024 + bytesUsed,
-							}
-
-							err := container.LimitDisk(quotaLimit)
+							})
 							Expect(err).ToNot(HaveOccurred())
 
 							dd, err := container.Run(garden.ProcessSpec{
@@ -285,10 +334,9 @@ var _ = Describe("Limits", func() {
 				var err error
 
 				BeforeEach(func() {
-					quotaLimit = garden.DiskLimits{
-						ByteSoft: 50 * 1024 * 1024,
-						ByteHard: 50 * 1024 * 1024,
-					}
+					byteSoftQuota = 50 * 1024 * 1024
+					byteHardQuota = 50 * 1024 * 1024
+					quotaScope = garden.DiskLimitScopeTotal
 				})
 
 				JustBeforeEach(func() {
