@@ -140,6 +140,23 @@ var _ = Describe("Security", func() {
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("proc /proc proc ro"))
 			})
+
+			It("/sys IS mounted as Read-Only", func() {
+				stdout := gbytes.NewBuffer()
+
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "cat",
+					Args: []string{"/proc/mounts"},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+					Stderr: GinkgoWriter,
+				})
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("sysfs /sys sysfs ro"))
+			})
 		})
 
 		Context("in a privileged container", func() {
@@ -162,6 +179,23 @@ var _ = Describe("Security", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("proc /proc proc rw"))
+			})
+
+			It("/sys IS mounted as Read-Only", func() {
+				stdout := gbytes.NewBuffer()
+
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "cat",
+					Args: []string{"/proc/mounts"},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+					Stderr: GinkgoWriter,
+				})
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("sysfs /sys sysfs ro"))
 			})
 		})
 	})
