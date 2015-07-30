@@ -20,6 +20,39 @@ import (
 )
 
 var _ = Describe("Lifecycle", func() {
+	Context("Creating a container", func() {
+		BeforeEach(func() {
+			limits = garden.Limits{
+				Memory: garden.MemoryLimits{
+					LimitInBytes: 1024 * 1024 * 128,
+				},
+				CPU: garden.CPULimits{
+					LimitInShares: 50,
+				},
+			}
+		})
+
+		It("it applies limits if set in the container spec", func() {
+			memoryLimit, err := container.CurrentMemoryLimits()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(memoryLimit).To(Equal(limits.Memory))
+
+			cpuLimit, err := container.CurrentCPULimits()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(cpuLimit).To(Equal(limits.CPU))
+		})
+
+		It("does not apply limits if not set in container spec", func() {
+			diskLimit, err := container.CurrentDiskLimits()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(diskLimit).To(Equal(garden.DiskLimits{}))
+
+			bandwidthLimit, err := container.CurrentBandwidthLimits()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(bandwidthLimit).To(Equal(garden.BandwidthLimits{}))
+		})
+	})
+
 	It("provides /dev/shm as tmpfs in the container", func() {
 		process, err := container.Run(garden.ProcessSpec{
 			User: "vcap",

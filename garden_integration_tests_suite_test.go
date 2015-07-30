@@ -20,6 +20,7 @@ var (
 	rootfs              string
 	privilegedContainer bool
 	properties          garden.Properties
+	limits              garden.Limits
 )
 
 func TestGardenIntegrationTests(t *testing.T) {
@@ -31,6 +32,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 		rootfs = ""
 		privilegedContainer = false
 		properties = garden.Properties{}
+		limits = garden.Limits{}
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
 	})
 
@@ -42,6 +44,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 			RootFSPath: rootfs,
 			Privileged: privilegedContainer,
 			Properties: properties,
+			Limits:     limits,
 		})
 		Expect(err).ToNot(HaveOccurred())
 	})
