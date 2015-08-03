@@ -34,7 +34,6 @@ var _ = Describe("Process", func() {
 				Stdout: stdout,
 			})
 			Expect(err).ToNot(HaveOccurred())
-			time.Sleep(time.Second)
 
 			err = process.Signal(garden.SignalTerminate)
 			Expect(err).ToNot(HaveOccurred())
