@@ -42,7 +42,7 @@ var _ = Describe("Process", func() {
 		})
 	})
 
-	It("wait returns when all children of the process have exited", func() {
+	It("doe not block in Wait() when all children of the process have exited", func() {
 		buffer := gbytes.NewBuffer()
 		process, err := container.Run(garden.ProcessSpec{
 			User: "vcap",
@@ -76,6 +76,7 @@ var _ = Describe("Process", func() {
 		Eventually(buffer).Should(gbytes.Say("trapping"))
 
 		Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+
 		select {
 		case status := <-exitChan:
 			Expect(status).To(Equal(42))
@@ -85,7 +86,7 @@ var _ = Describe("Process", func() {
 		}
 	})
 
-	It("wait does not block when a child of the process has not exited", func() {
+	It("does not block in Wait() when a child of the process has not exited", func() {
 		buffer := gbytes.NewBuffer()
 		process, err := container.Run(garden.ProcessSpec{
 			User: "vcap",
@@ -93,14 +94,14 @@ var _ = Describe("Process", func() {
 			Args: []string{"-c", `
 					cleanup ()
 					{
-					  exit 42
+						exit 42
 					}
 
 					trap cleanup TERM
-                    echo trapping
-
-
-					sleep 1000 &
+					sleep 100000 &
+					disown -h
+ -
+					echo trapping
 					wait
 				`},
 		}, garden.ProcessIO{Stdout: buffer})

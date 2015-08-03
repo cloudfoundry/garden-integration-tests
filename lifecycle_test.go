@@ -386,7 +386,7 @@ var _ = Describe("Lifecycle", func() {
 		}, 480.0)
 
 		It("collects the process's full output, even if it exits quickly after", func() {
-			for i := 0; i < 100; i++ {
+			for i := 0; i < 1000; i++ {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
