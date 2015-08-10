@@ -1,14 +1,11 @@
 package garden_integration_tests_test
 
 import (
-	"fmt"
 	"os"
-	"strings"
 
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Limits", func() {
@@ -65,21 +62,11 @@ var _ = Describe("Limits", func() {
 
 			Context("on a directory rootfs container", func() {
 				It("reports correct disk usage", func() {
-					var diskUsage uint64
-					stdout := gbytes.NewBuffer()
+					metrics, err := container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+					initialDiskUsage := metrics.DiskStat
 
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
-						Path: "sh",
-						Args: []string{"-c", "du -d 0 / | awk ' {print $1 }'"},
-					}, garden.ProcessIO{Stdout: stdout})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
-
-					_, err = fmt.Sscanf(strings.TrimSpace(string(stdout.Contents())), "%d", &diskUsage)
-					Expect(err).ToNot(HaveOccurred())
-
-					process, err = container.Run(garden.ProcessSpec{
 						User: "vcap",
 						Path: "dd",
 						Args: []string{"if=/dev/urandom", "of=/home/vcap/some-file", "bs=1M", "count=10"},
@@ -87,24 +74,11 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
-					metrics := func() garden.ContainerDiskStat {
-						metricsAfter, err := container.Metrics()
-						Expect(err).ToNot(HaveOccurred())
+					metrics, err = container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
 
-						return metricsAfter.DiskStat
-					}
-
-					metricsTotalBytes := func() uint64 {
-						return metrics().TotalBytesUsed
-					}
-
-					metricsExclusiveBytes := func() uint64 {
-						return metrics().ExclusiveBytesUsed
-					}
-
-					expectedTotalBytes := (diskUsage * 1024) + uint64(6*1024*1024)
-					Eventually(metricsTotalBytes, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedTotalBytes, uint64(4*1024*1024)))
-					Eventually(metricsExclusiveBytes, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(9*1024*1024), uint64(11*1024*1024)))
+					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(10*1024*1024)))
+					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(Equal(initialDiskUsage.ExclusiveBytesUsed + uint64(10*1024*1024)))
 
 					process, err = container.Run(garden.ProcessSpec{
 						User: "vcap",
@@ -114,9 +88,11 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
-					expectedTotalBytes = (diskUsage * 1024) + uint64(6*1024*1024)
-					Eventually(metricsTotalBytes, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", expectedTotalBytes, uint64(4*1024*1024)))
-					Eventually(metricsExclusiveBytes, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(19*1024*1024), uint64(21*1024*1024)))
+					metrics, err = container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+
+					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(20*1024*1024)))
+					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(Equal(initialDiskUsage.ExclusiveBytesUsed + uint64(20*1024*1024)))
 				})
 			})
 
@@ -238,26 +214,11 @@ var _ = Describe("Limits", func() {
 
 					Context("user alice is getting near the set limit", func() {
 						JustBeforeEach(func() {
-							metrics := func() garden.ContainerDiskStat {
-								metricsAfter, err := container.Metrics()
-								Expect(err).ToNot(HaveOccurred())
-								return metricsAfter.DiskStat
-							}
+							metrics, err := container.Metrics()
+							Expect(err).ToNot(HaveOccurred())
+							bytesUsed := metrics.DiskStat.TotalBytesUsed
 
-							totalMetrics := func() uint64 {
-								return metrics().TotalBytesUsed
-							}
-
-							exclusiveMetrics := func() uint64 {
-								return metrics().ExclusiveBytesUsed
-							}
-
-							Eventually(totalMetrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(6*1024*1024), uint64(4*1024*1024)))
-							Eventually(exclusiveMetrics, BTRFS_WAIT_TIME, 30).Should(BeNumerically("~", uint64(0), uint64(4*1024*1024)))
-
-							bytesUsed := totalMetrics()
-
-							err := container.LimitDisk(garden.DiskLimits{
+							err = container.LimitDisk(garden.DiskLimits{
 								ByteSoft: 10*1024*1024 + bytesUsed,
 								ByteHard: 10*1024*1024 + bytesUsed,
 							})
