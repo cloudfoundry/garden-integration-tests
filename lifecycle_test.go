@@ -295,16 +295,16 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Wait()).To(Equal(0))
 			})
 
-			checkProcessIsGone := func(container garden.Container) {
+			checkProcessIsGone := func(container garden.Container, argsPrefix string) {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
 					User: "vcap",
 					Path: "sh",
-					Args: []string{"-c", `
-						 ps ax -o args= | grep -q '^sh -c while'
-					 `},
+					Args: []string{"-c", fmt.Sprintf(`
+						 ps ax -o args= | grep -q '^%s'
+					 `, argsPrefix)},
 				}, garden.ProcessIO{
-					Stdout: stdout,
+					Stdout: io.MultiWriter(stdout, GinkgoWriter),
 					Stderr: GinkgoWriter,
 				})
 				Expect(err).ToNot(HaveOccurred())
@@ -333,7 +333,7 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Signal(garden.SignalKill)).To(Succeed())
 				Expect(process.Wait()).To(Equal(255))
 
-				checkProcessIsGone(container)
+				checkProcessIsGone(container, "sh -c while")
 
 				close(done)
 			}, 10.0)
@@ -360,26 +360,52 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
 				Expect(process.Wait()).To(Equal(255))
 
-				checkProcessIsGone(container)
+				checkProcessIsGone(container, "sh -c while")
 
 				close(done)
 			}, 10.0)
+
+			Context("when killing a process that does not use streaming", func() {
+				var process garden.Process
+
+				JustBeforeEach(func() {
+					var err error
+
+					process, err = container.Run(garden.ProcessSpec{
+						User: "vcap",
+						Path: "sleep",
+						Args: []string{"1000"},
+					}, garden.ProcessIO{})
+					Expect(err).ToNot(HaveOccurred())
+
+					Expect(process.Signal(garden.SignalKill)).To(Succeed())
+				})
+
+				It("goes away", func(done Done) {
+					Expect(process.Wait()).NotTo(Equal(0))
+
+					checkProcessIsGone(container, "sleep")
+
+					close(done)
+				}, 30.0)
+			})
 		})
 
 		It("avoids a race condition when sending a kill signal", func(done Done) {
 			for i := 0; i < 100; i++ {
+				stdout := gbytes.NewBuffer()
+
 				process, err := container.Run(garden.ProcessSpec{
 					User: "vcap",
 					Path: "sh",
 					Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
 				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
+					Stdout: stdout,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(process.Signal(garden.SignalKill)).To(Succeed())
-				Expect(process.Wait()).To(Equal(255))
+				Expect(process.Wait()).NotTo(Equal(0))
 			}
 
 			close(done)
