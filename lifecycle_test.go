@@ -20,7 +20,7 @@ import (
 )
 
 var _ = Describe("Lifecycle", func() {
-	Context("Creating a container", func() {
+	Context("Creating a container with limits", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{
 				Memory: garden.MemoryLimits{

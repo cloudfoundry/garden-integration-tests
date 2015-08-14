@@ -3,6 +3,7 @@ package garden_integration_tests_test
 import (
 	"bytes"
 	"io"
+	"strconv"
 
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
@@ -10,7 +11,6 @@ import (
 )
 
 var _ = Describe("users", func() {
-
 	Context("when nobody maps to 65534", func() {
 		BeforeEach(func() {
 			rootfs = "docker:///ubuntu"
@@ -56,4 +56,41 @@ var _ = Describe("users", func() {
 		})
 	})
 
+	It("should create a user with a large uid and gid", func() {
+		uid := 700000
+		gid := 700000
+
+		proc, err := container.Run(garden.ProcessSpec{
+			User: "root",
+			Path: "addgroup",
+			Args: []string{"-g", strconv.Itoa(gid), "bob"},
+		}, garden.ProcessIO{
+			Stdout: GinkgoWriter,
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(proc.Wait()).To(Equal(0))
+
+		proc, err = container.Run(garden.ProcessSpec{
+			User: "root",
+			Path: "adduser",
+			Args: []string{"-u", strconv.Itoa(uid), "-G", "bob", "-D", "bob"},
+		}, garden.ProcessIO{
+			Stdout: GinkgoWriter,
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(proc.Wait()).To(Equal(0))
+
+		proc, err = container.Run(garden.ProcessSpec{
+			User: "bob",
+			Path: "echo",
+			Args: []string{"Hello Baldrick"},
+		}, garden.ProcessIO{
+			Stdout: GinkgoWriter,
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(proc.Wait()).To(Equal(0))
+	})
 })
