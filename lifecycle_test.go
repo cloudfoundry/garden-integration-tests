@@ -55,7 +55,7 @@ var _ = Describe("Lifecycle", func() {
 
 	It("provides /dev/shm as tmpfs in the container", func() {
 		process, err := container.Run(garden.ProcessSpec{
-			User: "vcap",
+			User: "alice",
 			Path: "dd",
 			Args: []string{"if=/dev/urandom", "of=/dev/shm/some-data", "count=64", "bs=1k"},
 		}, garden.ProcessIO{})
@@ -66,7 +66,7 @@ var _ = Describe("Lifecycle", func() {
 		outBuf := gbytes.NewBuffer()
 
 		process, err = container.Run(garden.ProcessSpec{
-			User: "vcap",
+			User: "alice",
 			Path: "cat",
 			Args: []string{"/proc/mounts"},
 		}, garden.ProcessIO{
@@ -85,7 +85,7 @@ var _ = Describe("Lifecycle", func() {
 		stdout := gbytes.NewBuffer()
 
 		_, err := container.Run(garden.ProcessSpec{
-			User: "vcap",
+			User: "alice",
 			Path: "hostname",
 		}, garden.ProcessIO{
 			Stdout: stdout,
@@ -117,10 +117,23 @@ var _ = Describe("Lifecycle", func() {
 				rootfs = "docker:///cloudfoundry/with-volume"
 			})
 
+			JustBeforeEach(func() {
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "/usr/sbin/adduser",
+					Args: []string{"-D", "bob"},
+				}, garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+			})
+
 			It("creates the volume directory, if it does not already exist", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "bob",
 					Path: "ls",
 					Args: []string{"-l", "/"},
 				}, garden.ProcessIO{
@@ -143,7 +156,7 @@ var _ = Describe("Lifecycle", func() {
 				stderr := gbytes.NewBuffer()
 
 				_, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "tr '\\0' 'a' < /dev/zero | dd count=50 bs=1M of=/dev/null; echo done"},
 				}, garden.ProcessIO{
@@ -160,7 +173,7 @@ var _ = Describe("Lifecycle", func() {
 				stderr := gbytes.NewBuffer()
 
 				_, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "tr '\\0' 'a' < /dev/zero | dd count=50 bs=1M; echo done"},
 				}, garden.ProcessIO{
@@ -212,7 +225,7 @@ var _ = Describe("Lifecycle", func() {
 			stderr := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
+				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", "sleep 0.5; echo $FIRST; sleep 0.5; echo $SECOND >&2; sleep 0.5; exit 42"},
 				Env:  []string{"FIRST=hello", "SECOND=goodbye"},
@@ -232,7 +245,7 @@ var _ = Describe("Lifecycle", func() {
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
+				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", `
 				trap 'echo termed; exit 42' SIGTERM
@@ -298,7 +311,7 @@ var _ = Describe("Lifecycle", func() {
 			checkProcessIsGone := func(container garden.Container, argsPrefix string) {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", fmt.Sprintf(`
 						 ps ax -o args= | grep -q '^%s'
@@ -315,7 +328,7 @@ var _ = Describe("Lifecycle", func() {
 			It("sends a KILL signal to the process if requested", func(done Done) {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `
 							while true; do
@@ -342,7 +355,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `
 							while true; do
@@ -372,7 +385,7 @@ var _ = Describe("Lifecycle", func() {
 					var err error
 
 					process, err = container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "sleep",
 						Args: []string{"1000"},
 					}, garden.ProcessIO{})
@@ -396,7 +409,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
 				}, garden.ProcessIO{
@@ -416,7 +429,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "cat <&0"},
 				}, garden.ProcessIO{
@@ -441,7 +454,7 @@ var _ = Describe("Lifecycle", func() {
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
+				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", "cat <&0"},
 			}, garden.ProcessIO{
@@ -464,7 +477,7 @@ var _ = Describe("Lifecycle", func() {
 
 			for i := 0; i < 10; i++ {
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "ls",
 				}, garden.ProcessIO{
 					Stdin: bytes.NewBufferString(strings.Repeat("x", 1024)),
@@ -496,7 +509,7 @@ var _ = Describe("Lifecycle", func() {
 			Context("when the process writes too much to /dev/shm", func() {
 				It("is killed", func() {
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
 					}, garden.ProcessIO{})
@@ -514,7 +527,7 @@ var _ = Describe("Lifecycle", func() {
 				inR, inW := io.Pipe()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "read foo; stty -a"},
 					TTY: &garden.TTYSpec{
@@ -548,7 +561,7 @@ var _ = Describe("Lifecycle", func() {
 				inR, inW := io.Pipe()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{
 						"-c",
@@ -595,7 +608,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "pwd",
 					Dir:  "/usr",
 				}, garden.ProcessIO{
@@ -614,7 +627,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout2 := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "sleep 2; echo hello; sleep 0.5; echo goodbye; sleep 0.5; exit 42"},
 				}, garden.ProcessIO{
@@ -647,7 +660,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{
 						"-c",
@@ -681,7 +694,7 @@ var _ = Describe("Lifecycle", func() {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{
 						"-c",
@@ -732,7 +745,7 @@ var _ = Describe("Lifecycle", func() {
 					defer close(done)
 
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "sh",
 						Args: []string{
 							"-c",
@@ -794,16 +807,16 @@ var _ = Describe("Lifecycle", func() {
 
 			It("creates the files in the container, as the specified user", func() {
 				err := container.StreamIn(garden.StreamInSpec{
-					User:      "vcap",
-					Path:      "/home/vcap",
+					User:      "alice",
+					Path:      "/home/alice",
 					TarStream: tarStream,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "test",
-					Args: []string{"-f", "/home/vcap/some-temp-dir/some-temp-file"},
+					Args: []string{"-f", "/home/alice/some-temp-dir/some-temp-file"},
 				}, garden.ProcessIO{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -811,9 +824,9 @@ var _ = Describe("Lifecycle", func() {
 
 				output := gbytes.NewBuffer()
 				process, err = container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "ls",
-					Args: []string{"-al", "/home/vcap/some-temp-dir/some-temp-file"},
+					Args: []string{"-al", "/home/alice/some-temp-dir/some-temp-file"},
 				}, garden.ProcessIO{
 					Stdout: output,
 				})
@@ -821,15 +834,15 @@ var _ = Describe("Lifecycle", func() {
 
 				Expect(process.Wait()).To(Equal(0))
 
-				// output should look like -rwxrwxrwx 1 vcap vcap 9 Jan  1  1970 /tmp/some-container-dir/some-temp-dir/some-temp-file
-				Expect(output).To(gbytes.Say("vcap"))
-				Expect(output).To(gbytes.Say("vcap"))
+				// output should look like -rwxrwxrwx 1 alice alice 9 Jan  1  1970 /tmp/some-container-dir/some-temp-dir/some-temp-file
+				Expect(output).To(gbytes.Say("alice"))
+				Expect(output).To(gbytes.Say("alice"))
 			})
 
 			Context("when no user specified", func() {
 				It("streams the files in as root", func() {
 					err := container.StreamIn(garden.StreamInSpec{
-						Path:      "/home/vcap",
+						Path:      "/home/alice",
 						TarStream: tarStream,
 					})
 					Expect(err).ToNot(HaveOccurred())
@@ -838,7 +851,7 @@ var _ = Describe("Lifecycle", func() {
 					process, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "ls",
-						Args: []string{"-la", "/home/vcap/some-temp-dir/some-temp-file"},
+						Args: []string{"-la", "/home/alice/some-temp-dir/some-temp-file"},
 					}, garden.ProcessIO{
 						Stdout: out,
 						Stderr: out,
@@ -854,7 +867,7 @@ var _ = Describe("Lifecycle", func() {
 				It("returns error", func() {
 					err := container.StreamIn(garden.StreamInSpec{
 						User:      "batman",
-						Path:      "/home/vcap",
+						Path:      "/home/alice",
 						TarStream: tarStream,
 					})
 					Expect(err).To(MatchError(ContainSubstring("error streaming in")))
@@ -878,7 +891,7 @@ var _ = Describe("Lifecycle", func() {
 				It("returns error", func() {
 					err := container.StreamIn(garden.StreamInSpec{
 						User:      "bob",
-						Path:      "/home/vcap",
+						Path:      "/home/alice",
 						TarStream: tarStream,
 					})
 					Expect(err).To(MatchError(ContainSubstring("Permission denied")))
@@ -892,14 +905,14 @@ var _ = Describe("Lifecycle", func() {
 
 				It("streams in relative to the default run directory", func() {
 					err := container.StreamIn(garden.StreamInSpec{
-						User:      "vcap",
+						User:      "alice",
 						Path:      ".",
 						TarStream: tarStream,
 					})
 					Expect(err).ToNot(HaveOccurred())
 
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "test",
 						Args: []string{"-f", "some-temp-dir/some-temp-file"},
 					}, garden.ProcessIO{})
@@ -911,14 +924,14 @@ var _ = Describe("Lifecycle", func() {
 
 			It("streams in relative to the default run directory", func() {
 				err := container.StreamIn(garden.StreamInSpec{
-					User:      "vcap",
+					User:      "alice",
 					Path:      ".",
 					TarStream: tarStream,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "test",
 					Args: []string{"-f", "some-temp-dir/some-temp-file"},
 				}, garden.ProcessIO{})
@@ -929,7 +942,7 @@ var _ = Describe("Lifecycle", func() {
 
 			It("returns an error when the tar process dies", func() {
 				err := container.StreamIn(garden.StreamInSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "/tmp/some-container-dir",
 					TarStream: &io.LimitedReader{
 						R: tarStream,
@@ -943,7 +956,7 @@ var _ = Describe("Lifecycle", func() {
 				itStreamsTheDirectory := func(user string) {
 					It("streams the directory", func() {
 						process, err := container.Run(garden.ProcessSpec{
-							User: "vcap",
+							User: "alice",
 							Path: "sh",
 							Args: []string{"-c", `mkdir -p some-outer-dir/some-inner-dir && touch some-outer-dir/some-inner-dir/some-file`},
 						}, garden.ProcessIO{})
@@ -953,7 +966,7 @@ var _ = Describe("Lifecycle", func() {
 
 						tarOutput, err := container.StreamOut(garden.StreamOutSpec{
 							User: user,
-							Path: "/home/vcap/some-outer-dir/some-inner-dir",
+							Path: "/home/alice/some-outer-dir/some-inner-dir",
 						})
 						Expect(err).ToNot(HaveOccurred())
 
@@ -970,7 +983,7 @@ var _ = Describe("Lifecycle", func() {
 
 				}
 
-				itStreamsTheDirectory("vcap")
+				itStreamsTheDirectory("alice")
 
 				Context("when no user specified", func() {
 					// Any user's files can be streamed out as root
@@ -980,7 +993,7 @@ var _ = Describe("Lifecycle", func() {
 				Context("with a trailing slash", func() {
 					It("streams the contents of the directory", func() {
 						process, err := container.Run(garden.ProcessSpec{
-							User: "vcap",
+							User: "alice",
 							Path: "sh",
 							Args: []string{"-c", `mkdir -p some-container-dir && touch some-container-dir/some-file`},
 						}, garden.ProcessIO{})
@@ -989,7 +1002,7 @@ var _ = Describe("Lifecycle", func() {
 						Expect(process.Wait()).To(Equal(0))
 
 						tarOutput, err := container.StreamOut(garden.StreamOutSpec{
-							User: "vcap",
+							User: "alice",
 							Path: "some-container-dir/",
 						})
 						Expect(err).ToNot(HaveOccurred())

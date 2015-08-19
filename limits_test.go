@@ -21,7 +21,7 @@ var _ = Describe("Limits", func() {
 			Context("when the process writes too much to /dev/shm", func() {
 				It("is killed", func() {
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
 					}, garden.ProcessIO{})
@@ -67,9 +67,9 @@ var _ = Describe("Limits", func() {
 					initialDiskUsage := metrics.DiskStat
 
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/vcap/some-file", "bs=1M", "count=10"},
+						Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=10"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
@@ -81,9 +81,9 @@ var _ = Describe("Limits", func() {
 					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(Equal(initialDiskUsage.ExclusiveBytesUsed + uint64(10*1024*1024)))
 
 					process, err = container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/vcap/another-file", "bs=1M", "count=10"},
+						Args: []string{"if=/dev/urandom", "of=/home/alice/another-file", "bs=1M", "count=10"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
@@ -316,17 +316,17 @@ var _ = Describe("Limits", func() {
 
 				It("gives each container its own quota", func() {
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/vcap/some-file", "bs=1M", "count=40"},
+						Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=40"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
 					process, err = container2.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/vcap/some-file", "bs=1M", "count=40"},
+						Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=40"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))

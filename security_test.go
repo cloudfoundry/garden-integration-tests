@@ -15,7 +15,7 @@ var _ = Describe("Security", func() {
 	Describe("PID namespace", func() {
 		It("isolates processes so that only processes from inside the container are visible", func() {
 			_, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
+				User: "alice",
 				Path: "sleep",
 				Args: []string{"989898"},
 			}, garden.ProcessIO{
@@ -27,7 +27,7 @@ var _ = Describe("Security", func() {
 			Eventually(func() []string {
 				psout := gbytes.NewBuffer()
 				ps, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "ps -a"},
 				}, garden.ProcessIO{
@@ -231,7 +231,7 @@ var _ = Describe("Security", func() {
 			It("executes with setuid and setgid", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Dir:  "/usr",
 					Path: "pwd",
 				}, garden.ProcessIO{
@@ -251,7 +251,7 @@ var _ = Describe("Security", func() {
 			It("executes with setuid and setgid", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "/bin/sh",
 					Args: []string{"-c", "id -u; id -g"},
 				}, garden.ProcessIO{
@@ -263,13 +263,13 @@ var _ = Describe("Security", func() {
 				exitStatus, err := process.Wait()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("10001\n10001\n"))
+				Expect(stdout).To(gbytes.Say("1001\n1001\n"))
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "/bin/sh",
 					Args: []string{"-c", "env | sort"},
 				}, garden.ProcessIO{
@@ -281,14 +281,14 @@ var _ = Describe("Security", func() {
 				exitStatus, err := process.Wait()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("HOME=/home/vcap\nPATH=/usr/local/bin:/usr/bin:/bin\nPWD=/home/vcap\nSHLVL=1\nUSER=vcap\n"))
+				Expect(stdout).To(gbytes.Say("HOME=/home/alice\nPATH=/usr/local/bin:/usr/bin:/bin\nPWD=/home/alice\nSHLVL=1\nUSER=alice\n"))
 			})
 
 			Context("when $HOME is set in the spec", func() {
 				It("sets $HOME from the spec", func() {
 					stdout := gbytes.NewBuffer()
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "alice",
 						Path: "/bin/sh",
 						Args: []string{"-c", "echo $HOME"},
 						Env: []string{
@@ -310,7 +310,7 @@ var _ = Describe("Security", func() {
 			It("executes in the user's home directory", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "/bin/pwd",
 				}, garden.ProcessIO{
 					Stdout: stdout,
@@ -321,13 +321,13 @@ var _ = Describe("Security", func() {
 				exitStatus, err := process.Wait()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("/home/vcap\n"))
+				Expect(stdout).To(gbytes.Say("/home/alice\n"))
 			})
 
 			It("sets the specified environment variables", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Env:  []string{"VAR1=VALUE1", "VAR2=VALUE2"},
 					Path: "/bin/sh",
 					Args: []string{"-c", "env | sort"},
@@ -345,7 +345,7 @@ var _ = Describe("Security", func() {
 
 			It("searches a sanitized path not including /sbin for the executable", func() {
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "ls",
 				}, garden.ProcessIO{
 					Stdout: GinkgoWriter,
@@ -357,7 +357,7 @@ var _ = Describe("Security", func() {
 				Expect(exitStatus).To(Equal(0))
 
 				process, err = container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "alice",
 					Path: "ifconfig", // ifconfig is only available in /sbin
 				}, garden.ProcessIO{
 					Stdout: GinkgoWriter,
@@ -663,13 +663,24 @@ var _ = Describe("Security", func() {
 
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
+
+					process, err = container.Run(garden.ProcessSpec{
+						User: "root",
+						Path: "useradd",
+						Args: []string{"-U", "-m", "bob"},
+					}, garden.ProcessIO{
+						Stdout: GinkgoWriter,
+						Stderr: GinkgoWriter,
+					})
+					Expect(err).ToNot(HaveOccurred())
+					Expect(process.Wait()).To(Equal(0))
 				})
 
 				It("can chown files", func() {
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "bob",
 						Path: "sudo",
-						Args: []string{"chown", "-R", "vcap", "/tmp"},
+						Args: []string{"chown", "-R", "bob", "/tmp"},
 					}, garden.ProcessIO{
 						Stdout: GinkgoWriter,
 						Stderr: GinkgoWriter,
@@ -682,7 +693,7 @@ var _ = Describe("Security", func() {
 				It("does not have certain capabilities", func() {
 					// This attempts to set system time which requires the CAP_SYS_TIME permission.
 					process, err := container.Run(garden.ProcessSpec{
-						User: "vcap",
+						User: "bob",
 						Path: "sudo",
 						Args: []string{"date", "--set", "+2 minutes"},
 					}, garden.ProcessIO{

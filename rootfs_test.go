@@ -21,10 +21,23 @@ var _ = Describe("Rootfses", func() {
 				rootfs = "docker:///cloudfoundry/with-volume"
 			})
 
+			JustBeforeEach(func() {
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "/usr/sbin/adduser",
+					Args: []string{"-D", "bob"},
+				}, garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+			})
+
 			It("$PATH is taken from the docker image", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "bob",
 					Path: "/bin/sh",
 					Args: []string{"-c", "echo $PATH"},
 				}, garden.ProcessIO{
@@ -41,7 +54,7 @@ var _ = Describe("Rootfses", func() {
 			It("$TEST is taken from the docker image", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
-					User: "vcap",
+					User: "bob",
 					Path: "/bin/sh",
 					Args: []string{"-c", "echo $TEST"},
 				}, garden.ProcessIO{

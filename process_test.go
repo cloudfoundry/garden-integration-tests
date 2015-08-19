@@ -17,11 +17,24 @@ var _ = Describe("Process", func() {
 	})
 
 	Describe("signalling", func() {
+		JustBeforeEach(func() {
+			process, err := container.Run(garden.ProcessSpec{
+				User: "root",
+				Path: "useradd",
+				Args: []string{"-U", "-m", "bob"},
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(0))
+		})
+
 		It("a process can be sent SIGTERM immediately after having been started", func() {
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
-				User: "vcap",
+				User: "bob",
 				Path: "sh",
 				Args: []string{
 					"-c",
@@ -41,12 +54,26 @@ var _ = Describe("Process", func() {
 		})
 	})
 
-	It("doe not block in Wait() when all children of the process have exited", func() {
-		buffer := gbytes.NewBuffer()
-		process, err := container.Run(garden.ProcessSpec{
-			User: "vcap",
-			Path: "/bin/bash",
-			Args: []string{"-c", `
+	Describe("wait", func() {
+		JustBeforeEach(func() {
+			process, err := container.Run(garden.ProcessSpec{
+				User: "root",
+				Path: "useradd",
+				Args: []string{"-U", "-m", "bob"},
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(0))
+		})
+
+		It("does not block in Wait() when all children of the process have exited", func() {
+			buffer := gbytes.NewBuffer()
+			process, err := container.Run(garden.ProcessSpec{
+				User: "bob",
+				Path: "/bin/bash",
+				Args: []string{"-c", `
 
 				  cleanup ()
 				  {
@@ -61,36 +88,36 @@ var _ = Describe("Process", func() {
 				  child_pid=$!
 				  wait
 				`},
-		}, garden.ProcessIO{Stdout: buffer})
-		Expect(err).NotTo(HaveOccurred())
+			}, garden.ProcessIO{Stdout: buffer})
+			Expect(err).NotTo(HaveOccurred())
 
-		exitChan := make(chan int)
-		go func(p garden.Process, exited chan<- int) {
-			GinkgoRecover()
-			status, waitErr := p.Wait()
-			Expect(waitErr).NotTo(HaveOccurred())
-			exited <- status
-		}(process, exitChan)
+			exitChan := make(chan int)
+			go func(p garden.Process, exited chan<- int) {
+				GinkgoRecover()
+				status, waitErr := p.Wait()
+				Expect(waitErr).NotTo(HaveOccurred())
+				exited <- status
+			}(process, exitChan)
 
-		Eventually(buffer).Should(gbytes.Say("trapping"))
+			Eventually(buffer).Should(gbytes.Say("trapping"))
 
-		Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
 
-		select {
-		case status := <-exitChan:
-			Expect(status).To(Equal(42))
-		case <-time.After(time.Second * 10):
-			debug.PrintStack()
-			Fail("timed out!")
-		}
-	})
+			select {
+			case status := <-exitChan:
+				Expect(status).To(Equal(42))
+			case <-time.After(time.Second * 10):
+				debug.PrintStack()
+				Fail("timed out!")
+			}
+		})
 
-	It("does not block in Wait() when a child of the process has not exited", func() {
-		buffer := gbytes.NewBuffer()
-		process, err := container.Run(garden.ProcessSpec{
-			User: "vcap",
-			Path: "/bin/bash",
-			Args: []string{"-c", `
+		It("does not block in Wait() when a child of the process has not exited", func() {
+			buffer := gbytes.NewBuffer()
+			process, err := container.Run(garden.ProcessSpec{
+				User: "bob",
+				Path: "/bin/bash",
+				Args: []string{"-c", `
 					cleanup ()
 					{
 						exit 42
@@ -103,26 +130,27 @@ var _ = Describe("Process", func() {
 					echo trapping
 					wait
 				`},
-		}, garden.ProcessIO{Stdout: buffer})
-		Expect(err).NotTo(HaveOccurred())
+			}, garden.ProcessIO{Stdout: buffer})
+			Expect(err).NotTo(HaveOccurred())
 
-		exitChan := make(chan int)
-		go func(p garden.Process, exited chan<- int) {
-			GinkgoRecover()
-			status, waitErr := p.Wait()
-			Expect(waitErr).NotTo(HaveOccurred())
-			exited <- status
-		}(process, exitChan)
+			exitChan := make(chan int)
+			go func(p garden.Process, exited chan<- int) {
+				GinkgoRecover()
+				status, waitErr := p.Wait()
+				Expect(waitErr).NotTo(HaveOccurred())
+				exited <- status
+			}(process, exitChan)
 
-		Eventually(buffer).Should(gbytes.Say("trapping"))
+			Eventually(buffer).Should(gbytes.Say("trapping"))
 
-		Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
-		select {
-		case status := <-exitChan:
-			Expect(status).To(Equal(42))
-		case <-time.After(time.Second * 10):
-			Fail("Wait should not block when a child has not exited")
-		}
+			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+			select {
+			case status := <-exitChan:
+				Expect(status).To(Equal(42))
+			case <-time.After(time.Second * 10):
+				Fail("Wait should not block when a child has not exited")
+			}
+		})
 	})
 
 	Describe("working directory", func() {
