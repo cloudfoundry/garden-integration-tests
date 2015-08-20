@@ -29,7 +29,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	BeforeEach(func() {
-		rootfs = ""
+		rootfs = "docker:///cloudfoundry/garden-busybox"
 		privilegedContainer = false
 		properties = garden.Properties{}
 		limits = garden.Limits{}
