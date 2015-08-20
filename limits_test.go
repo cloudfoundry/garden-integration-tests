@@ -78,7 +78,7 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 
 					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(10*1024*1024)))
-					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(Equal(initialDiskUsage.ExclusiveBytesUsed + uint64(10*1024*1024)))
+					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(BeNumerically("~", initialDiskUsage.ExclusiveBytesUsed+uint64(10*1024*1024), uint64(1024*1024)))
 
 					process, err = container.Run(garden.ProcessSpec{
 						User: "alice",
@@ -92,7 +92,7 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 
 					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(20*1024*1024)))
-					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(Equal(initialDiskUsage.ExclusiveBytesUsed + uint64(20*1024*1024)))
+					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(BeNumerically("~", initialDiskUsage.ExclusiveBytesUsed+uint64(20*1024*1024), uint64(1024*1024)))
 				})
 			})
 
