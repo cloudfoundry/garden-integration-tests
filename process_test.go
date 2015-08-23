@@ -17,24 +17,11 @@ var _ = Describe("Process", func() {
 	})
 
 	Describe("signalling", func() {
-		JustBeforeEach(func() {
-			process, err := container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "useradd",
-				Args: []string{"-U", "-m", "bob"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).ToNot(HaveOccurred())
-			Expect(process.Wait()).To(Equal(0))
-		})
-
 		It("a process can be sent SIGTERM immediately after having been started", func() {
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
-				User: "bob",
+				User: "root",
 				Path: "sh",
 				Args: []string{
 					"-c",
@@ -55,23 +42,10 @@ var _ = Describe("Process", func() {
 	})
 
 	Describe("wait", func() {
-		JustBeforeEach(func() {
-			process, err := container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "useradd",
-				Args: []string{"-U", "-m", "bob"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).ToNot(HaveOccurred())
-			Expect(process.Wait()).To(Equal(0))
-		})
-
 		It("does not block in Wait() when all children of the process have exited", func() {
 			buffer := gbytes.NewBuffer()
 			process, err := container.Run(garden.ProcessSpec{
-				User: "bob",
+				User: "root",
 				Path: "/bin/bash",
 				Args: []string{"-c", `
 
@@ -115,7 +89,7 @@ var _ = Describe("Process", func() {
 		It("does not block in Wait() when a child of the process has not exited", func() {
 			buffer := gbytes.NewBuffer()
 			process, err := container.Run(garden.ProcessSpec{
-				User: "bob",
+				User: "root",
 				Path: "/bin/bash",
 				Args: []string{"-c", `
 					cleanup ()
@@ -224,7 +198,7 @@ var _ = Describe("Process", func() {
 					out := gbytes.NewBuffer()
 					process, err := container.Run(garden.ProcessSpec{
 						User: "alice",
-						Dir:  "/home/bob/nonexistent",
+						Dir:  "/root/nonexistent",
 						Path: "pwd",
 					}, garden.ProcessIO{
 						Stdout: GinkgoWriter,
@@ -234,7 +208,7 @@ var _ = Describe("Process", func() {
 					Expect(err).ToNot(HaveOccurred())
 					exitStatus, err := process.Wait()
 					Expect(exitStatus).ToNot(Equal(0))
-					Expect(out).To(gbytes.Say("proc_starter: ExecAsUser: system: mkdir /home/bob/nonexistent: permission denied"))
+					Expect(out).To(gbytes.Say("proc_starter: ExecAsUser: system: mkdir /root/nonexistent: permission denied"))
 				})
 			})
 		})
