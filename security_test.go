@@ -76,7 +76,7 @@ var _ = Describe("Security", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(exitStatus).To(Equal(0))
 
-			Expect(stdout).To(gbytes.Say(`\s+1\s+{initd}\s+wshd: %s`, container.Handle()))
+			Expect(stdout).To(gbytes.Say(`\s+1\s+{exe}\s+initd.*-title="wshd: %s"`, container.Handle()))
 		})
 	})
 
