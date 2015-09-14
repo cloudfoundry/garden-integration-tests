@@ -8,11 +8,11 @@ import (
 )
 
 var _ = Describe("smoke tests", func() {
-	It("can run a process inside a container", func() {
+	FIt("can run a process inside a container", func() {
 		stdout := gbytes.NewBuffer()
 
 		_, err := container.Run(garden.ProcessSpec{
-			Path: "whoami",
+			Path: "/usr/bin/whoami",
 			User: "root",
 		}, garden.ProcessIO{
 			Stdout: stdout,
