@@ -99,9 +99,9 @@ var _ = Describe("Limits", func() {
 			Context("on a Docker container", func() {
 				BeforeEach(func() {
 					privilegedContainer = false
-					rootfs = "docker:///busybox"
-					byteSoftQuota = 10 * 1024 * 1024
-					byteHardQuota = 10 * 1024 * 1024
+					rootfs = "docker:///busybox#1.23"
+					byteSoftQuota = 9 * 1024 * 1024
+					byteHardQuota = uint64(9 * 1024 * 1024)
 					quotaScope = garden.DiskLimitScopeTotal
 				})
 
@@ -121,7 +121,7 @@ var _ = Describe("Limits", func() {
 							dd, err := container.Run(garden.ProcessSpec{
 								User: "root",
 								Path: "dd",
-								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=3"}, // should succeed, even though equivalent with 'total' scope does not
+								Args: []string{"if=/dev/random", "of=/root/test", "bs=1M", "count=3"}, // should succeed, even though equivalent with 'total' scope does not
 							}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 							Expect(err).ToNot(HaveOccurred())
 							Expect(dd.Wait()).To(Equal(0))
@@ -134,7 +134,7 @@ var _ = Describe("Limits", func() {
 								User: "root",
 								Path: "dd",
 								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for a few MB
-							}, garden.ProcessIO{})
+							}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 							Expect(err).ToNot(HaveOccurred())
 							Expect(dd.Wait()).ToNot(Equal(0))
 						})
