@@ -727,7 +727,7 @@ var _ = Describe("Lifecycle", func() {
 
 				Expect(process.Wait()).To(Equal(143)) // 143 = 128 + SIGTERM
 
-				Expect(time.Since(stoppedAt)).To(BeNumerically("<=", 5*time.Second))
+				Expect(time.Since(stoppedAt)).To(BeNumerically("<=", 9*time.Second))
 			}, 15)
 
 			It("changes the container's state to 'stopped'", func() {
