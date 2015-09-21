@@ -100,8 +100,8 @@ var _ = Describe("Limits", func() {
 				BeforeEach(func() {
 					privilegedContainer = false
 					rootfs = "docker:///busybox#1.23"
-					byteSoftQuota = 9 * 1024 * 1024
-					byteHardQuota = uint64(9 * 1024 * 1024)
+					byteSoftQuota = 9*1024*1024 + 1024
+					byteHardQuota = uint64(9*1024*1024 + 1024)
 					quotaScope = garden.DiskLimitScopeTotal
 				})
 
