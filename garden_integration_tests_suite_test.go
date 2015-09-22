@@ -50,7 +50,9 @@ func TestGardenIntegrationTests(t *testing.T) {
 	})
 
 	AfterEach(func() {
-		Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
+		if container != nil {
+			Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
+		}
 	})
 
 	RunSpecs(t, "GardenIntegrationTests Suite")

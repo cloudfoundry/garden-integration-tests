@@ -1021,4 +1021,31 @@ var _ = Describe("Lifecycle", func() {
 			})
 		})
 	})
+
+	Context("when the container GraceTime is modified", func() {
+		var graceTime time.Duration
+
+		JustBeforeEach(func() {
+			graceTime = time.Second * 5
+
+			container.SetGraceTime(graceTime)
+		})
+
+		AfterEach(func() {
+			container = nil
+		})
+
+		It("should disappear after grace time and before timeout", func(done Done) {
+			time.Sleep(graceTime + time.Second)
+
+			_, err := container.Run(garden.ProcessSpec{
+				Path: "ls",
+				Args: []string{"/"},
+				User: "root",
+			}, garden.ProcessIO{})
+			Expect(err).To(HaveOccurred())
+
+			close(done)
+		}, 10.0)
+	})
 })
