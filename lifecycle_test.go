@@ -741,9 +741,7 @@ var _ = Describe("Lifecycle", func() {
 			})
 
 			Context("when a process does not die 10 seconds after receiving SIGTERM", func() {
-				It("is forcibly killed", func(done Done) {
-					defer close(done)
-
+				It("is forcibly killed", func() {
 					process, err := container.Run(garden.ProcessSpec{
 						User: "alice",
 						Path: "sh",
@@ -771,7 +769,7 @@ var _ = Describe("Lifecycle", func() {
 					Expect(process.Wait()).ToNot(Equal(0)) // either 137 or 255
 
 					Expect(time.Since(stoppedAt)).To(BeNumerically(">=", 10*time.Second))
-				}, 15)
+				})
 			})
 		})
 
