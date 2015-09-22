@@ -1,4 +1,4 @@
-package garden_integration_tests_test
+package performance_test
 
 import (
 	"io"
@@ -12,12 +12,55 @@ import (
 )
 
 var _ = Describe("performance", func() {
+	Describe("streaming", func() {
+		BeforeEach(func() {
+			rootfs = "docker:///cloudfoundry/garden-busybox"
+		})
 
-	BeforeEach(func() {
-		rootfs = "docker:///cloudfoundry/ubuntu-bc"
+		Measure("it should stream stdout and stderr efficiently", func(b Benchmarker) {
+			b.Time("(baseline) streaming 50M of stdout to /dev/null", func() {
+				stdout := gbytes.NewBuffer()
+				stderr := gbytes.NewBuffer()
+
+				_, err := container.Run(garden.ProcessSpec{
+					User: "alice",
+					Path: "sh",
+					Args: []string{"-c", "tr '\\0' 'a' < /dev/zero | dd count=50 bs=1M of=/dev/null; echo done"},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+					Stderr: stderr,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(stdout, "2s").Should(gbytes.Say("done\n"))
+			})
+
+			time := b.Time("streaming 50M of data via garden", func() {
+				stdout := gbytes.NewBuffer()
+				stderr := gbytes.NewBuffer()
+
+				_, err := container.Run(garden.ProcessSpec{
+					User: "alice",
+					Path: "sh",
+					Args: []string{"-c", "tr '\\0' 'a' < /dev/zero | dd count=50 bs=1M; echo done"},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+					Stderr: stderr,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(stdout, "10s").Should(gbytes.Say("done\n"))
+			})
+
+			Expect(time.Seconds()).To(BeNumerically("<", 3))
+		}, 10)
 	})
 
 	Describe("a process inside a container", func() {
+		BeforeEach(func() {
+			rootfs = "docker:///cloudfoundry/ubuntu-bc"
+		})
+
 		Measure("starting lots of processes", func(b Benchmarker) {
 			b.Time("end to end time", func() {
 				process, err := container.Run(garden.ProcessSpec{
