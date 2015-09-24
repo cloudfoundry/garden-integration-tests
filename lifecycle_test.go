@@ -983,29 +983,18 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	Context("when the container GraceTime is modified", func() {
-		var graceTime time.Duration
+		It("should disappear after grace time and before timeout", func() {
+			_, err := gardenClient.Lookup(container.Handle())
+			Expect(err).NotTo(HaveOccurred())
 
-		JustBeforeEach(func() {
-			graceTime = time.Second * 5
+			container.SetGraceTime(500 * time.Millisecond)
 
-			container.SetGraceTime(graceTime)
+			Eventually(func() error {
+				_, err := gardenClient.Lookup(container.Handle())
+				return err
+			}, "10s").Should(HaveOccurred())
+
+			container = nil // avoid double-destroying in AfterEach
 		})
-
-		AfterEach(func() {
-			container = nil
-		})
-
-		It("should disappear after grace time and before timeout", func(done Done) {
-			time.Sleep(graceTime + time.Second)
-
-			_, err := container.Run(garden.ProcessSpec{
-				Path: "ls",
-				Args: []string{"/"},
-				User: "root",
-			}, garden.ProcessIO{})
-			Expect(err).To(HaveOccurred())
-
-			close(done)
-		}, 10.0)
 	})
 })
