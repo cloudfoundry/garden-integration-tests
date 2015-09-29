@@ -62,37 +62,42 @@ var _ = Describe("Limits", func() {
 
 			Context("on a directory rootfs container", func() {
 				It("reports correct disk usage", func() {
-					metrics, err := container.Metrics()
-					Expect(err).ToNot(HaveOccurred())
-					initialDiskUsage := metrics.DiskStat
+					var TotalBytesUsed = func() uint64 {
+						metrics, err := container.Metrics()
+						Expect(err).ToNot(HaveOccurred())
+						return metrics.DiskStat.TotalBytesUsed
+					}
+
+					var ExclusiveBytesUsed = func() uint64 {
+						metrics, err := container.Metrics()
+						Expect(err).ToNot(HaveOccurred())
+						return metrics.DiskStat.ExclusiveBytesUsed
+					}
+
+					initialTotalBytes := TotalBytesUsed()
+					initialExclusiveBytes := ExclusiveBytesUsed()
 
 					process, err := container.Run(garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=10"},
+						Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=10"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
-					metrics, err = container.Metrics()
-					Expect(err).ToNot(HaveOccurred())
-
-					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(10*1024*1024)))
-					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(BeNumerically("~", initialDiskUsage.ExclusiveBytesUsed+uint64(10*1024*1024), uint64(1024*1024)))
+					Eventually(TotalBytesUsed).Should(Equal(initialTotalBytes + uint64(10*1024*1024)))
+					Eventually(ExclusiveBytesUsed).Should(BeNumerically("~", initialExclusiveBytes+uint64(10*1024*1024), uint64(1024*1024)))
 
 					process, err = container.Run(garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/home/alice/another-file", "bs=1M", "count=10"},
+						Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(process.Wait()).To(Equal(0))
 
-					metrics, err = container.Metrics()
-					Expect(err).ToNot(HaveOccurred())
-
-					Expect(metrics.DiskStat.TotalBytesUsed).To(Equal(initialDiskUsage.TotalBytesUsed + uint64(20*1024*1024)))
-					Expect(metrics.DiskStat.ExclusiveBytesUsed).To(BeNumerically("~", initialDiskUsage.ExclusiveBytesUsed+uint64(20*1024*1024), uint64(1024*1024)))
+					Eventually(TotalBytesUsed).Should(Equal(initialTotalBytes + uint64(20*1024*1024)))
+					Eventually(ExclusiveBytesUsed).Should(BeNumerically("~", initialExclusiveBytes+uint64(20*1024*1024), uint64(1024*1024)))
 				})
 			})
 
