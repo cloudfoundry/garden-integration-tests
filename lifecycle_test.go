@@ -368,14 +368,13 @@ var _ = Describe("Lifecycle", func() {
 
 		It("avoids a race condition when sending a kill signal", func(done Done) {
 			for i := 0; i < 100; i++ {
-				stdout := gbytes.NewBuffer()
-
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
 				}, garden.ProcessIO{
-					Stdout: stdout,
+					Stdout: GinkgoWriter,
+					Stderr: GinkgoWriter,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
