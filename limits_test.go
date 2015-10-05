@@ -149,6 +149,7 @@ var _ = Describe("Limits", func() {
 				Context("when the scope is exclusive", func() {
 					BeforeEach(func() {
 						quotaScope = garden.DiskLimitScopeExclusive
+						rootfs = "docker:///cloudfoundry/busyboxplus#curl"
 					})
 
 					Context("and run a process that would exceed the quota due to the size of the rootfs (but doesnt since this is not included)", func() {
@@ -156,7 +157,7 @@ var _ = Describe("Limits", func() {
 							dd, err := container.Run(garden.ProcessSpec{
 								User: "root",
 								Path: "dd",
-								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=8"}, // should succeed, even though equivalent with 'total' scope does not
 							}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 							Expect(err).ToNot(HaveOccurred())
 							Expect(dd.Wait()).To(Equal(0))
