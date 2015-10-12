@@ -703,13 +703,14 @@ var _ = Describe("Lifecycle", func() {
 
 			Context("when a process does not die 10 seconds after receiving SIGTERM", func() {
 				It("is forcibly killed", func() {
+					stdout := gbytes.NewBuffer()
 					process, err := container.Run(garden.ProcessSpec{
 						User: "alice",
 						Path: "sh",
 						Args: []string{
 							"-c",
 							`
-							trap "echo cant touch this; sleep 1000" SIGTERM
+							trap "echo cannot touch this" SIGTERM
 
 							echo waiting
 							while true
@@ -718,7 +719,9 @@ var _ = Describe("Lifecycle", func() {
 							done
 						`,
 						},
-					}, garden.ProcessIO{})
+					}, garden.ProcessIO{Stdout: stdout})
+
+					Eventually(stdout).Should(gbytes.Say("waiting"))
 
 					Expect(err).ToNot(HaveOccurred())
 
@@ -727,7 +730,11 @@ var _ = Describe("Lifecycle", func() {
 					err = container.Stop(false)
 					Expect(err).ToNot(HaveOccurred())
 
-					Expect(process.Wait()).ToNot(Equal(0)) // either 137 or 255
+					exitStatus, err := process.Wait()
+					Expect(err).ToNot(HaveOccurred())
+					if exitStatus != 137 && exitStatus != 255 {
+						Fail(fmt.Sprintf("Unexpected exitStatus: %d", exitStatus))
+					}
 
 					Expect(time.Since(stoppedAt)).To(BeNumerically(">=", 10*time.Second))
 				})
