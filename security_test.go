@@ -227,6 +227,17 @@ var _ = Describe("Security", func() {
 	})
 
 	Describe("Users and groups", func() {
+		It("maintains setuid permissions in unprivileged containers", func() {
+			stdout := gbytes.NewBuffer()
+			container.Run(garden.ProcessSpec{
+				User: "alice",
+				Path: "ls",
+				Args: []string{"-l", "/bin/busybox"},
+			}, garden.ProcessIO{Stdout: stdout, Stderr: GinkgoWriter})
+
+			Eventually(stdout).Should(gbytes.Say("-rws"))
+		})
+
 		Context("when running a command in a working dir", func() {
 			It("executes with setuid and setgid", func() {
 				stdout := gbytes.NewBuffer()
