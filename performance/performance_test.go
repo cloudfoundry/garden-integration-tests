@@ -2,6 +2,7 @@ package performance_test
 
 import (
 	"io"
+	"fmt"
 	"strings"
 	"time"
 
@@ -12,6 +13,40 @@ import (
 )
 
 var _ = Describe("performance", func() {
+	FDescribe("creating", func() {
+		Measure("multiple concurrent creates", func(b Benchmarker) {
+		 gardenClient.Create(garden.ContainerSpec{}) // make sure we're hitting cache
+
+			handles := []string{}
+			b.Time("concurrent creations", func() {
+				chans := []chan string{}
+				for i := 0; i < 50; i++ {
+					ch := make(chan string, 1)
+					go func(c chan string, index int) {
+						defer GinkgoRecover()
+						b.Time(fmt.Sprintf("create-%d",index), func() {
+							ctr, err := gardenClient.Create(garden.ContainerSpec{})
+							Expect(err).ToNot(HaveOccurred())
+							c <- ctr.Handle()
+						})
+					}(ch, i)
+					chans = append(chans, ch)
+				}
+
+				for _, ch := range chans {
+					handle := <-ch
+					if handle != "" {
+						handles = append(handles, handle)
+					}
+				}
+			})
+
+			for _, handle := range handles {
+				Expect(gardenClient.Destroy(handle)).To(Succeed())
+			}
+		}, 2)
+	})
+
 	Describe("streaming", func() {
 		BeforeEach(func() {
 			rootfs = "docker:///cloudfoundry/garden-busybox"
