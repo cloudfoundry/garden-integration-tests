@@ -1,8 +1,8 @@
 package performance_test
 
 import (
-	"io"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -13,9 +13,9 @@ import (
 )
 
 var _ = Describe("performance", func() {
-	FDescribe("creating", func() {
+	Describe("creating", func() {
 		Measure("multiple concurrent creates", func(b Benchmarker) {
-		 gardenClient.Create(garden.ContainerSpec{}) // make sure we're hitting cache
+			gardenClient.Create(garden.ContainerSpec{}) // make sure we're hitting cache
 
 			handles := []string{}
 			b.Time("concurrent creations", func() {
@@ -24,7 +24,7 @@ var _ = Describe("performance", func() {
 					ch := make(chan string, 1)
 					go func(c chan string, index int) {
 						defer GinkgoRecover()
-						b.Time(fmt.Sprintf("create-%d",index), func() {
+						b.Time(fmt.Sprintf("create-%d", index), func() {
 							ctr, err := gardenClient.Create(garden.ContainerSpec{})
 							Expect(err).ToNot(HaveOccurred())
 							c <- ctr.Handle()
