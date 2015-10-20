@@ -14,7 +14,7 @@ import (
 
 var _ = Describe("performance", func() {
 	Describe("creating", func() {
-		Measure("multiple concurrent creates", func(b Benchmarker) {
+		FMeasure("multiple concurrent creates", func(b Benchmarker) {
 			// make sure we're warmed up and hitting the cache
 			for i := 0; i < 5; i++ {
 				ctr, err := gardenClient.Create(garden.ContainerSpec{})
@@ -25,7 +25,7 @@ var _ = Describe("performance", func() {
 			handles := []string{}
 			b.Time("concurrent creations", func() {
 				chans := []chan string{}
-				for i := 0; i < 50; i++ {
+				for i := 0; i < 5; i++ {
 					ch := make(chan string, 1)
 					go func(c chan string, index int) {
 						defer GinkgoRecover()
@@ -49,7 +49,7 @@ var _ = Describe("performance", func() {
 			for _, handle := range handles {
 				Expect(gardenClient.Destroy(handle)).To(Succeed())
 			}
-		}, 10)
+		}, 50)
 	})
 
 	Describe("streaming", func() {
