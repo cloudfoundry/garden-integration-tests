@@ -15,7 +15,12 @@ import (
 var _ = Describe("performance", func() {
 	Describe("creating", func() {
 		Measure("multiple concurrent creates", func(b Benchmarker) {
-			gardenClient.Create(garden.ContainerSpec{}) // make sure we're hitting cache
+			// make sure we're warmed up and hitting the cache
+			for i := 0; i < 5; i++ {
+				ctr, err := gardenClient.Create(garden.ContainerSpec{})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(gardenClient.Destroy(ctr.Handle())).To(Succeed())
+			}
 
 			handles := []string{}
 			b.Time("concurrent creations", func() {
@@ -44,7 +49,7 @@ var _ = Describe("performance", func() {
 			for _, handle := range handles {
 				Expect(gardenClient.Destroy(handle)).To(Succeed())
 			}
-		}, 2)
+		}, 10)
 	})
 
 	Describe("streaming", func() {
