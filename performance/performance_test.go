@@ -1,9 +1,13 @@
 package performance_test
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
+	"os"
+	"path"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
@@ -14,7 +18,7 @@ import (
 
 var _ = Describe("performance", func() {
 	Describe("creating", func() {
-		FMeasure("multiple concurrent creates", func(b Benchmarker) {
+		Measure("multiple concurrent creates", func(b Benchmarker) {
 			// make sure we're warmed up and hitting the cache
 			for i := 0; i < 5; i++ {
 				ctr, err := gardenClient.Create(garden.ContainerSpec{})
@@ -93,6 +97,91 @@ var _ = Describe("performance", func() {
 			})
 
 			Expect(time.Seconds()).To(BeNumerically("<", 3))
+		}, 10)
+
+		Measure("concurrent streaming to multiple containers", func(b Benchmarker) {
+			fmt.Fprintf(GinkgoWriter, "about to create containers\n")
+			// create some containers, in parallel for speed
+			chans := []chan string{}
+			for i := 0; i < 50; i++ {
+				ch := make(chan string, 1)
+				go func(c chan string, index int) {
+					defer GinkgoRecover()
+					ctr, err := gardenClient.Create(garden.ContainerSpec{
+						Privileged: true,
+					})
+					Expect(err).ToNot(HaveOccurred())
+					c <- ctr.Handle()
+				}(ch, i)
+				chans = append(chans, ch)
+			}
+
+			// collect the container handles
+			handles := []string{}
+			for _, ch := range chans {
+				handle := <-ch
+				if handle != "" {
+					handles = append(handles, handle)
+				}
+			}
+			fmt.Fprintf(GinkgoWriter, "containers created\n")
+
+			// measure streaming data to the containers
+			b.Time("concurrent streaming", func() {
+				startingGate := &sync.WaitGroup{}
+				startingGate.Add(1)
+
+				streamChans := []chan struct{}{}
+				for _, handle := range handles {
+					ch := make(chan struct{}, 1)
+					streamChans = append(streamChans, ch)
+					go func(ch chan struct{}, handle string) {
+						defer GinkgoRecover()
+						ctr, err := gardenClient.Lookup(handle)
+						Expect(err).ToNot(HaveOccurred())
+
+						fmt.Fprintf(GinkgoWriter, "at the starting gate for container %s\n", handle)
+						startingGate.Wait()
+
+						fmt.Fprintf(GinkgoWriter, "about to stream in to container %s\n", handle)
+
+						// Stream in a tar file to ctr
+						var tarStream io.Reader
+
+						pwd, err := os.Getwd()
+						Expect(err).ToNot(HaveOccurred())
+						tgzPath := path.Join(pwd, "../resources/dora.tgz")
+						tgz, err := os.Open(tgzPath)
+						Expect(err).ToNot(HaveOccurred())
+						defer tgz.Close()
+
+						tarStream, err = gzip.NewReader(tgz)
+						Expect(err).ToNot(HaveOccurred())
+
+						Expect(ctr.StreamIn(garden.StreamInSpec{
+							User:      "root",
+							Path:      "/root/xxx",
+							TarStream: tarStream,
+						})).To(Succeed())
+
+						fmt.Fprintf(GinkgoWriter, "successfully streamed in to container %s\n", handle)
+						ch <- struct{}{}
+					}(ch, handle)
+				}
+
+				startingGate.Done()
+
+				fmt.Fprintf(GinkgoWriter, "about to wait for streaming to end\n")
+				for _, ch := range streamChans {
+					<-ch
+				}
+			})
+
+			fmt.Fprintf(GinkgoWriter, "about to destroy containers\n")
+
+			for _, handle := range handles {
+				Expect(gardenClient.Destroy(handle)).To(Succeed())
+			}
 		}, 10)
 	})
 
