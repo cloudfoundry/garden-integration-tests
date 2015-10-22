@@ -43,7 +43,7 @@ var _ = Describe("Process", func() {
 
 	Describe("wait", func() {
 		It("does not block in Wait() when all children of the process have exited", func() {
-			buffer := gbytes.NewBuffer()
+			stderr := gbytes.NewBuffer()
 			process, err := container.Run(garden.ProcessSpec{
 				User: "root",
 				Path: "/bin/bash",
@@ -56,13 +56,14 @@ var _ = Describe("Process", func() {
 				  }
 
 				  trap cleanup TERM
-				  echo trapping
+				  # Use stderr to avoid buffering in the shell.
+				  echo trapping >&2
 
 				  sleep 1000 &
 				  child_pid=$!
 				  wait
 				`},
-			}, garden.ProcessIO{Stdout: buffer})
+			}, garden.ProcessIO{Stderr: stderr})
 			Expect(err).NotTo(HaveOccurred())
 
 			exitChan := make(chan int)
@@ -73,7 +74,7 @@ var _ = Describe("Process", func() {
 				exited <- status
 			}(process, exitChan)
 
-			Eventually(buffer).Should(gbytes.Say("trapping"))
+			Eventually(stderr).Should(gbytes.Say("trapping"))
 
 			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
 

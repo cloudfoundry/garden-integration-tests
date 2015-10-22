@@ -652,7 +652,7 @@ var _ = Describe("Lifecycle", func() {
 			It("recursively terminates all child processes", func(done Done) {
 				defer close(done)
 
-				stdout := gbytes.NewBuffer()
+				stderr := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
@@ -666,20 +666,20 @@ var _ = Describe("Lifecycle", func() {
 					# spawn child that exits when it receives TERM
 					sh -c 'trap wait SIGTERM; sleep 100 & wait' &
 
-					# sync with test
-					echo waiting
+					# sync with test. Use stderr to avoid buffering in the shell.
+					echo waiting >&2
 
 					# wait on children
 					wait
 					`,
 					},
 				}, garden.ProcessIO{
-					Stdout: stdout,
+					Stderr: stderr,
 				})
 
 				Expect(err).ToNot(HaveOccurred())
 
-				Eventually(stdout, 5).Should(gbytes.Say("waiting\n"))
+				Eventually(stderr, 5).Should(gbytes.Say("waiting\n"))
 
 				stoppedAt := time.Now()
 
