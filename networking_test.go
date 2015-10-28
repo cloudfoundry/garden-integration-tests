@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"net"
 	"os/exec"
 	"strings"
 	"time"
@@ -44,4 +45,46 @@ var _ = Describe("Networking", func() {
 		Eventually(nc).Should(gbytes.Say("hallo"))
 		Eventually(nc).Should(gexec.Exit(0))
 	})
+
+	It("can access a remote address after a NetOut", func() {
+		ips, err := net.LookupIP("www.example.com")
+		Expect(err).ToNot(HaveOccurred())
+		Expect(ips).ToNot(BeEmpty())
+		externalIP := ips[0]
+
+		err = container.NetOut(garden.NetOutRule{
+			Networks: []garden.IPRange{
+				garden.IPRangeFromIP(externalIP),
+			},
+		})
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(checkInternet(container, externalIP)).To(Succeed())
+	})
 })
+
+func checkInternet(container garden.Container, externalIP net.IP) error {
+	return checkConnection(container, externalIP.String(), 80)
+}
+
+func checkConnection(container garden.Container, ip string, port int) error {
+	process, err := container.Run(garden.ProcessSpec{
+		User: "alice",
+		Path: "sh",
+		Args: []string{"-c", fmt.Sprintf("echo hello | nc -w1 %s %d", ip, port)},
+	}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
+	if err != nil {
+		return err
+	}
+
+	exitCode, err := process.Wait()
+	if err != nil {
+		return err
+	}
+
+	if exitCode == 0 {
+		return nil
+	} else {
+		return fmt.Errorf("Request failed. Process exited with code %d", exitCode)
+	}
+}
