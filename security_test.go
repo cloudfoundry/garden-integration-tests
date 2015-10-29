@@ -2,7 +2,6 @@ package garden_integration_tests_test
 
 import (
 	"io"
-	"os"
 	"strings"
 
 	"github.com/cloudfoundry-incubator/garden"
@@ -520,24 +519,6 @@ var _ = Describe("Security", func() {
 					User: "root",
 					Path: "sh",
 					Args: []string{"-c", "ls -l /dev/pts /dev/ptmx"},
-				}, garden.ProcessIO{Stdout: stdout, Stderr: GinkgoWriter})
-				Expect(err).ToNot(HaveOccurred())
-
-				Expect(process.Wait()).To(Equal(0))
-				Expect(stdout).NotTo(gbytes.Say("nobody"))
-				Expect(stdout).NotTo(gbytes.Say("65534"))
-				Expect(stdout).To(gbytes.Say(" root "))
-			})
-
-			It("sees the root directory as owned by the container's root user", func() {
-				if os.Getenv("BTRFS_SUPPORTED") == "" {
-					Skip("Non-BTRFS drivers do not support making the container's root directory owned by container root")
-				}
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
-					User: "root",
-					Path: "sh",
-					Args: []string{"-c", "ls -al / | head -n 2"},
 				}, garden.ProcessIO{Stdout: stdout, Stderr: GinkgoWriter})
 				Expect(err).ToNot(HaveOccurred())
 
