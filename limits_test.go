@@ -3,6 +3,7 @@ package garden_integration_tests_test
 import (
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
@@ -40,45 +41,44 @@ var _ = Describe("Limits", func() {
 			})
 
 			Context("on a directory rootfs container", func() {
-				// PENDED: Until metrics work with AUFS
-				PIt("reports correct disk usage", func() {
-					var TotalBytesUsed = func() uint64 {
-						metrics, err := container.Metrics()
+				DescribeTable("reporting disk usage",
+					func(reporter func() uint64) {
+						initialBytes := reporter()
+						process, err := container.Run(garden.ProcessSpec{
+							User: "alice",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=10"},
+						}, garden.ProcessIO{})
 						Expect(err).ToNot(HaveOccurred())
-						return metrics.DiskStat.TotalBytesUsed
-					}
+						Expect(process.Wait()).To(Equal(0))
 
-					var ExclusiveBytesUsed = func() uint64 {
+						Eventually(reporter).Should(Equal(initialBytes + uint64(10*1024*1024)))
+
+						process, err = container.Run(garden.ProcessSpec{
+							User: "alice",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
+						}, garden.ProcessIO{})
+						Expect(err).ToNot(HaveOccurred())
+						Expect(process.Wait()).To(Equal(0))
+
+						Eventually(reporter).Should(Equal(initialBytes + uint64(20*1024*1024)))
+					},
+
+					// PENDED until we have exclusive metrics with AUFS
+					PEntry("with exclusive metrics", func() uint64 {
 						metrics, err := container.Metrics()
 						Expect(err).ToNot(HaveOccurred())
 						return metrics.DiskStat.ExclusiveBytesUsed
-					}
+					}),
 
-					initialTotalBytes := TotalBytesUsed()
-					initialExclusiveBytes := ExclusiveBytesUsed()
-
-					process, err := container.Run(garden.ProcessSpec{
-						User: "alice",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=10"},
-					}, garden.ProcessIO{})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
-
-					Eventually(TotalBytesUsed).Should(Equal(initialTotalBytes + uint64(10*1024*1024)))
-					Eventually(ExclusiveBytesUsed).Should(BeNumerically("~", initialExclusiveBytes+uint64(10*1024*1024), uint64(1024*1024)))
-
-					process, err = container.Run(garden.ProcessSpec{
-						User: "alice",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
-					}, garden.ProcessIO{})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
-
-					Eventually(TotalBytesUsed).Should(Equal(initialTotalBytes + uint64(20*1024*1024)))
-					Eventually(ExclusiveBytesUsed).Should(BeNumerically("~", initialExclusiveBytes+uint64(20*1024*1024), uint64(1024*1024)))
-				})
+					// PENDED until we have total metrics with AUFS
+					PEntry("with total metrics", func() uint64 {
+						metrics, err := container.Metrics()
+						Expect(err).ToNot(HaveOccurred())
+						return metrics.DiskStat.TotalBytesUsed
+					}),
+				)
 			})
 
 			Context("on a Docker container", func() {
