@@ -24,7 +24,7 @@ var _ = Describe("Rootfses", func() {
 			JustBeforeEach(func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "root",
-					Path: "/usr/sbin/adduser",
+					Path: "adduser",
 					Args: []string{"-D", "bob"},
 				}, garden.ProcessIO{
 					Stdout: GinkgoWriter,
