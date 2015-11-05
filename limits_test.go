@@ -130,7 +130,6 @@ var _ = Describe("Limits", func() {
 				Context("when the scope is exclusive", func() {
 					BeforeEach(func() {
 						limits.Disk.Scope = garden.DiskLimitScopeExclusive
-						rootfs = "docker:///cloudfoundry/busyboxplus#curl"
 					})
 
 					Context("and run a process that would exceed the quota due to the size of the rootfs (but doesnt since this is not included)", func() {
@@ -150,7 +149,7 @@ var _ = Describe("Limits", func() {
 							dd, err := container.Run(garden.ProcessSpec{
 								User: "root",
 								Path: "dd",
-								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
+								Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=8"}, // 8MB + the ext4 headers also garden stuff > 10MB
 							}, garden.ProcessIO{})
 							Expect(err).ToNot(HaveOccurred())
 							Expect(dd.Wait()).ToNot(Equal(0))
