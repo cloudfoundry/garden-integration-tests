@@ -35,8 +35,8 @@ var _ = Describe("Limits", func() {
 	Describe("LimitDisk", func() {
 		Context("when quotas are enabled and there is a disk limit", func() {
 			BeforeEach(func() {
-				limits.Disk.ByteSoft = 180 * 1024 * 1024
-				limits.Disk.ByteHard = 180 * 1024 * 1024
+				limits.Disk.ByteSoft = 100 * 1024 * 1024
+				limits.Disk.ByteHard = 100 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
 			})
 
@@ -47,12 +47,12 @@ var _ = Describe("Limits", func() {
 						process, err := container.Run(garden.ProcessSpec{
 							User: "alice",
 							Path: "dd",
-							Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=10"},
+							Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=3"},
 						}, garden.ProcessIO{})
 						Expect(err).ToNot(HaveOccurred())
 						Expect(process.Wait()).To(Equal(0))
 
-						Eventually(reporter).Should(Equal(initialBytes + uint64(10*1024*1024)))
+						Eventually(reporter).Should(BeNumerically("~", initialBytes+3*1024*1024, 1024*1024))
 
 						process, err = container.Run(garden.ProcessSpec{
 							User: "alice",
@@ -62,11 +62,10 @@ var _ = Describe("Limits", func() {
 						Expect(err).ToNot(HaveOccurred())
 						Expect(process.Wait()).To(Equal(0))
 
-						Eventually(reporter).Should(Equal(initialBytes + uint64(20*1024*1024)))
+						Eventually(reporter).Should(BeNumerically("~", initialBytes+uint64(13*1024*1024), 1024*1024))
 					},
 
-					// PENDED until we have exclusive metrics with AUFS
-					PEntry("with exclusive metrics", func() uint64 {
+					Entry("with exclusive metrics", func() uint64 {
 						metrics, err := container.Metrics()
 						Expect(err).ToNot(HaveOccurred())
 						return metrics.DiskStat.ExclusiveBytesUsed
