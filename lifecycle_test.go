@@ -168,7 +168,7 @@ var _ = Describe("Lifecycle", func() {
 
 			Context("and there is no /root directory in the image", func() {
 				BeforeEach(func() {
-					rootfs = "docker:///onsi/grace-busybox"
+					rootfs = "docker:///cloudfoundry/grace-busybox"
 				})
 
 				It("still allows running as root", func() {
