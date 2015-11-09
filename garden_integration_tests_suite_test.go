@@ -34,11 +34,10 @@ func TestGardenIntegrationTests(t *testing.T) {
 		properties = garden.Properties{}
 		limits = garden.Limits{}
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
+		gardenClient = client.New(connection.New("tcp", gardenHost))
 	})
 
 	JustBeforeEach(func() {
-		gardenClient = client.New(connection.New("tcp", gardenHost))
-
 		var err error
 		container, err = gardenClient.Create(garden.ContainerSpec{
 			RootFSPath: rootfs,
