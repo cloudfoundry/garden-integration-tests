@@ -13,9 +13,11 @@ import (
 )
 
 var (
-	gardenHost   string
-	gardenClient garden.Client
-	container    garden.Container
+	gardenHost            string
+	gardenClient          garden.Client
+	container             garden.Container
+	containerCreateErr    error
+	assertContainerCreate bool
 
 	rootfs              string
 	privilegedContainer bool
@@ -29,6 +31,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	BeforeEach(func() {
+		assertContainerCreate = true
 		rootfs = "docker:///cloudfoundry/garden-busybox"
 		privilegedContainer = false
 		properties = garden.Properties{}
@@ -38,14 +41,16 @@ func TestGardenIntegrationTests(t *testing.T) {
 	})
 
 	JustBeforeEach(func() {
-		var err error
-		container, err = gardenClient.Create(garden.ContainerSpec{
+		container, containerCreateErr = gardenClient.Create(garden.ContainerSpec{
 			RootFSPath: rootfs,
 			Privileged: privilegedContainer,
 			Properties: properties,
 			Limits:     limits,
 		})
-		Expect(err).ToNot(HaveOccurred())
+
+		if assertContainerCreate {
+			Expect(containerCreateErr).ToNot(HaveOccurred())
+		}
 	})
 
 	AfterEach(func() {
