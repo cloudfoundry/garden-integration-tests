@@ -1,6 +1,7 @@
 package performance_test
 
 import (
+	"os"
 	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
