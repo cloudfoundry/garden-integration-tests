@@ -1,7 +1,6 @@
 package performance_test
 
 import (
-	"os"
 	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
@@ -9,6 +8,7 @@ import (
 	"github.com/cloudfoundry-incubator/garden/client/connection"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 
 	"testing"
 )
@@ -38,6 +38,19 @@ func TestPerformance(t *testing.T) {
 			RootFSPath: rootfs,
 		})
 		Expect(err).ToNot(HaveOccurred())
+		stdout := gbytes.NewBuffer()
+		stderr := gbytes.NewBuffer()
+
+		process, err := container.Run(garden.ProcessSpec{
+			User: "alice",
+			Path: "sh",
+			Args: []string{"-c", "while true; do sleep 1; done"},
+		}, garden.ProcessIO{
+			Stdout: stdout,
+			Stderr: stderr,
+		})
+		Expect(err).ToNot(HaveOccurred())
+		go process.Wait()
 	})
 
 	AfterEach(func() {

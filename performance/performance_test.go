@@ -1,11 +1,15 @@
 package performance_test
 
 import (
+	"bytes"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -15,6 +19,21 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 )
+
+var dogURL = "https://app.datadoghq.com/api/v1/series?api_key=" + os.Getenv("DATADOG_API_KEY")
+
+func emitMetric(req interface{}) {
+	buf, err := json.Marshal(req)
+	if err != nil {
+		Fail("cannot-marshal-metric: " + err.Error())
+		return
+	}
+	_, err = http.Post(dogURL, "application/json", bytes.NewReader(buf))
+	if err != nil {
+		Fail("cannot-emit-metric: " + err.Error())
+		return
+	}
+}
 
 var _ = Describe("performance", func() {
 	Describe("creating", func() {
@@ -54,6 +73,108 @@ var _ = Describe("performance", func() {
 				Expect(gardenClient.Destroy(handle)).To(Succeed())
 			}
 		}, 50)
+
+		streaminDora := func(ctr garden.Container) {
+			for i := 0; i < 20; i++ {
+				By(fmt.Sprintf("preparing stream %d for handle %s", i, ctr.Handle()))
+				// Stream in a tar file to ctr
+				var tarStream io.Reader
+
+				pwd, err := os.Getwd()
+				Expect(err).ToNot(HaveOccurred())
+				tgzPath := path.Join(pwd, "../resources/dora.tgz")
+				tgz, err := os.Open(tgzPath)
+				Expect(err).ToNot(HaveOccurred())
+				tarStream, err = gzip.NewReader(tgz)
+				Expect(err).ToNot(HaveOccurred())
+
+				By(fmt.Sprintf("starting stream %d for handle: %s", i, ctr.Handle()))
+				Expect(ctr.StreamIn(garden.StreamInSpec{
+					User:      "root",
+					Path:      fmt.Sprintf("/root/stream-file-%d", i),
+					TarStream: tarStream,
+				})).To(Succeed())
+				By(fmt.Sprintf("stream %d done for handle: %s", i, ctr.Handle()))
+
+				tgz.Close()
+			}
+		}
+
+		createAndStream := func(index int, b Benchmarker) {
+			var handle string
+			var ctr garden.Container
+			var err error
+
+			b.Time(fmt.Sprintf("stream-%d", index), func() {
+				creationTime := b.Time(fmt.Sprintf("create-%d", index), func() {
+					By("creating container " + strconv.Itoa(index))
+					ctr, err = gardenClient.Create(garden.ContainerSpec{
+						Limits: garden.Limits{
+							Disk: garden.DiskLimits{ByteHard: 2 * 1024 * 1024 * 1024},
+						},
+						Privileged: true,
+					})
+					Expect(err).ToNot(HaveOccurred())
+					handle = ctr.Handle()
+					By("done creating container " + strconv.Itoa(index))
+				})
+				now := time.Now()
+				emitMetric(map[string]interface{}{
+					"series": []map[string]interface{}{
+						{
+							"metric": "garden.container-creation-time",
+							"points": [][]int64{
+								{now.Unix(), int64(creationTime)},
+							},
+							"tags": []string{"deployment:garden-garden"},
+						},
+					},
+				})
+
+				By("starting stream in to container " + handle)
+
+				streaminDora(ctr)
+
+				By("succefully streamed in to container " + handle)
+
+				b.Time(fmt.Sprintf("delete-%d", index), func() {
+					By("destroying container " + handle)
+					Expect(gardenClient.Destroy(handle)).To(Succeed())
+					By("successfully destroyed container " + handle)
+				})
+			})
+		}
+
+		FMeasure("stream bytes in", func(b Benchmarker) {
+			// make sure we're warmed up and hitting the cache
+			for i := 0; i < 5; i++ {
+				ctr, err := gardenClient.Create(garden.ContainerSpec{})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(gardenClient.Destroy(ctr.Handle())).To(Succeed())
+			}
+			By("starting")
+
+			b.Time("concurrent streamings", func() {
+				chans := []chan struct{}{}
+				for i := 0; i < 3; i++ {
+					ch := make(chan struct{}, 1)
+					chans = append(chans, ch)
+
+					go func(c chan struct{}, index int) {
+						defer GinkgoRecover()
+
+						createAndStream(index, b)
+						createAndStream(index, b)
+
+						c <- struct{}{}
+					}(ch, i)
+				}
+
+				for _, ch := range chans {
+					<-ch
+				}
+			})
+		}, 1000)
 	})
 
 	Describe("streaming", func() {
