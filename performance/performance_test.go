@@ -143,7 +143,7 @@ var _ = Describe("performance", func() {
 			for _, handle := range handles {
 				Expect(gardenClient.Destroy(handle)).To(Succeed())
 			}
-		}, 1)
+		}, 50)
 
 		Measure("stream bytes in", func(b Benchmarker) {
 			// make sure we're warmed up and hitting the cache
@@ -174,7 +174,7 @@ var _ = Describe("performance", func() {
 					<-ch
 				}
 			})
-		}, 1)
+		}, 10)
 	})
 
 	Describe("streaming", func() {
@@ -218,7 +218,7 @@ var _ = Describe("performance", func() {
 			})
 
 			Expect(time.Seconds()).To(BeNumerically("<", 3))
-		}, 1)
+		}, 10)
 
 		Measure("concurrent streaming to multiple containers", func(b Benchmarker) {
 			fmt.Fprintf(GinkgoWriter, "about to create containers\n")
@@ -303,7 +303,7 @@ var _ = Describe("performance", func() {
 			for _, handle := range handles {
 				Expect(gardenClient.Destroy(handle)).To(Succeed())
 			}
-		}, 1)
+		}, 10)
 	})
 
 	Describe("a process inside a container", func() {
@@ -331,7 +331,7 @@ var _ = Describe("performance", func() {
 			})
 
 			// TODO add expectations to avoid regression
-		}, 2)
+		}, 20)
 
 		Measure("running a calculation", func(b Benchmarker) {
 			stderr := gbytes.NewBuffer()
@@ -373,6 +373,6 @@ var _ = Describe("performance", func() {
 			// Once we have a good baseline...
 			//Expect(timed).To(BeNumerically(",", ???))
 			//Expect(b.Seconds()).To(BeNumerically(",", ???))
-		}, 2)
+		}, 20)
 	})
 })
