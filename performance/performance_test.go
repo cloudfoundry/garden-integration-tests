@@ -174,7 +174,7 @@ var _ = Describe("performance", func() {
 					<-ch
 				}
 			})
-		}, 1000)
+		}, 10)
 	})
 
 	Describe("streaming", func() {
