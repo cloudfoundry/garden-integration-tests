@@ -23,14 +23,21 @@ import (
 var dogURL = "https://app.datadoghq.com/api/v1/series?api_key=" + os.Getenv("DATADOG_API_KEY")
 
 func emitMetric(req interface{}) {
+	if os.Getenv("DATADOG_API_KEY") == "" {
+		Fail("DATADOG_API_KEY not set!")
+	}
 	buf, err := json.Marshal(req)
 	if err != nil {
 		Fail("cannot-marshal-metric: " + err.Error())
 		return
 	}
-	_, err = http.Post(dogURL, "application/json", bytes.NewReader(buf))
+	response, err := http.Post(dogURL, "application/json", bytes.NewReader(buf))
 	if err != nil {
 		Fail("cannot-emit-metric: " + err.Error())
+		return
+	}
+	if response.StatusCode != http.StatusOK {
+		Fail(fmt.Sprintf("cannot-emit-metric: error code not 200: %d %s", response.StatusCode, response.Status))
 		return
 	}
 }
