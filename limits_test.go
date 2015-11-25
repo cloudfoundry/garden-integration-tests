@@ -71,8 +71,7 @@ var _ = Describe("Limits", func() {
 				return metrics.DiskStat.ExclusiveBytesUsed
 			}),
 
-			// PENDED until we have total metrics with AUFS
-			PEntry("with total metrics", func() uint64 {
+			Entry("with total metrics", func() uint64 {
 				metrics, err := container.Metrics()
 				Expect(err).ToNot(HaveOccurred())
 				return metrics.DiskStat.TotalBytesUsed
@@ -98,6 +97,20 @@ var _ = Describe("Limits", func() {
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
+			})
+
+			Context("and the container is privileged because dirperm1", func() {
+				BeforeEach(func() {
+					privilegedContainer = true
+				})
+
+				It("reports initial total bytes of a container based on size of image", func() {
+					metrics, err := container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is approx 1 MB
+				})
 			})
 
 			Context("and run a process that does not exceed the limit", func() {
