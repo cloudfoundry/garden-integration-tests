@@ -99,9 +99,23 @@ var _ = Describe("Limits", func() {
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
 			})
 
-			Context("and the container is privileged because dirperm1", func() {
+			Context("and the container is privileged", func() {
 				BeforeEach(func() {
 					privilegedContainer = true
+				})
+
+				It("reports initial total bytes of a container based on size of image", func() {
+					metrics, err := container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is approx 1 MB
+				})
+			})
+
+			Context("and the container is un-privileged", func() {
+				BeforeEach(func() {
+					privilegedContainer = false
 				})
 
 				It("reports initial total bytes of a container based on size of image", func() {
