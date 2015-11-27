@@ -215,8 +215,8 @@ func emitMetric(req interface{}) {
 		Fail("cannot-emit-metric: " + err.Error())
 		return
 	}
-	if response.StatusCode != http.StatusOK {
-		Fail(fmt.Sprintf("cannot-emit-metric: error code not 200: %d %s", response.StatusCode, response.Status))
+	if response.StatusCode != http.StatusAccepted {
+		Fail(fmt.Sprintf("cannot-emit-metric: error code not 202: %d %s", response.StatusCode, response.Status))
 		return
 	}
 }
