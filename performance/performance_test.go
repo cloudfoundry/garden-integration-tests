@@ -279,7 +279,7 @@ func createAndStream(index int, b Benchmarker) {
 					"points": [][]int64{
 						{now.Unix(), int64(creationTime)},
 					},
-					"tags": []string{"deployment:garden-garden"},
+					"tags": []string{"deployment:" + os.Getenv("ENVIRONMENT") + "-garden"},
 				},
 			},
 		})
