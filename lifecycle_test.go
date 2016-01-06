@@ -994,13 +994,13 @@ var _ = Describe("Lifecycle", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			container.SetGraceTime(500 * time.Millisecond)
+			containerHandle := container.Handle()
+			container = nil // avoid double-destroying in AfterEach
 
 			Eventually(func() error {
-				_, err := gardenClient.Lookup(container.Handle())
+				_, err := gardenClient.Lookup(containerHandle)
 				return err
 			}, "10s").Should(HaveOccurred())
-
-			container = nil // avoid double-destroying in AfterEach
 		})
 	})
 })
