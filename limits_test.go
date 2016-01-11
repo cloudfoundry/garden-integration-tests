@@ -109,7 +109,7 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 
 					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is approx 1 MB
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
 				})
 			})
 
@@ -123,7 +123,7 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 
 					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is approx 1 MB
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
 				})
 			})
 
@@ -144,7 +144,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=8"}, // assume busybox itself accounts for a few MB
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for > 1 MB
 					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
@@ -175,7 +175,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=8"}, // should succeed, even though equivalent with 'total' scope does not
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
 					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).To(Equal(0))
@@ -187,7 +187,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // 8MB + the ext4 headers also garden stuff > 10MB
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
 					}, garden.ProcessIO{})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
