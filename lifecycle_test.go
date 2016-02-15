@@ -398,18 +398,12 @@ var _ = Describe("Lifecycle", func() {
 					Stderr: os.Stderr,
 					Stdout: stdout,
 				})
-
-				if err != nil {
-					println("ERROR: " + err.Error())
-					select {}
-				}
-
 				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
 
+				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("hi stdout"))
 			}
-		})
+		}, 240.0)
 
 		It("streams input to the process's stdin", func() {
 			stdout := gbytes.NewBuffer()
