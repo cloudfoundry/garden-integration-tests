@@ -5,7 +5,6 @@ import (
 	"net"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
@@ -25,21 +24,34 @@ var _ = Describe("Networking", func() {
 			Stderr: GinkgoWriter,
 		})
 		Expect(err).ToNot(HaveOccurred())
-
 		defer func() {
 			process.Signal(garden.SignalTerminate)
 			_, err := process.Wait()
 			Expect(err).NotTo(HaveOccurred())
 		}()
 
-		gardenHostname := strings.Split(gardenHost, ":")[0]
-
 		hostPort, _, err := container.NetIn(0, 8080)
 		Expect(err).ToNot(HaveOccurred())
 
-		// Allow nc time to start running.
-		time.Sleep(2 * time.Second)
+		Eventually(func() string {
+			out := gbytes.NewBuffer()
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "netstat",
+				Args: []string{"-a"},
+				User: "root",
+			}, garden.ProcessIO{
+				Stdout: out,
+			})
+			Expect(err).ToNot(HaveOccurred())
 
+			exitCode, err := process.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
+
+			return string(out.Contents())
+		}).Should(ContainSubstring("LISTEN"))
+
+		gardenHostname := strings.Split(gardenHost, ":")[0]
 		nc, err := gexec.Start(exec.Command("nc", gardenHostname, fmt.Sprintf("%d", hostPort)), GinkgoWriter, GinkgoWriter)
 		Expect(err).ToNot(HaveOccurred())
 		Eventually(nc).Should(gbytes.Say("hallo"))
