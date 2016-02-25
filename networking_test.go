@@ -45,22 +45,6 @@ var _ = Describe("Networking", func() {
 		Eventually(nc).Should(gbytes.Say("hallo"))
 		Eventually(nc).Should(gexec.Exit(0))
 	})
-
-	It("can access a remote address after a NetOut", func() {
-		ips, err := net.LookupIP("www.example.com")
-		Expect(err).ToNot(HaveOccurred())
-		Expect(ips).ToNot(BeEmpty())
-		externalIP := ips[0]
-
-		err = container.NetOut(garden.NetOutRule{
-			Networks: []garden.IPRange{
-				garden.IPRangeFromIP(externalIP),
-			},
-		})
-		Expect(err).ToNot(HaveOccurred())
-
-		Expect(checkInternet(container, externalIP)).To(Succeed())
-	})
 })
 
 func checkInternet(container garden.Container, externalIP net.IP) error {
