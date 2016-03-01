@@ -15,7 +15,7 @@ import (
 
 var _ = Describe("Networking", func() {
 	It("can be contacted after a NetIn", func() {
-		process, err := container.Run(garden.ProcessSpec{
+		_, err := container.Run(garden.ProcessSpec{
 			Path: "sh",
 			Args: []string{"-c", "echo hallo | nc -l -p 8080"},
 			User: "root",
@@ -24,38 +24,19 @@ var _ = Describe("Networking", func() {
 			Stderr: GinkgoWriter,
 		})
 		Expect(err).ToNot(HaveOccurred())
-		defer func() {
-			process.Signal(garden.SignalTerminate)
-			_, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
-		}()
 
 		hostPort, _, err := container.NetIn(0, 8080)
 		Expect(err).ToNot(HaveOccurred())
 
-		Eventually(func() string {
-			out := gbytes.NewBuffer()
-			process, err := container.Run(garden.ProcessSpec{
-				Path: "netstat",
-				Args: []string{"-a"},
-				User: "root",
-			}, garden.ProcessIO{
-				Stdout: out,
-			})
-			Expect(err).ToNot(HaveOccurred())
-
-			exitCode, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(exitCode).To(Equal(0))
-
-			return string(out.Contents())
-		}).Should(ContainSubstring("LISTEN"))
-
 		gardenHostname := strings.Split(gardenHost, ":")[0]
-		nc, err := gexec.Start(exec.Command("nc", gardenHostname, fmt.Sprintf("%d", hostPort)), GinkgoWriter, GinkgoWriter)
-		Expect(err).ToNot(HaveOccurred())
-		Eventually(nc).Should(gbytes.Say("hallo"))
-		Eventually(nc).Should(gexec.Exit(0))
+		Eventually(func() error {
+			nc, err := gexec.Start(exec.Command("nc", gardenHostname, fmt.Sprintf("%d", hostPort)), GinkgoWriter, GinkgoWriter)
+			if err != nil {
+				Eventually(nc).Should(gbytes.Say("hallo"))
+			}
+
+			return err
+		}).ShouldNot(HaveOccurred())
 	})
 })
 
