@@ -611,6 +611,22 @@ var _ = Describe("Security", func() {
 			Expect(process.Wait()).To(Equal(0))
 		})
 
+		It("does not inherit additional groups", func() {
+			stdout := gbytes.NewBuffer()
+			process, err := container.Run(garden.ProcessSpec{
+				User: "root",
+				Path: "cat",
+				Args: []string{"/proc/self/status"},
+			}, garden.ProcessIO{
+				Stdout: stdout,
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(process.Wait()).To(Equal(0))
+			Expect(stdout).NotTo(gbytes.Say("Groups:.*0"))
+		})
+
 		It("can write to files in the /root directory", func() {
 			process, err := container.Run(garden.ProcessSpec{
 				User: "root",
