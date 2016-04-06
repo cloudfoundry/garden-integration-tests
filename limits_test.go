@@ -8,31 +8,26 @@ import (
 )
 
 var _ = Describe("Limits", func() {
-	Describe("LimitMemory", func() {
-		Context("with a memory limit", func() {
-			JustBeforeEach(func() {
-				err := container.LimitMemory(garden.MemoryLimits{
-					LimitInBytes: 64 * 1024 * 1024,
-				})
-				Expect(err).ToNot(HaveOccurred())
-			})
+	Describe("memory limits", func() {
+		BeforeEach(func() {
+			limits = garden.Limits{Memory: garden.MemoryLimits{
+				LimitInBytes: 64 * 1024 * 1024,
+			}}
+		})
 
-			Context("when the process writes too much to /dev/shm", func() {
-				It("is killed", func() {
-					process, err := container.Run(garden.ProcessSpec{
-						User: "alice",
-						Path: "dd",
-						Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
-					}, garden.ProcessIO{})
-					Expect(err).ToNot(HaveOccurred())
+		It("kills a process if it uses too much memory", func() {
+			process, err := container.Run(garden.ProcessSpec{
+				User: "alice",
+				Path: "dd",
+				Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+			}, garden.ProcessIO{})
+			Expect(err).ToNot(HaveOccurred())
 
-					Expect(process.Wait()).ToNot(Equal(0))
-				})
-			})
+			Expect(process.Wait()).ToNot(Equal(0))
 		})
 	})
 
-	Describe("LimitDisk", func() {
+	Describe("disk limits", func() {
 		BeforeEach(func() {
 			privilegedContainer = false
 
