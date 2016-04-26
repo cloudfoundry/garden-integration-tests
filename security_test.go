@@ -655,7 +655,7 @@ var _ = Describe("Security", func() {
 
 		Context("when the process is run as non-root user", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///ubuntu"
+				rootfs = "docker:///ubuntu#14.04"
 			})
 
 			Context("and the user changes to root", func() {
