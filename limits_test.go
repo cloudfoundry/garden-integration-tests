@@ -149,7 +149,7 @@ var _ = Describe("Limits", func() {
 			Context("when rootfs exceeds the quota", func() {
 				BeforeEach(func() {
 					assertContainerCreate = false
-					rootfs = "docker:///ubuntu"
+					rootfs = "docker:///ubuntu#trusty-20160323"
 				})
 
 				It("should fail to create a container", func() {
