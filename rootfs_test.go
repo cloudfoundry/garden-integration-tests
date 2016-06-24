@@ -18,7 +18,7 @@ var _ = Describe("Rootfses", func() {
 				//   ENV TEST test-from-dockerfile
 				//   ENV TEST second-test-from-dockerfile:$TEST
 				// see diego-dockerfiles/with-volume
-				rootfs = "docker:///cloudfoundry/with-volume"
+				rootfs = "docker:///cfgarden/with-volume"
 			})
 
 			JustBeforeEach(func() {

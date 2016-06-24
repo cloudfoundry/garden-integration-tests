@@ -114,7 +114,7 @@ var _ = Describe("Lifecycle", func() {
 		Context("when there is a VOLUME associated with the docker image", func() {
 			BeforeEach(func() {
 				// dockerfile contains `VOLUME /foo`, see diego-dockerfiles/with-volume
-				rootfs = "docker:///cloudfoundry/with-volume"
+				rootfs = "docker:///cfgarden/with-volume"
 			})
 
 			JustBeforeEach(func() {

@@ -28,7 +28,7 @@ func TestPerformance(t *testing.T) {
 
 	BeforeEach(func() {
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
-		rootfs = "docker:///cloudfoundry/garden-busybox"
+		rootfs = "docker:///cfgarden/garden-busybox"
 	})
 
 	JustBeforeEach(func() {

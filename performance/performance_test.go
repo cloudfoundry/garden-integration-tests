@@ -88,7 +88,7 @@ var _ = Describe("performance", func() {
 
 	Describe("streaming", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cloudfoundry/garden-busybox"
+			rootfs = "docker:///cfgarden/garden-busybox"
 		})
 
 		Measure("it should stream stdout and stderr efficiently", func(b Benchmarker) {
@@ -132,7 +132,7 @@ var _ = Describe("performance", func() {
 
 	Describe("a process inside a container", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cloudfoundry/ubuntu-bc"
+			rootfs = "docker:///cfgarden/ubuntu-bc"
 		})
 
 		Measure("starting lots of processes", func(b Benchmarker) {

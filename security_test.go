@@ -495,7 +495,7 @@ var _ = Describe("Security", func() {
 
 		Context("with a docker image", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///cloudfoundry/preexisting_users"
+				rootfs = "docker:///cfgarden/preexisting_users"
 			})
 
 			It("sees root-owned files in the rootfs as owned by the container's root user", func() {

@@ -192,7 +192,7 @@ var _ = Describe("Limits", func() {
 
 		Context("a rootfs with pre-existing users", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///cloudfoundry/preexisting_users"
+				rootfs = "docker:///cfgarden/preexisting_users"
 
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024

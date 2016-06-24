@@ -130,7 +130,7 @@ var _ = Describe("Process", func() {
 
 	Describe("working directory", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cloudfoundry/preexisting_users"
+			rootfs = "docker:///cfgarden/preexisting_users"
 		})
 
 		Context("when user has access to working directory", func() {
