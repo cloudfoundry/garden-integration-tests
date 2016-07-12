@@ -43,7 +43,7 @@ func TestPerformance(t *testing.T) {
 		stderr := gbytes.NewBuffer()
 
 		process, err := container.Run(garden.ProcessSpec{
-			User: "alice",
+			User: "root",
 			Path: "sh",
 			Args: []string{"-c", "while true; do sleep 1; done"},
 		}, garden.ProcessIO{

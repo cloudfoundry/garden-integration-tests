@@ -20,6 +20,10 @@ import (
 )
 
 var _ = Describe("Lifecycle", func() {
+	JustBeforeEach(func() {
+		createUser(container, "alice")
+	})
+
 	Context("Creating a container with limits", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{
@@ -53,6 +57,23 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
+	Context("Creating a container with a duplicate handle", func() {
+		It("returns a meaningful error message", func() {
+			existingHandle := container.Handle()
+
+			container, err := gardenClient.Create(garden.ContainerSpec{
+				Handle: existingHandle,
+			})
+
+			Expect(container).To(BeNil())
+			Expect(err).To(MatchError(fmt.Sprintf("Handle '%s' already in use", existingHandle)))
+		})
+	})
+
+	It("returns garden.ContainerNotFound when destroying a container that doesn't exist", func() {
+		Expect(gardenClient.Destroy("potato-sandwhich-policy")).To(MatchError(garden.ContainerNotFoundError{Handle: "potato-sandwhich-policy"}))
+	})
+
 	It("provides /dev/shm as tmpfs in the container", func() {
 		process, err := container.Run(garden.ProcessSpec{
 			User: "alice",
@@ -81,7 +102,7 @@ var _ = Describe("Lifecycle", func() {
 		Expect(outBuf).To(gbytes.Say("rw,nodev,relatime"))
 	})
 
-	It("gives the container a hostname based on its id", func() {
+	It("gives the container a hostname based on its handle", func() {
 		stdout := gbytes.NewBuffer()
 
 		_, err := container.Run(garden.ProcessSpec{
@@ -93,6 +114,26 @@ var _ = Describe("Lifecycle", func() {
 		Expect(err).ToNot(HaveOccurred())
 
 		Eventually(stdout).Should(gbytes.Say(fmt.Sprintf("%s\n", container.Handle())))
+	})
+
+	Context("when the handle is bigger than 49 characters", func() {
+		BeforeEach(func() {
+			handle = "7132-ec774112a9cd-101f8293-230e-4fa8-4138-e8244e6dcfa1"
+		})
+
+		It("should use the last 49 characters of the handle as the hostname", func() {
+			stdout := gbytes.NewBuffer()
+
+			_, err := container.Run(garden.ProcessSpec{
+				User: "alice",
+				Path: "hostname",
+			}, garden.ProcessIO{
+				Stdout: stdout,
+			})
+			Expect(err).ToNot(HaveOccurred())
+
+			Eventually(stdout).Should(gbytes.Say("ec774112a9cd-101f8293-230e-4fa8-4138-e8244e6dcfa1"))
+		})
 	})
 
 	Context("and sending a List request", func() {
@@ -107,45 +148,6 @@ var _ = Describe("Lifecycle", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(info.State).To(Equal("active"))
-		})
-	})
-
-	Context("Using a docker image", func() {
-		Context("when there is a VOLUME associated with the docker image", func() {
-			BeforeEach(func() {
-				// dockerfile contains `VOLUME /foo`, see diego-dockerfiles/with-volume
-				rootfs = "docker:///cfgarden/with-volume"
-			})
-
-			JustBeforeEach(func() {
-				process, err := container.Run(garden.ProcessSpec{
-					User: "root",
-					Path: "adduser",
-					Args: []string{"-D", "bob"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-			})
-
-			It("creates the volume directory, if it does not already exist", func() {
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
-					User: "bob",
-					Path: "ls",
-					Args: []string{"-l", "/"},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
-				})
-
-				Expect(err).ToNot(HaveOccurred())
-
-				process.Wait()
-				Expect(stdout).To(gbytes.Say("foo"))
-			})
 		})
 	})
 
@@ -166,7 +168,7 @@ var _ = Describe("Lifecycle", func() {
 				Eventually(stdout).Should(gbytes.Say("root\n"))
 			})
 
-			Context("and there is no /root directory in the image", func() {
+			PContext("and there is no /root directory in the image", func() {
 				BeforeEach(func() {
 					rootfs = "docker:///cloudfoundry/grace-busybox"
 				})
@@ -271,20 +273,23 @@ var _ = Describe("Lifecycle", func() {
 			})
 
 			checkProcessIsGone := func(container garden.Container, argsPrefix string) {
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`
-						 ps ax -o args= | grep -q '^%s'
-					 `, argsPrefix)},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(stdout, GinkgoWriter),
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(1))
-				Eventually(stdout).ShouldNot(gbytes.Say("waiting"))
+				Consistently(func() *gbytes.Buffer {
+					stdout := gbytes.NewBuffer()
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "ps",
+						Args: []string{"ax", "-o", "args="},
+					}, garden.ProcessIO{
+						Stdout: io.MultiWriter(stdout, GinkgoWriter),
+						Stderr: GinkgoWriter,
+					})
+					Expect(err).ToNot(HaveOccurred())
+
+					_, err = process.Wait()
+					Expect(err).NotTo(HaveOccurred())
+
+					return stdout
+				}).ShouldNot(gbytes.Say(argsPrefix))
 			}
 
 			It("sends a KILL signal to the process if requested", func(done Done) {
@@ -293,6 +298,8 @@ var _ = Describe("Lifecycle", func() {
 					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `
+							trap wait SIGTERM
+
 							while true; do
 							  echo waiting
 								sleep 1
@@ -306,9 +313,9 @@ var _ = Describe("Lifecycle", func() {
 				Eventually(stdout).Should(gbytes.Say("waiting"))
 
 				Expect(process.Signal(garden.SignalKill)).To(Succeed())
-				Expect(process.Wait()).To(Equal(255))
+				Expect(process.Wait()).To(Equal(137))
 
-				checkProcessIsGone(container, "sh -c while")
+				checkProcessIsGone(container, "sh -c")
 
 				close(done)
 			}, 10.0)
@@ -333,7 +340,7 @@ var _ = Describe("Lifecycle", func() {
 				Eventually(stdout).Should(gbytes.Say("waiting"))
 
 				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
-				Expect(process.Wait()).To(Equal(255))
+				Expect(process.Wait()).NotTo(BeZero())
 
 				checkProcessIsGone(container, "sh -c while")
 
@@ -342,27 +349,30 @@ var _ = Describe("Lifecycle", func() {
 
 			Context("when killing a process that does not use streaming", func() {
 				var process garden.Process
+				var buff *gbytes.Buffer
 
 				JustBeforeEach(func() {
 					var err error
 
+					buff = gbytes.NewBuffer()
 					process, err = container.Run(garden.ProcessSpec{
 						User: "alice",
-						Path: "sleep",
-						Args: []string{"1000"},
-					}, garden.ProcessIO{})
+						Path: "sh",
+						Args: []string{
+							"-c", "while true; do echo stillhere; sleep 1; done",
+						},
+					}, garden.ProcessIO{Stdout: buff})
 					Expect(err).ToNot(HaveOccurred())
 
+					Eventually(buff).Should(gbytes.Say("stillhere")) // make sure we dont kill before the process is spawned to avoid false-positives
 					Expect(process.Signal(garden.SignalKill)).To(Succeed())
 				})
 
 				It("goes away", func(done Done) {
 					Expect(process.Wait()).NotTo(Equal(0))
-
-					checkProcessIsGone(container, "sleep")
-
+					Consistently(buff, "5s").ShouldNot(gbytes.Say("stillhere"))
 					close(done)
-				}, 30.0)
+				}, 30)
 			})
 		})
 
@@ -443,25 +453,25 @@ var _ = Describe("Lifecycle", func() {
 			}
 		})
 
-		Context("when no user is specified", func() {
-			It("returns an error", func() {
-				_, err := container.Run(garden.ProcessSpec{
-					Path: "pwd",
-				}, garden.ProcessIO{})
-				Expect(err).To(MatchError(ContainSubstring("A User for the process to run as must be specified")))
-			})
-		})
-
 		Context("with a tty", func() {
 			It("executes the process with a raw tty with the given window size", func() {
 				stdout := gbytes.NewBuffer()
-
-				inR, inW := io.Pipe()
-
-				process, err := container.Run(garden.ProcessSpec{
+				_, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", "read foo; stty -a"},
+					Env:  []string{"USE_DADOO=true"},
+					Args: []string{
+						"-c",
+						`
+						# The mechanism that is used to set TTY size (ioctl) is
+						# asynchronous. Hence, stty does not return the correct result
+						# right after the process is launched.
+						while true; do
+							stty -a
+							sleep 1
+						done
+					`,
+					},
 					TTY: &garden.TTYSpec{
 						WindowSize: &garden.WindowSize{
 							Columns: 123,
@@ -469,22 +479,11 @@ var _ = Describe("Lifecycle", func() {
 						},
 					},
 				}, garden.ProcessIO{
-					Stdin:  inR,
 					Stdout: stdout,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
-				_, err = inW.Write([]byte("hello"))
-				Expect(err).ToNot(HaveOccurred())
-
-				Eventually(stdout).Should(gbytes.Say("hello"))
-
-				_, err = inW.Write([]byte("\n"))
-				Expect(err).ToNot(HaveOccurred())
-
 				Eventually(stdout, "3s").Should(gbytes.Say("rows 456; columns 123;"))
-
-				Expect(process.Wait()).To(Equal(0))
 			})
 
 			It("can have its terminal resized", func() {
@@ -495,6 +494,7 @@ var _ = Describe("Lifecycle", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
+					Env:  []string{"USE_DADOO=true"},
 					Args: []string{
 						"-c",
 						`
@@ -509,7 +509,12 @@ var _ = Describe("Lifecycle", func() {
 						done
 					`,
 					},
-					TTY: &garden.TTYSpec{},
+					TTY: &garden.TTYSpec{
+						WindowSize: &garden.WindowSize{
+							Columns: 13,
+							Rows:    46,
+						},
+					},
 				}, garden.ProcessIO{
 					Stdin:  inR,
 					Stdout: stdout,
@@ -813,16 +818,7 @@ var _ = Describe("Lifecycle", func() {
 
 			Context("when the specified user does not have permission to stream in", func() {
 				JustBeforeEach(func() {
-					process, err := container.Run(garden.ProcessSpec{
-						User: "root",
-						Path: "adduser",
-						Args: []string{"-D", "bob"},
-					}, garden.ProcessIO{
-						Stdout: GinkgoWriter,
-						Stderr: GinkgoWriter,
-					})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
+					createUser(container, "bob")
 				})
 
 				It("returns error", func() {
@@ -959,19 +955,34 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
-	Context("when the container GraceTime is modified", func() {
-		It("should disappear after grace time and before timeout", func() {
-			_, err := gardenClient.Lookup(container.Handle())
-			Expect(err).NotTo(HaveOccurred())
+	Context("when the container GraceTime is applied", func() {
+		var containerHandle string
 
+		JustBeforeEach(func() {
 			container.SetGraceTime(500 * time.Millisecond)
-			containerHandle := container.Handle()
-			container = nil // avoid double-destroying in AfterEach
+			containerHandle = container.Handle()
 
+			_, err := gardenClient.Lookup(containerHandle)
+			Expect(err).NotTo(HaveOccurred())
+			container = nil // avoid double-destroying in AfterEach
+		})
+
+		It("should disappear after grace time and before timeout", func() {
 			Eventually(func() error {
 				_, err := gardenClient.Lookup(containerHandle)
 				return err
 			}, "10s").Should(HaveOccurred())
+		})
+
+		It("returns an unknown handle error when calling the API", func() {
+			Eventually(func() error {
+				_, err := gardenClient.Lookup(containerHandle)
+				return err
+			}, "2s").Should(HaveOccurred())
+
+			Eventually(func() error {
+				return gardenClient.Destroy(containerHandle)
+			}).Should(MatchError(fmt.Sprintf("unknown handle: %s", containerHandle)))
 		})
 	})
 })

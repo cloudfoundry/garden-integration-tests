@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,6 +21,8 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
+const containerPrefix = "concurrent-create-handle"
+
 var dogURL = "https://app.datadoghq.com/api/v1/series?api_key=" + os.Getenv("DATADOG_API_KEY")
 
 var _ = Describe("performance", func() {
@@ -28,18 +31,18 @@ var _ = Describe("performance", func() {
 	})
 
 	Measure("multiple concurrent creates", func(b Benchmarker) {
-		concurrenyLevel := 5
+		concurrencyLevel := 5
 		handles := []string{}
 
 		b.Time("concurrent creations", func() {
 			wg := sync.WaitGroup{}
 
-			for i := 0; i < concurrenyLevel; i++ {
+			for i := 0; i < concurrencyLevel; i++ {
 				wg.Add(1)
-				handle := fmt.Sprintf("handle-%d", i)
-				handles = append(handles, handle)
+				h := fmt.Sprintf("%s-%d", containerPrefix, i)
+				handles = append(handles, h)
 
-				go func(index int) {
+				go func(index int, handle string) {
 					defer wg.Done()
 					defer GinkgoRecover()
 
@@ -47,7 +50,7 @@ var _ = Describe("performance", func() {
 						_, err := gardenClient.Create(garden.ContainerSpec{Handle: handle})
 						Expect(err).ToNot(HaveOccurred())
 					})
-				}(i)
+				}(i, h)
 			}
 
 			wg.Wait()
@@ -59,6 +62,17 @@ var _ = Describe("performance", func() {
 					Expect(gardenClient.Destroy(handle)).To(Succeed())
 				})
 			}
+
+			// ensure all containers are actually destroyed
+			Eventually(func() error {
+				for _, handle := range handles {
+					_, err := gardenClient.Lookup(handle)
+					if err == nil {
+						return errors.New(fmt.Sprintf("container '%s' exists but it should've been destroyed", handle))
+					}
+				}
+				return nil
+			}).ShouldNot(HaveOccurred())
 		})
 	}, 50)
 

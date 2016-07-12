@@ -10,30 +10,16 @@ import (
 )
 
 var _ = Describe("Rootfses", func() {
+	BeforeEach(func() {
+		rootfs = "docker:///cfgarden/with-volume"
+	})
+
+	JustBeforeEach(func() {
+		createUser(container, "bob")
+	})
+
 	Context("when the rootfs path is a docker image URL", func() {
-		Context("and the docker image specifies $PATH", func() {
-			BeforeEach(func() {
-				// Dockerfile contains:
-				//   ENV PATH /usr/local/bin:/usr/bin:/bin:/from-dockerfile
-				//   ENV TEST test-from-dockerfile
-				//   ENV TEST second-test-from-dockerfile:$TEST
-				// see diego-dockerfiles/with-volume
-				rootfs = "docker:///cfgarden/with-volume"
-			})
-
-			JustBeforeEach(func() {
-				process, err := container.Run(garden.ProcessSpec{
-					User: "root",
-					Path: "adduser",
-					Args: []string{"-D", "bob"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-			})
-
+		Context("and the image specifies $PATH", func() {
 			It("$PATH is taken from the docker image", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
@@ -66,6 +52,25 @@ var _ = Describe("Rootfses", func() {
 
 				process.Wait()
 				Expect(stdout).To(gbytes.Say("second-test-from-dockerfile:test-from-dockerfile"))
+			})
+		})
+
+		Context("and the image specifies a VOLUME", func() {
+			It("creates the volume directory, if it does not already exist", func() {
+				stdout := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "bob",
+					Path: "ls",
+					Args: []string{"-l", "/"},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(GinkgoWriter, stdout),
+					Stderr: GinkgoWriter,
+				})
+
+				Expect(err).ToNot(HaveOccurred())
+
+				process.Wait()
+				Expect(stdout).To(gbytes.Say("foo"))
 			})
 		})
 	})

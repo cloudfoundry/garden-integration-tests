@@ -8,11 +8,35 @@ import (
 )
 
 var _ = Describe("Limits", func() {
+	JustBeforeEach(func() {
+		createUser(container, "alice")
+	})
+
+	Describe("CPU limits", func() {
+		BeforeEach(func() {
+			limits.CPU = garden.CPULimits{
+				LimitInShares: 100,
+			}
+		})
+
+		It("reports the CPU limit", func() {
+			cpuLimits, err := container.CurrentCPULimits()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(100))
+		})
+	})
+
 	Describe("memory limits", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{Memory: garden.MemoryLimits{
 				LimitInBytes: 64 * 1024 * 1024,
 			}}
+		})
+
+		It("reports the memory limits", func() {
+			memoryLimits, err := container.CurrentMemoryLimits()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(memoryLimits.LimitInBytes).To(BeEquivalentTo(64 * 1024 * 1024))
 		})
 
 		It("kills a process if it uses too much memory", func() {
@@ -24,6 +48,16 @@ var _ = Describe("Limits", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(process.Wait()).ToNot(Equal(0))
+		})
+
+		It("doesn't kill a process that uses lots of memory within the limit", func() {
+			process, err := container.Run(garden.ProcessSpec{
+				User: "alice",
+				Path: "dd",
+				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=60"},
+			}, ginkgoIO)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(0))
 		})
 	})
 
@@ -38,12 +72,14 @@ var _ = Describe("Limits", func() {
 
 		DescribeTable("Metrics",
 			func(reporter func() uint64) {
+				createUser(container, "alice")
+
 				initialBytes := reporter()
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "dd",
 					Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=3"},
-				}, garden.ProcessIO{})
+				}, ginkgoIO)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 
@@ -53,7 +89,7 @@ var _ = Describe("Limits", func() {
 					User: "alice",
 					Path: "dd",
 					Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
-				}, garden.ProcessIO{})
+				}, ginkgoIO)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 
@@ -94,32 +130,12 @@ var _ = Describe("Limits", func() {
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
 			})
 
-			Context("and the container is privileged", func() {
-				BeforeEach(func() {
-					privilegedContainer = true
-				})
+			It("reports initial total bytes of a container based on size of image", func() {
+				metrics, err := container.Metrics()
+				Expect(err).ToNot(HaveOccurred())
 
-				It("reports initial total bytes of a container based on size of image", func() {
-					metrics, err := container.Metrics()
-					Expect(err).ToNot(HaveOccurred())
-
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
-				})
-			})
-
-			Context("and the container is un-privileged", func() {
-				BeforeEach(func() {
-					privilegedContainer = false
-				})
-
-				It("reports initial total bytes of a container based on size of image", func() {
-					metrics, err := container.Metrics()
-					Expect(err).ToNot(HaveOccurred())
-
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
-				})
+				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
+				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
 			})
 
 			Context("and run a process that does not exceed the limit", func() {
@@ -127,7 +143,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/random", "of=/root/test", "bs=1M", "count=7"},
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=7"},
 					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).To(Equal(0))
@@ -183,7 +199,7 @@ var _ = Describe("Limits", func() {
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-					}, garden.ProcessIO{})
+					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
@@ -192,11 +208,14 @@ var _ = Describe("Limits", func() {
 
 		Context("a rootfs with pre-existing users", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///cfgarden/preexisting_users"
-
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeExclusive
+			})
+
+			JustBeforeEach(func() {
+				createUser(container, "alice")
+				createUser(container, "bob")
 			})
 
 			Context("and run a process that exceeds the quota as bob", func() {
@@ -205,7 +224,7 @@ var _ = Describe("Limits", func() {
 						User: "bob",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/bob/test", "bs=1M", "count=11"},
-					}, garden.ProcessIO{})
+					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
@@ -217,7 +236,7 @@ var _ = Describe("Limits", func() {
 						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/alice/test", "bs=1M", "count=11"},
-					}, garden.ProcessIO{})
+					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
@@ -267,7 +286,7 @@ var _ = Describe("Limits", func() {
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-					}, garden.ProcessIO{})
+					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
@@ -275,19 +294,13 @@ var _ = Describe("Limits", func() {
 
 			Context("and run a process that exceeds the quota as a new user", func() {
 				It("kills the process", func() {
-					addUser, err := container.Run(garden.ProcessSpec{
-						User: "root",
-						Path: "adduser",
-						Args: []string{"-D", "-g", "", "bob"},
-					}, garden.ProcessIO{})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(addUser.Wait()).To(Equal(0))
+					createUser(container, "bob")
 
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "bob",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/bob/test", "bs=1M", "count=11"},
-					}, garden.ProcessIO{})
+					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
@@ -311,6 +324,8 @@ var _ = Describe("Limits", func() {
 					Limits:     limits,
 				})
 				Expect(err).ToNot(HaveOccurred())
+
+				createUser(container2, "alice")
 			})
 
 			AfterEach(func() {
@@ -323,16 +338,16 @@ var _ = Describe("Limits", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "dd",
-					Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=40"},
-				}, garden.ProcessIO{})
+					Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
+				}, ginkgoIO)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 
 				process, err = container2.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "dd",
-					Args: []string{"if=/dev/urandom", "of=/home/alice/some-file", "bs=1M", "count=40"},
-				}, garden.ProcessIO{})
+					Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
+				}, ginkgoIO)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 			})

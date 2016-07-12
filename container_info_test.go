@@ -1,16 +1,23 @@
 package garden_integration_tests_test
 
 import (
+	"fmt"
+
 	"github.com/cloudfoundry-incubator/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Container information", func() {
+	var (
+		bar string
+	)
+
 	Describe("for a single container", func() {
 		BeforeEach(func() {
+			bar = fmt.Sprintf("bar%d", GinkgoParallelNode())
 			properties = garden.Properties{
-				"foo": "bar",
+				"foo": bar,
 				"a":   "b",
 			}
 		})
@@ -20,10 +27,8 @@ var _ = Describe("Container information", func() {
 				info, err := container.Info()
 				Expect(err).ToNot(HaveOccurred())
 
-				Expect(info.Properties["foo"]).To(Equal("bar"))
+				Expect(info.Properties["foo"]).To(Equal(bar))
 				Expect(info.Properties["a"]).To(Equal("b"))
-
-				Expect(info.Properties).To(HaveLen(2))
 			})
 		})
 
@@ -43,7 +48,7 @@ var _ = Describe("Container information", func() {
 
 				value, err := container.Properties()
 				Expect(err).ToNot(HaveOccurred())
-				Expect(value).To(HaveKeyWithValue("foo", "bar"))
+				Expect(value).To(HaveKeyWithValue("foo", bar))
 				Expect(value).To(HaveKeyWithValue("bar", "baz"))
 			})
 		})
@@ -52,7 +57,7 @@ var _ = Describe("Container information", func() {
 			It("can CRUD", func() {
 				value, err := container.Property("foo")
 				Expect(err).ToNot(HaveOccurred())
-				Expect(value).To(Equal("bar"))
+				Expect(value).To(Equal(bar))
 
 				err = container.SetProperty("foo", "baz")
 				Expect(err).ToNot(HaveOccurred())
@@ -63,9 +68,7 @@ var _ = Describe("Container information", func() {
 				info, err := container.Info()
 				Expect(err).ToNot(HaveOccurred())
 
-				Expect(info.Properties).To(Equal(garden.Properties{
-					"foo": "baz",
-				}))
+				Expect(info.Properties).To(HaveKeyWithValue("foo", "baz"))
 			})
 		})
 
@@ -103,7 +106,7 @@ var _ = Describe("Container information", func() {
 			})
 
 			It("can filter by property", func() {
-				containers, err := gardenClient.Containers(garden.Properties{"foo": "bar"})
+				containers, err := gardenClient.Containers(garden.Properties{"foo": bar})
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(containers).To(HaveLen(1))
@@ -117,4 +120,32 @@ var _ = Describe("Container information", func() {
 		})
 	})
 
+	Describe("multiple containers", func() {
+		var extraContainer garden.Container
+
+		BeforeEach(func() {
+			var err error
+			extraContainer, err = gardenClient.Create(garden.ContainerSpec{})
+			Expect(err).ToNot(HaveOccurred())
+		})
+
+		AfterEach(func() {
+			if extraContainer != nil {
+				Expect(gardenClient.Destroy(extraContainer.Handle())).To(Succeed())
+			}
+		})
+
+		It("should list all containers", func() {
+			containers, err := gardenClient.Containers(garden.Properties{})
+			Expect(err).ToNot(HaveOccurred())
+
+			handles := []string{}
+			for _, c := range containers {
+				handles = append(handles, c.Handle())
+			}
+
+			Expect(handles).To(ContainElement(container.Handle()))
+			Expect(handles).To(ContainElement(extraContainer.Handle()))
+		})
+	})
 })
