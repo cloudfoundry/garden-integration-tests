@@ -558,40 +558,6 @@ var _ = Describe("Lifecycle", func() {
 			})
 		})
 
-		Context("and then attaching to it", func() {
-			It("streams output and the exit status to the attached request", func(done Done) {
-				stdout1 := gbytes.NewBuffer()
-				stdout2 := gbytes.NewBuffer()
-
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{"-c", "sleep 2; echo hello; sleep 0.5; echo goodbye; sleep 0.5; exit 42"},
-				}, garden.ProcessIO{
-					Stdout: stdout1,
-				})
-				Expect(err).ToNot(HaveOccurred())
-
-				attached, err := container.Attach(process.ID(), garden.ProcessIO{
-					Stdout: stdout2,
-				})
-				Expect(err).ToNot(HaveOccurred())
-
-				time.Sleep(2 * time.Second)
-
-				Eventually(stdout1).Should(gbytes.Say("hello\n"))
-				Eventually(stdout1).Should(gbytes.Say("goodbye\n"))
-
-				Eventually(stdout2).Should(gbytes.Say("hello\n"))
-				Eventually(stdout2).Should(gbytes.Say("goodbye\n"))
-
-				Expect(process.Wait()).To(Equal(42))
-				Expect(attached.Wait()).To(Equal(42))
-
-				close(done)
-			}, 10.0)
-		})
-
 		Context("and then sending a stop request", func() {
 			It("terminates all running processes", func() {
 				stdout := gbytes.NewBuffer()
