@@ -394,10 +394,7 @@ var _ = Describe("Security", func() {
 					Stdout: GinkgoWriter,
 					Stderr: GinkgoWriter,
 				})
-				Expect(err).ToNot(HaveOccurred())
-				exitStatus, err = process.Wait()
-				Expect(err).ToNot(HaveOccurred())
-				Expect(exitStatus).NotTo(Equal(0))
+				Expect(err).To(HaveOccurred())
 			})
 		})
 
