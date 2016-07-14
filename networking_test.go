@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cloudfoundry-incubator/garden"
+	"code.cloudfoundry.org/garden"
 	"github.com/eapache/go-resiliency/retrier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
