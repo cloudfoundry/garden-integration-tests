@@ -377,7 +377,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("avoids a race condition when sending a kill signal", func(done Done) {
-			for i := 0; i < 100; i++ {
+			for i := 0; i < 20; i++ {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
@@ -396,7 +396,7 @@ var _ = Describe("Lifecycle", func() {
 		}, 480.0)
 
 		It("collects the process's full output, even if it exits quickly after", func() {
-			for i := 0; i < 1000; i++ {
+			for i := 0; i < 100; i++ {
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
