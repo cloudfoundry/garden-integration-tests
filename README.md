@@ -1,5 +1,7 @@
 # Garden Integration Tests
 
+**Note**: This repository should be imported as `code.cloudfoundry.org/garden-integration-tests`.
+
 Tests that run against a remote garden server.
 
 ## How to run
