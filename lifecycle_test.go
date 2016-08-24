@@ -395,6 +395,25 @@ var _ = Describe("Lifecycle", func() {
 			close(done)
 		}, 480.0)
 
+		It("collects the process's full output when tty is requested", func() {
+			for i := 0; i < 100; i++ {
+				stdout := gbytes.NewBuffer()
+
+				process, err := container.Run(garden.ProcessSpec{
+					User: "alice",
+					Path: "sh",
+					Args: []string{"-c", "echo $(seq 10000)"},
+					TTY:  &garden.TTYSpec{},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				Expect(process.Wait()).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("9999 10000"))
+			}
+		})
+
 		It("collects the process's full output, even if it exits quickly after", func() {
 			for i := 0; i < 100; i++ {
 				stdout := gbytes.NewBuffer()
@@ -413,7 +432,7 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("hi stdout"))
 			}
-		}, 240.0)
+		})
 
 		It("streams input to the process's stdin", func() {
 			stdout := gbytes.NewBuffer()
