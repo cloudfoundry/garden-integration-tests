@@ -473,6 +473,33 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		Context("with a tty", func() {
+			It("executes the process with a raw tty with the default window size", func() {
+				stdout := gbytes.NewBuffer()
+				_, err := container.Run(garden.ProcessSpec{
+					User: "alice",
+					Path: "sh",
+					Env:  []string{"USE_DADOO=true"},
+					Args: []string{
+						"-c",
+						`
+						# The mechanism that is used to set TTY size (ioctl) is
+						# asynchronous. Hence, stty does not return the correct result
+						# right after the process is launched.
+						while true; do
+							stty -a
+							sleep 1
+						done
+					`,
+					},
+					TTY: &garden.TTYSpec{},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(stdout, "3s").Should(gbytes.Say("rows 24; columns 80;"))
+			})
+
 			It("executes the process with a raw tty with the given window size", func() {
 				stdout := gbytes.NewBuffer()
 				_, err := container.Run(garden.ProcessSpec{
