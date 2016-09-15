@@ -54,7 +54,7 @@ var _ = Describe("Limits", func() {
 			process, err := container.Run(garden.ProcessSpec{
 				User: "alice",
 				Path: "dd",
-				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=60"},
+				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=57"},
 			}, ginkgoIO)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(process.Wait()).To(Equal(0))
