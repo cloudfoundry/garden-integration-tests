@@ -224,15 +224,23 @@ func emitMetric(req interface{}) {
 		Fail("cannot-marshal-metric: " + err.Error())
 		return
 	}
-	response, err := http.Post(dogURL, "application/json", bytes.NewReader(buf))
-	if err != nil {
-		Fail("cannot-emit-metric: " + err.Error())
-		return
-	}
-	if response.StatusCode != http.StatusAccepted {
-		Fail(fmt.Sprintf("cannot-emit-metric: error code not 202: %d %s", response.StatusCode, response.Status))
-		return
-	}
+
+	Eventually(func() error {
+		response, err := http.Post(dogURL, "application/json", bytes.NewReader(buf))
+		if err != nil {
+			err = errors.New("cannot-emit-metric: " + err.Error())
+			fmt.Fprintf(GinkgoWriter, err.Error())
+			return err
+		}
+
+		if response.StatusCode != http.StatusAccepted {
+			err := fmt.Errorf("cannot-emit-metric: error code not 202: %d %s", response.StatusCode, response.Status)
+			fmt.Fprintf(GinkgoWriter, err.Error())
+			return err
+		}
+
+		return nil
+	}).Should(Succeed())
 }
 
 func warmUp(gardenClient garden.Client) {
