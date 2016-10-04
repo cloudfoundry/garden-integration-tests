@@ -970,16 +970,14 @@ var _ = Describe("Lifecycle", func() {
 	Context("when the container GraceTime is applied", func() {
 		var containerHandle string
 
-		JustBeforeEach(func() {
+		It("should disappear after grace time and before timeout", func() {
 			container.SetGraceTime(500 * time.Millisecond)
 			containerHandle = container.Handle()
 
 			_, err := gardenClient.Lookup(containerHandle)
 			Expect(err).NotTo(HaveOccurred())
 			container = nil // avoid double-destroying in AfterEach
-		})
 
-		It("should disappear after grace time and before timeout", func() {
 			Eventually(func() error {
 				_, err := gardenClient.Lookup(containerHandle)
 				return err
@@ -988,13 +986,8 @@ var _ = Describe("Lifecycle", func() {
 
 		It("returns an unknown handle error when calling the API", func() {
 			Eventually(func() error {
-				_, err := gardenClient.Lookup(containerHandle)
-				return err
-			}, "2s").Should(HaveOccurred())
-
-			Eventually(func() error {
-				return gardenClient.Destroy(containerHandle)
-			}).Should(MatchError(fmt.Sprintf("unknown handle: %s", containerHandle)))
+				return gardenClient.Destroy("not-a-real-handle")
+			}).Should(MatchError(fmt.Sprintf("unknown handle: %s", "not-a-real-handle")))
 		})
 	})
 })
