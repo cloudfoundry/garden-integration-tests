@@ -240,7 +240,7 @@ func emitMetric(req interface{}) {
 		}
 
 		return nil
-	}).Should(Succeed())
+	}, 15*time.Second).Should(Succeed())
 }
 
 func warmUp(gardenClient garden.Client) {
