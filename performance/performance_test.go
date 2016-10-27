@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"os"
 	"path"
@@ -213,6 +214,27 @@ var _ = Describe("performance", func() {
 			//Expect(b.Seconds()).To(BeNumerically(",", ???))
 		}, 20)
 	})
+
+	Measure("BulkNetOut", func(b Benchmarker) {
+		b.Time("3000 rules", func() {
+			rules := make([]garden.NetOutRule, 0)
+
+			for i := 0; i < 3000; i++ {
+				rules = append(rules, garden.NetOutRule{
+					Protocol: garden.ProtocolTCP,
+					Networks: []garden.IPRange{garden.IPRangeFromIP(net.ParseIP("8.8.8.8"))},
+					Ports:    []garden.PortRange{garden.PortRangeFromPort(uint16(i))},
+				})
+			}
+
+			container, err := gardenClient.Create(garden.ContainerSpec{})
+			Expect(err).ToNot(HaveOccurred())
+
+			Expect(container.BulkNetOut(rules)).To(Succeed())
+
+			Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
+		})
+	}, 5)
 })
 
 func emitMetric(req interface{}) {
