@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
@@ -77,29 +78,46 @@ var _ = Describe("performance", func() {
 		})
 	}, 50)
 
-	Measure("stream bytes in", func(b Benchmarker) {
-		concurrenyLevel := 5
-		By("starting")
+	Context("streaming custom tgz file", func() {
+		const archive string = "file.tgz"
 
-		b.Time("concurrent streamings", func() {
-			wg := sync.WaitGroup{}
+		JustBeforeEach(func() {
+			// create a 17M tgz file
+			Expect(exec.Command("dd", "if=/dev/urandom", "of=file", "bs=1m", "count=17").Run()).To(Succeed())
+			Expect(exec.Command("/bin/bash", "-c", fmt.Sprintf("tar cvzf %s file", archive)).Run()).To(Succeed())
 
-			for i := 0; i < concurrenyLevel; i++ {
-				wg.Add(1)
-
-				go func(index int) {
-					defer wg.Done()
-					defer GinkgoRecover()
-
-					// do it twice in a row to increase likelihood of overlaps
-					createAndStream(index, b)
-					createAndStream(index, b)
-				}(i)
-			}
-
-			wg.Wait()
+			Expect(archive).To(BeARegularFile())
 		})
-	}, 10)
+
+		AfterEach(func() {
+			os.Remove("file")
+			os.Remove(archive)
+		})
+
+		Measure("stream bytes in", func(b Benchmarker) {
+			concurrenyLevel := 5
+			By("starting")
+
+			b.Time("concurrent streamings", func() {
+				wg := sync.WaitGroup{}
+
+				for i := 0; i < concurrenyLevel; i++ {
+					wg.Add(1)
+
+					go func(index int) {
+						defer wg.Done()
+						defer GinkgoRecover()
+
+						// do it twice in a row to increase likelihood of overlaps
+						createAndStream(index, b, archive)
+						createAndStream(index, b, archive)
+					}(i)
+				}
+
+				wg.Wait()
+			})
+		}, 2)
+	})
 
 	Describe("streaming", func() {
 		BeforeEach(func() {
@@ -271,7 +289,7 @@ func warmUp(gardenClient garden.Client) {
 	Expect(gardenClient.Destroy(ctr.Handle())).To(Succeed())
 }
 
-func streaminDora(ctr garden.Container) {
+func streamin(ctr garden.Container, archive string) {
 	for i := 0; i < 20; i++ {
 		By(fmt.Sprintf("preparing stream %d for handle %s", i, ctr.Handle()))
 		// Stream in a tar file to ctr
@@ -279,7 +297,7 @@ func streaminDora(ctr garden.Container) {
 
 		pwd, err := os.Getwd()
 		Expect(err).ToNot(HaveOccurred())
-		tgzPath := path.Join(pwd, "../resources/dora.tgz")
+		tgzPath := path.Join(pwd, archive)
 		tgz, err := os.Open(tgzPath)
 		Expect(err).ToNot(HaveOccurred())
 		tarStream, err = gzip.NewReader(tgz)
@@ -297,7 +315,7 @@ func streaminDora(ctr garden.Container) {
 	}
 }
 
-func createAndStream(index int, b Benchmarker) {
+func createAndStream(index int, b Benchmarker, archive string) {
 	var handle string
 	var ctr garden.Container
 	var err error
@@ -330,7 +348,7 @@ func createAndStream(index int, b Benchmarker) {
 
 		By("starting stream in to container " + handle)
 
-		streaminDora(ctr)
+		streamin(ctr, archive)
 
 		By("succefully streamed in to container " + handle)
 
