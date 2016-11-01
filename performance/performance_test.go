@@ -83,7 +83,7 @@ var _ = Describe("performance", func() {
 
 		JustBeforeEach(func() {
 			// create a 17M tgz file
-			Expect(exec.Command("dd", "if=/dev/urandom", "of=file", "bs=1m", "count=17").Run()).To(Succeed())
+			Expect(exec.Command("dd", "if=/dev/urandom", "of=file", "bs=1048576", "count=17").Run()).To(Succeed())
 			Expect(exec.Command("/bin/bash", "-c", fmt.Sprintf("tar cvzf %s file", archive)).Run()).To(Succeed())
 
 			Expect(archive).To(BeARegularFile())
@@ -116,7 +116,7 @@ var _ = Describe("performance", func() {
 
 				wg.Wait()
 			})
-		}, 2)
+		}, 10)
 	})
 
 	Describe("streaming", func() {
