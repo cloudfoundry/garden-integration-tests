@@ -106,7 +106,7 @@ var _ = Describe("users", func() {
 			rootfs = "docker:///cfgarden/with-user-with-groups"
 		})
 
-		It("preserves additional groups", func() {
+		It("ignores additional groups", func() {
 			stdout := gbytes.NewBuffer()
 
 			proc, err := container.Run(garden.ProcessSpec{
@@ -120,7 +120,9 @@ var _ = Describe("users", func() {
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(proc.Wait()).To(Equal(0))
-			Expect(stdout).To(gbytes.Say("Groups:\t1010 1011"))
+			Expect(stdout).To(gbytes.Say("Groups:\t\n"))
+			Expect(stdout).NotTo(gbytes.Say("1010"))
+			Expect(stdout).NotTo(gbytes.Say("1011"))
 		})
 	})
 })
