@@ -55,6 +55,20 @@ var _ = Describe("Lifecycle", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(bandwidthLimit).To(Equal(garden.BandwidthLimits{}))
 		})
+
+		It("should be able to create and destroy containers sequentially", func() {
+			diskLimits := garden.DiskLimits{
+				ByteHard: 2 * 1024 * 1024 * 1024,
+			}
+
+			container1, err := gardenClient.Create(garden.ContainerSpec{Limits: garden.Limits{Disk: diskLimits}})
+			Expect(err).NotTo(HaveOccurred())
+			container2, err := gardenClient.Create(garden.ContainerSpec{Limits: garden.Limits{Disk: diskLimits}})
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(gardenClient.Destroy(container1.Handle())).To(Succeed())
+			Expect(gardenClient.Destroy(container2.Handle())).To(Succeed())
+		})
 	})
 
 	Context("Creating a container with a duplicate handle", func() {
