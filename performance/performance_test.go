@@ -78,6 +78,28 @@ var _ = Describe("performance", func() {
 		})
 	}, 50)
 
+	Measure("serial creation of containers with disk quotas", func(b Benchmarker) {
+		handles := []string{}
+
+		for i := 0; i < 50; i++ {
+			b.Time(fmt.Sprintf("create-%d", i), func() {
+				containerSpec := garden.ContainerSpec{
+					Handle: fmt.Sprintf("container-%d", i),
+					Limits: garden.Limits{
+						Disk: garden.DiskLimits{ByteHard: 2 * 1024 * 1024 * 1024},
+					},
+				}
+				container, err := gardenClient.Create(containerSpec)
+				Expect(err).NotTo(HaveOccurred())
+				handles = append(handles, container.Handle())
+			})
+		}
+
+		for _, handle := range handles {
+			Expect(gardenClient.Destroy(handle)).To(Succeed())
+		}
+	}, 10)
+
 	Context("streaming custom tgz file", func() {
 		const archive string = "file.tgz"
 
