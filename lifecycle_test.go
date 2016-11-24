@@ -57,6 +57,10 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("should be able to create and destroy containers sequentially", func() {
+			if os.Getenv("NESTED") == "true" {
+				Skip("Not supported on nested environments")
+			}
+
 			diskLimits := garden.DiskLimits{
 				ByteHard: 2 * 1024 * 1024 * 1024,
 			}
