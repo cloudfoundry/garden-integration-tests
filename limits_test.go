@@ -1,6 +1,8 @@
 package garden_integration_tests_test
 
 import (
+	"time"
+
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
@@ -9,7 +11,7 @@ import (
 
 var _ = Describe("Limits", func() {
 	JustBeforeEach(func() {
-		createUser(container, "alice")
+		// createUser(container, "alice")
 	})
 
 	Describe("CPU limits", func() {
@@ -351,6 +353,18 @@ var _ = Describe("Limits", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 			})
+		})
+	})
+
+	FDescribe("PID limits", func() {
+		BeforeEach(func() {
+			limits.Pid = garden.PidLimits{Limit: 15}
+		})
+
+		It("work", func() {
+			time.Sleep(time.Hour)
+			_, err := container.Run(garden.ProcessSpec{Path: "ls"}, ginkgoIO)
+			Expect(err).To(MatchError("dasfghtikop;"))
 		})
 	})
 })
