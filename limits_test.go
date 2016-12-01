@@ -1,10 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"os/exec"
-	"strconv"
-	"strings"
-
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
@@ -362,13 +358,7 @@ var _ = Describe("Limits", func() {
 	Describe("PID limits", func() {
 		Context("when there is a pid limit applied", func() {
 			BeforeEach(func() {
-				version, err := exec.Command("uname", "-r").Output()
-				Expect(err).NotTo(HaveOccurred())
-				vSplit := strings.Split(string(version), ".")
-				major, err := strconv.Atoi(vSplit[0])
-				Expect(err).NotTo(HaveOccurred())
-				minor, err := strconv.Atoi(vSplit[1])
-				Expect(err).NotTo(HaveOccurred())
+				major, minor := getKernelVersion()
 				if major < 4 || (major == 4 && minor < 4) {
 					Skip("kernel version should be at 4.4 or later")
 				}
