@@ -9,10 +9,6 @@ import (
 )
 
 var _ = Describe("Limits", func() {
-	JustBeforeEach(func() {
-		// createUser(container, "alice")
-	})
-
 	Describe("CPU limits", func() {
 		BeforeEach(func() {
 			limits.CPU = garden.CPULimits{
@@ -42,7 +38,7 @@ var _ = Describe("Limits", func() {
 
 		It("kills a process if it uses too much memory", func() {
 			process, err := container.Run(garden.ProcessSpec{
-				User: "alice",
+				User: "root",
 				Path: "dd",
 				Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
 			}, garden.ProcessIO{})
@@ -53,7 +49,7 @@ var _ = Describe("Limits", func() {
 
 		It("doesn't kill a process that uses lots of memory within the limit", func() {
 			process, err := container.Run(garden.ProcessSpec{
-				User: "alice",
+				User: "root",
 				Path: "dd",
 				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=57"},
 			}, ginkgoIO)
@@ -270,6 +266,52 @@ var _ = Describe("Limits", func() {
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
 			})
+
+			Context("when multiple containers are created for the same user", func() {
+				var container2 garden.Container
+				var err error
+
+				BeforeEach(func() {
+					limits.Disk.ByteSoft = 50 * 1024 * 1024
+					limits.Disk.ByteHard = 50 * 1024 * 1024
+					limits.Disk.Scope = garden.DiskLimitScopeExclusive
+				})
+
+				JustBeforeEach(func() {
+					container2, err = gardenClient.Create(garden.ContainerSpec{
+						Privileged: privilegedContainer,
+						RootFSPath: rootfs,
+						Limits:     limits,
+					})
+					Expect(err).ToNot(HaveOccurred())
+
+					createUser(container2, "alice")
+				})
+
+				AfterEach(func() {
+					if container2 != nil {
+						Expect(gardenClient.Destroy(container2.Handle())).To(Succeed())
+					}
+				})
+
+				It("gives each container its own quota", func() {
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "dd",
+						Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
+					}, ginkgoIO)
+					Expect(err).ToNot(HaveOccurred())
+					Expect(process.Wait()).To(Equal(0))
+
+					process, err = container2.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "dd",
+						Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
+					}, ginkgoIO)
+					Expect(err).ToNot(HaveOccurred())
+					Expect(process.Wait()).To(Equal(0))
+				})
+			})
 		})
 
 		Context("when the container is privileged", func() {
@@ -305,52 +347,6 @@ var _ = Describe("Limits", func() {
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
 				})
-			})
-		})
-
-		Context("when multiple containers are created for the same user", func() {
-			var container2 garden.Container
-			var err error
-
-			BeforeEach(func() {
-				limits.Disk.ByteSoft = 50 * 1024 * 1024
-				limits.Disk.ByteHard = 50 * 1024 * 1024
-				limits.Disk.Scope = garden.DiskLimitScopeExclusive
-			})
-
-			JustBeforeEach(func() {
-				container2, err = gardenClient.Create(garden.ContainerSpec{
-					Privileged: privilegedContainer,
-					RootFSPath: rootfs,
-					Limits:     limits,
-				})
-				Expect(err).ToNot(HaveOccurred())
-
-				createUser(container2, "alice")
-			})
-
-			AfterEach(func() {
-				if container2 != nil {
-					Expect(gardenClient.Destroy(container2.Handle())).To(Succeed())
-				}
-			})
-
-			It("gives each container its own quota", func() {
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "dd",
-					Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
-				}, ginkgoIO)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-
-				process, err = container2.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "dd",
-					Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
-				}, ginkgoIO)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
 			})
 		})
 	})
