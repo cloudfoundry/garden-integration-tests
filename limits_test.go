@@ -1,15 +1,20 @@
 package garden_integration_tests_test
 
 import (
+	"os/exec"
+	"strconv"
+	"strings"
+
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Limits", func() {
 	JustBeforeEach(func() {
-		createUser(container, "alice")
+		// createUser(container, "alice")
 	})
 
 	Describe("CPU limits", func() {
@@ -350,6 +355,66 @@ var _ = Describe("Limits", func() {
 				}, ginkgoIO)
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
+			})
+		})
+	})
+
+	Describe("PID limits", func() {
+		Context("when there is a pid limit applied", func() {
+			BeforeEach(func() {
+				version, err := exec.Command("uname", "-r").Output()
+				Expect(err).NotTo(HaveOccurred())
+				vSplit := strings.Split(string(version), ".")
+				major, err := strconv.Atoi(vSplit[0])
+				Expect(err).NotTo(HaveOccurred())
+				minor, err := strconv.Atoi(vSplit[1])
+				Expect(err).NotTo(HaveOccurred())
+				if major < 4 || (major == 4 && minor < 4) {
+					Skip("kernel version should be at 4.4 or later")
+				}
+
+				limits.Pid = garden.PidLimits{Limit: 1}
+			})
+
+			It("prevents forking of processes", func() {
+				stderr := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "sh",
+					Args: []string{"-c", "ps"},
+				}, garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: stderr,
+				})
+				Expect(err).NotTo(HaveOccurred())
+
+				exitCode, err := process.Wait()
+				Expect(exitCode).To(Equal(2))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(stderr).To(gbytes.Say("sh: can't fork"))
+			})
+		})
+
+		Context("when the pid limit is set to 0", func() {
+			BeforeEach(func() {
+				limits.Pid = garden.PidLimits{Limit: 0}
+			})
+
+			It("applies no limit", func() {
+				stderr := gbytes.NewBuffer()
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "sh",
+					Args: []string{"-c", "ps"},
+				}, garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: stderr,
+				})
+				Expect(err).NotTo(HaveOccurred())
+
+				exitCode, err := process.Wait()
+				Expect(exitCode).To(Equal(0))
+				Expect(err).NotTo(HaveOccurred())
 			})
 		})
 	})

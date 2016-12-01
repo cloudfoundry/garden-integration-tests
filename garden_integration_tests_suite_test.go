@@ -3,6 +3,9 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -111,4 +114,17 @@ func createUser(container garden.Container, username string) {
 	})
 	Expect(err).ToNot(HaveOccurred())
 	Expect(process.Wait()).To(Equal(0))
+}
+
+func getKernelVersion() (int, int) {
+	version, err := exec.Command("uname", "-r").Output()
+	Expect(err).NotTo(HaveOccurred())
+
+	vSplit := strings.Split(string(version), ".")
+	major, err := strconv.Atoi(vSplit[0])
+	Expect(err).NotTo(HaveOccurred())
+	minor, err := strconv.Atoi(vSplit[1])
+	Expect(err).NotTo(HaveOccurred())
+
+	return major, minor
 }
