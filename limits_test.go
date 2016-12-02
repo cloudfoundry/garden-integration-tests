@@ -359,7 +359,7 @@ var _ = Describe("Limits", func() {
 					Skip("kernel version should be at 4.4 or later")
 				}
 
-				limits.Pid = garden.PidLimits{Limit: 1}
+				limits.Pid = garden.PidLimits{Limit: 20}
 			})
 
 			It("prevents forking of processes", func() {
@@ -367,7 +367,7 @@ var _ = Describe("Limits", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
-					Args: []string{"-c", "ps"},
+					Args: []string{"-c", "for i in `seq 1 20`; do sleep 2 & done"},
 				}, garden.ProcessIO{
 					Stdout: GinkgoWriter,
 					Stderr: stderr,
