@@ -359,7 +359,7 @@ var _ = Describe("Limits", func() {
 					Skip("kernel version should be at 4.4 or later")
 				}
 
-				limits.Pid = garden.PidLimits{Limit: 20}
+				limits.Pid = garden.PidLimits{Max: 20}
 			})
 
 			It("prevents forking of processes", func() {
@@ -383,7 +383,7 @@ var _ = Describe("Limits", func() {
 
 		Context("when the pid limit is set to 0", func() {
 			BeforeEach(func() {
-				limits.Pid = garden.PidLimits{Limit: 0}
+				limits.Pid = garden.PidLimits{Max: 0}
 			})
 
 			It("applies no limit", func() {
