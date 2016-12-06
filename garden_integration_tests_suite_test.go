@@ -18,6 +18,8 @@ import (
 
 var (
 	gardenHost            string
+	gardenPort            string
+	gardenDebugPort       string
 	gardenClient          garden.Client
 	container             garden.Container
 	containerCreateErr    error
@@ -52,9 +54,17 @@ func TestGardenIntegrationTests(t *testing.T) {
 		env = []string{}
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
 		if gardenHost == "" {
-			gardenHost = "10.244.16.6:7777"
+			gardenHost = "10.244.16.6"
 		}
-		gardenClient = client.New(connection.New("tcp", gardenHost))
+		gardenPort = os.Getenv("GARDEN_PORT")
+		if gardenPort == "" {
+			gardenPort = "7777"
+		}
+		gardenDebugPort = os.Getenv("GARDEN_DEBUG_PORT")
+		if gardenDebugPort == "" {
+			gardenDebugPort = "17013"
+		}
+		gardenClient = client.New(connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort)))
 	})
 
 	JustBeforeEach(func() {
