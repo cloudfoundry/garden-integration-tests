@@ -1,6 +1,7 @@
 package performance_test
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 
 var (
 	gardenHost   string
+	gardenPort   string
 	gardenClient garden.Client
 	container    garden.Container
 
@@ -28,11 +30,18 @@ func TestPerformance(t *testing.T) {
 
 	BeforeEach(func() {
 		gardenHost = os.Getenv("GARDEN_ADDRESS")
+		if gardenHost == "" {
+			gardenHost = "10.244.16.6"
+		}
+		gardenPort = os.Getenv("GARDEN_PORT")
+		if gardenPort == "" {
+			gardenPort = "7777"
+		}
 		rootfs = "docker:///cfgarden/garden-busybox"
 	})
 
 	JustBeforeEach(func() {
-		gardenClient = client.New(connection.New("tcp", gardenHost))
+		gardenClient = client.New(connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort)))
 
 		var err error
 		container, err = gardenClient.Create(garden.ContainerSpec{
