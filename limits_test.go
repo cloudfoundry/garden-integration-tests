@@ -121,9 +121,9 @@ var _ = Describe("Limits", func() {
 
 		Context("when the scope is total", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///busybox#1.23"
-				limits.Disk.ByteSoft = 10 * 1024 * 1024
-				limits.Disk.ByteHard = 10 * 1024 * 1024
+				rootfs = "docker:///cfgarden/busybox-10mb"
+				limits.Disk.ByteSoft = 20 * 1024 * 1024
+				limits.Disk.ByteHard = 20 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
 			})
 
@@ -132,7 +132,7 @@ var _ = Describe("Limits", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
+				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 10*1024*1024, 512*1024)) // base busybox-10mb is > 10 MB but less than 10.5 MB
 			})
 
 			Context("and run a process that does not exceed the limit", func() {
@@ -152,7 +152,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for > 1 MB
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=22"}, // assume busybox-10mb itself accounts for ~ 10 MB
 					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
@@ -173,8 +173,9 @@ var _ = Describe("Limits", func() {
 
 		Context("when the scope is exclusive", func() {
 			BeforeEach(func() {
-				limits.Disk.ByteSoft = 10 * 1024 * 1024
-				limits.Disk.ByteHard = 10 * 1024 * 1024
+				rootfs = "docker:///cfgarden/busybox-10mb"
+				limits.Disk.ByteSoft = 15 * 1024 * 1024
+				limits.Disk.ByteHard = 15 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeExclusive
 			})
 
@@ -183,7 +184,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=7"}, // should succeed, even though equivalent with 'total' scope does not
 					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).To(Equal(0))
@@ -195,7 +196,7 @@ var _ = Describe("Limits", func() {
 					dd, err := container.Run(garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=16"},
 					}, ginkgoIO)
 					Expect(err).ToNot(HaveOccurred())
 					Expect(dd.Wait()).ToNot(Equal(0))
