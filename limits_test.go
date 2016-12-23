@@ -1,6 +1,8 @@
 package garden_integration_tests_test
 
 import (
+	"os"
+
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
@@ -60,6 +62,10 @@ var _ = Describe("Limits", func() {
 
 	Describe("disk limits", func() {
 		BeforeEach(func() {
+			if os.Getenv("EXTERNAL_IMAGE_PLUGIN_PROVIDED") == "true" {
+				Skip("Disk limits are not enforced by garden when there is an external image plugin provided")
+			}
+
 			privilegedContainer = false
 
 			limits.Disk.ByteSoft = 100 * 1024 * 1024
