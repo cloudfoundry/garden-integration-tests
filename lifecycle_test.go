@@ -496,7 +496,6 @@ var _ = Describe("Lifecycle", func() {
 				_, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Env:  []string{"USE_DADOO=true"},
 					Args: []string{
 						"-c",
 						`
@@ -523,7 +522,6 @@ var _ = Describe("Lifecycle", func() {
 				_, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Env:  []string{"USE_DADOO=true"},
 					Args: []string{
 						"-c",
 						`
@@ -558,7 +556,6 @@ var _ = Describe("Lifecycle", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Env:  []string{"USE_DADOO=true"},
 					Args: []string{
 						"-c",
 						`
