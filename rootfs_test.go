@@ -68,23 +68,10 @@ var _ = Describe("Rootfses", func() {
 				})
 
 				Expect(err).ToNot(HaveOccurred())
-
 				process.Wait()
 				Expect(stdout).To(gbytes.Say("foo"))
 			})
 		})
 
-		Context("and the image resides in a private docker registry", func() {
-			It("should return a nice error", func() {
-				_, err := gardenClient.Create(garden.ContainerSpec{
-					Image: garden.ImageRef{
-						URI:      "",
-						Username: "imagepluginuser",
-						Password: "secretpassword",
-					},
-				})
-				Expect(err).To(MatchError(ContainSubstring("private docker registries are not supported")))
-			})
-		})
 	})
 })
