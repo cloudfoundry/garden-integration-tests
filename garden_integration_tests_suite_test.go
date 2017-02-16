@@ -1,9 +1,9 @@
 package garden_integration_tests_test
 
 import (
+	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
@@ -141,10 +141,22 @@ func createUser(container garden.Container, username string) {
 }
 
 func getKernelVersion() (int, int) {
-	version, err := exec.Command("uname", "-r").Output()
+	container, err := gardenClient.Create(garden.ContainerSpec{})
 	Expect(err).NotTo(HaveOccurred())
+	defer gardenClient.Destroy(container.Handle())
 
-	vSplit := strings.Split(string(version), ".")
+	var outBytes bytes.Buffer
+	process, err := container.Run(garden.ProcessSpec{
+		User: "root",
+		Path: "uname",
+		Args: []string{"-r"},
+	}, garden.ProcessIO{
+		Stdout: &outBytes,
+	})
+	Expect(err).ToNot(HaveOccurred())
+	Expect(process.Wait()).To(Equal(0))
+
+	vSplit := strings.Split(outBytes.String(), ".")
 	major, err := strconv.Atoi(vSplit[0])
 	Expect(err).NotTo(HaveOccurred())
 	minor, err := strconv.Atoi(vSplit[1])
