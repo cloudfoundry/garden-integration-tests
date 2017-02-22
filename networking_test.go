@@ -120,6 +120,9 @@ var _ = Describe("Networking", func() {
 				})
 				Expect(err).NotTo(HaveOccurred())
 			})
+			AfterEach(func() {
+				Expect(gardenClient.Destroy(newContainer.Handle())).To(Succeed())
+			})
 
 			It("should continue to route traffic successfully", func() {
 				googleDNSIP := "8.8.8.8"
