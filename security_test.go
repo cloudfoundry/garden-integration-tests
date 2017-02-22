@@ -60,25 +60,6 @@ var _ = Describe("Security", func() {
 
 			Expect(stdout).To(gbytes.Say("0\n1\n2\n3\n")) // stdin, stdout, stderr, /proc/self/fd
 		})
-
-		PIt("has the correct initial process", func() {
-			stdout := gbytes.NewBuffer()
-			process, err := container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "/bin/ps",
-				Args: []string{"-o", "pid,args"},
-			}, garden.ProcessIO{
-				Stdout: stdout,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).ToNot(HaveOccurred())
-
-			exitStatus, err := process.Wait()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(exitStatus).To(Equal(0))
-
-			Expect(stdout).To(gbytes.Say(`\s+1\s+{exe}\s+initd.*-title="wshd: %s"`, container.Handle()))
-		})
 	})
 
 	Describe("File system", func() {
@@ -601,23 +582,6 @@ var _ = Describe("Security", func() {
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say(" alice "))
 				Expect(stdout).To(gbytes.Say(" alicesfile"))
-			})
-
-			PIt("sees devices as owned by root", func() {
-				out := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
-					User: "root",
-					Path: "ls",
-					Args: []string{"-la", "/dev/"},
-				}, garden.ProcessIO{
-					Stdout: out,
-					Stderr: out,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-				Expect(string(out.Contents())).To(ContainSubstring(" root "))
-				Expect(string(out.Contents())).ToNot(ContainSubstring("nobody"))
-				Expect(string(out.Contents())).ToNot(ContainSubstring("65534"))
 			})
 
 			It("lets alice write in /home/alice", func() {

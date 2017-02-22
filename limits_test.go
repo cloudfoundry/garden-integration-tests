@@ -112,19 +112,6 @@ var _ = Describe("Limits", func() {
 			}),
 		)
 
-		Describe("CurrentDiskLimits", func() {
-			// PENDED: Until CurrentDiskLimits work with AUFS
-			PIt("reports the correct disk limit size of the container", func() {
-				limit, err := container.CurrentDiskLimits()
-				Expect(err).ToNot(HaveOccurred())
-				Expect(limit).To(Equal(garden.DiskLimits{
-					ByteHard: limits.Disk.ByteHard,
-					ByteSoft: limits.Disk.ByteSoft,
-					Scope:    limits.Disk.Scope,
-				}))
-			})
-		})
-
 		Context("when the scope is total", func() {
 			BeforeEach(func() {
 				rootfs = "docker:///busybox#1.23"

@@ -185,21 +185,6 @@ var _ = Describe("Lifecycle", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Eventually(stdout).Should(gbytes.Say("root\n"))
 			})
-
-			PContext("and there is no /root directory in the image", func() {
-				BeforeEach(func() {
-					rootfs = "docker:///cloudfoundry/grace-busybox"
-				})
-
-				It("still allows running as root", func() {
-					_, err := container.Run(garden.ProcessSpec{
-						Path: "ls",
-						User: "root",
-					}, garden.ProcessIO{})
-
-					Expect(err).ToNot(HaveOccurred())
-				})
-			})
 		})
 
 		It("streams output back and reports the exit status", func() {
