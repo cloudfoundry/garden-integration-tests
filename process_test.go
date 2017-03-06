@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"fmt"
 	"io"
 	"runtime/debug"
 	"time"
@@ -34,6 +35,39 @@ var _ = Describe("Process", func() {
 			err = process.Signal(garden.SignalTerminate)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(process.Wait()).NotTo(Equal(12))
+		})
+	})
+
+	Describe("process ID", func() {
+		It("return a process containing the ID passed in the process spec", func() {
+			process, err := container.Run(garden.ProcessSpec{
+				ID:   "some-id",
+				Path: "/bin/true",
+			}, garden.ProcessIO{})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.ID()).To(Equal("some-id"))
+		})
+
+		Context("when two processes with the same ID are running", func() {
+			var processID string
+
+			JustBeforeEach(func() {
+				processID = "same-id"
+				_, err := container.Run(garden.ProcessSpec{
+					ID:   processID,
+					Path: "sleep",
+					Args: []string{"5"},
+				}, garden.ProcessIO{})
+				Expect(err).ToNot(HaveOccurred())
+			})
+
+			It("the second process with the same id should explode", func() {
+				_, err := container.Run(garden.ProcessSpec{
+					ID:   processID,
+					Path: "/bin/true",
+				}, garden.ProcessIO{})
+				Expect(err).To(MatchError(ContainSubstring(fmt.Sprintf("process ID '%s' already in use", processID))))
+			})
 		})
 	})
 
