@@ -102,7 +102,11 @@ var _ = Describe("Networking", func() {
 					Expect(err).NotTo(HaveOccurred())
 
 					Expect(gardenClient.Destroy(otherContainer.Handle())).To(Succeed())
-					Expect(checkConnection(container, googleDNSIP, 53)).To(Succeed())
+					err := checkConnection(container, googleDNSIP, 53)
+					if err != nil {
+						checkPing(container, googleDNSIP)
+					}
+					Expect(err).NotTo(HaveOccurred())
 				}
 			})
 		})
@@ -152,4 +156,15 @@ func checkConnection(container garden.Container, ip string, port int) error {
 	} else {
 		return fmt.Errorf("Request failed. Process exited with code %d", exitCode)
 	}
+}
+
+func checkPing(container garden.Container, ip string) error {
+	p, err := container.Run(garden.ProcessSpec{
+		User: "root",
+		Path: "ping",
+		Args: []string{"-c", "10", "-W", "1", ip},
+	}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
+	p.Wait()
+
+	return err
 }
