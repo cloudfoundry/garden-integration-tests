@@ -76,8 +76,14 @@ var _ = Describe("Networking", func() {
 			itCanResolve(container.Handle())
 		})
 
-		It("can resolve domain names", func() {
-			itCanResolve("www.example.com")
+		Describe("domain names", func() {
+			BeforeEach(func() {
+				rootfs = "docker:///debian#jessie"
+			})
+
+			It("can resolve domain names", func() {
+				itCanResolve("www.example.com")
+			})
 		})
 	})
 
