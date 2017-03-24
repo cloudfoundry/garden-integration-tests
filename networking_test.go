@@ -88,7 +88,7 @@ var _ = Describe("Networking", func() {
 
 		Context("when the rootFS doesn't contain /etc/hosts or /etc/resolv.conf", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///busybox:buildroot-2014.02"
+				rootfs = "docker:///busybox#buildroot-2014.02"
 			})
 
 			It("can still resolve domain names because garden modifies /etc/resolv.conf", func() {
