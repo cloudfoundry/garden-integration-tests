@@ -76,12 +76,22 @@ var _ = Describe("Networking", func() {
 			itCanResolve(container.Handle())
 		})
 
-		Describe("domain names", func() {
+		Context("when the rootFS contains /etc/resolv.conf", func() {
 			BeforeEach(func() {
 				rootfs = "docker:///debian#jessie"
 			})
 
 			It("can resolve domain names", func() {
+				itCanResolve("www.example.com")
+			})
+		})
+
+		Context("when the rootFS doesn't contain /etc/resolv.conf", func() {
+			BeforeEach(func() {
+				rootfs = "docker:///busybox:buildroot-2014.02"
+			})
+
+			It("can still resolve domain names because garden adds it", func() {
 				itCanResolve("www.example.com")
 			})
 		})
