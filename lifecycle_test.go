@@ -562,6 +562,28 @@ var _ = Describe("Lifecycle", func() {
 				Eventually(stdout, "3s").Should(gbytes.Say("rows 456; columns 123;"))
 			})
 
+			It("executes the process with a raw tty and with onlcr to preserve formatting (\r\n, not just \n)", func() {
+				stdout := gbytes.NewBuffer()
+				_, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{
+						"-c",
+						`
+						while true; do
+							echo -e "new\nline"
+							sleep 1
+					  done
+					`,
+					},
+					TTY: &garden.TTYSpec{},
+				}, garden.ProcessIO{
+					Stdout: stdout,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(stdout).Should(gbytes.Say("new\r\nline"))
+			})
+
 			It("can have its terminal resized", func() {
 				stdout := gbytes.NewBuffer()
 
