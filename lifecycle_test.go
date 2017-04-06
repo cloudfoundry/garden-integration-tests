@@ -170,7 +170,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
-	Context("running a process", func() {
+	Describe("running a process", func() {
 		Context("when root is requested", func() {
 			It("runs as root inside the container", func() {
 				stdout := gbytes.NewBuffer()
@@ -234,6 +234,17 @@ var _ = Describe("Lifecycle", func() {
 				wg.Wait()
 			})
 
+			It("should be able to get the exitcode multiple times on the same process", func() {
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{"-c", `sleep 2; exit 12`},
+				}, garden.ProcessIO{})
+				Expect(err).ToNot(HaveOccurred())
+
+				Eventually(process.ExitStatus()).Should(Receive(&garden.ProcessStatus{Code: 12}))
+				Eventually(process.ExitStatus()).Should(Receive(&garden.ProcessStatus{Code: 12}))
+				Eventually(process.ExitStatus()).Should(Receive(&garden.ProcessStatus{Code: 12}))
+			})
 		})
 
 		It("sends a TERM signal to the process if requested", func() {
