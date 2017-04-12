@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"code.cloudfoundry.org/garden"
@@ -169,7 +170,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
-	Context("running a process", func() {
+	Describe("running a process", func() {
 		Context("when root is requested", func() {
 			It("runs as root inside the container", func() {
 				stdout := gbytes.NewBuffer()
@@ -205,6 +206,45 @@ var _ = Describe("Lifecycle", func() {
 			Eventually(stdout).Should(gbytes.Say("hello\n"))
 			Eventually(stderr).Should(gbytes.Say("goodbye\n"))
 			Expect(process.Wait()).To(Equal(42))
+		})
+
+		Context("when multiple clients attach to the same process", func() {
+			It("all clients attached should get the exit code", func() {
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{"-c", `sleep 2; exit 12`},
+				}, garden.ProcessIO{})
+				Expect(err).ToNot(HaveOccurred())
+
+				wg := sync.WaitGroup{}
+				for i := 0; i <= 5; i++ {
+					wg.Add(1)
+					go func() {
+						defer wg.Done()
+						defer GinkgoRecover()
+						proc, err := container.Attach(process.ID(), garden.ProcessIO{})
+						Expect(err).ToNot(HaveOccurred())
+						code, err := proc.Wait()
+						Expect(err).NotTo(HaveOccurred())
+						Expect(code).To(Equal(12))
+					}()
+				}
+				wg.Wait()
+			})
+
+			It("should be able to get the exitcode multiple times on the same process", func() {
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{"-c", `sleep 2; exit 12`},
+				}, garden.ProcessIO{})
+				Expect(err).ToNot(HaveOccurred())
+
+				for i := 0; i < 3; i++ {
+					code, err := process.Wait()
+					Expect(err).ToNot(HaveOccurred())
+					Expect(code).To(Equal(12))
+				}
+			})
 		})
 
 		It("sends a TERM signal to the process if requested", func() {
