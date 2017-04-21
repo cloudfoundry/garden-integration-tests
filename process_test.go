@@ -149,7 +149,7 @@ var _ = Describe("Process", func() {
 
 			exitChan := make(chan int)
 			go func(p garden.Process, exited chan<- int) {
-				GinkgoRecover()
+				defer GinkgoRecover()
 				status, waitErr := p.Wait()
 				Expect(waitErr).NotTo(HaveOccurred())
 				exited <- status
