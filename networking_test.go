@@ -1,7 +1,9 @@
 package garden_integration_tests_test
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"strings"
 	"time"
@@ -38,6 +40,68 @@ var _ = Describe("Networking", func() {
 
 			return err
 		}).ShouldNot(HaveOccurred())
+	})
+
+	It("container root can overwrite /etc/hosts", func() {
+		process, err := container.Run(garden.ProcessSpec{
+			Path: "sh",
+			Args: []string{"-c", "echo NONSENSE > /etc/hosts"},
+			User: "root",
+		}, garden.ProcessIO{
+			Stdout: GinkgoWriter,
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).ToNot(HaveOccurred())
+		Expect(process.Wait()).To(Equal(0))
+	})
+
+	It("container root can overwrite /etc/resolv.conf", func() {
+		process, err := container.Run(garden.ProcessSpec{
+			Path: "sh",
+			Args: []string{"-c", "echo NONSENSE > /etc/resolv.conf"},
+			User: "root",
+		}, garden.ProcessIO{
+			Stdout: GinkgoWriter,
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).ToNot(HaveOccurred())
+		Expect(process.Wait()).To(Equal(0))
+	})
+
+	Describe("running as a user other than container root", func() {
+		BeforeEach(func() {
+			rootfs = "docker:///cfgarden/preexisting_users"
+		})
+
+		It("non-container-root can't overwrite /etc/hosts", func() {
+			var stderr bytes.Buffer
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{"-c", "echo NONSENSE > /etc/hosts"},
+				User: "alice",
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: io.MultiWriter(&stderr, GinkgoWriter),
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(1))
+			Expect(stderr.String()).To(ContainSubstring("Permission denied"))
+		})
+
+		It("non-container-root can't overwrite /etc/resolv.conf", func() {
+			var stderr bytes.Buffer
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{"-c", "echo NONSENSE > /etc/resolv.conf"},
+				User: "alice",
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: io.MultiWriter(&stderr, GinkgoWriter),
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(1))
+			Expect(stderr.String()).To(ContainSubstring("Permission denied"))
+		})
 	})
 
 	Describe("domain name resolution", func() {
