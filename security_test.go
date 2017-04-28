@@ -212,7 +212,7 @@ var _ = Describe("Security", func() {
 
 	Describe("Users and groups", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cfgarden/garden-busybox"
+			imageRef.URI = "docker:///cfgarden/garden-busybox"
 		})
 
 		JustBeforeEach(func() {
@@ -452,7 +452,7 @@ var _ = Describe("Security", func() {
 	Context("by default (unprivileged)", func() {
 		Describe("seccomp", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///ubuntu"
+				imageRef.URI = "docker:///ubuntu"
 			})
 
 			It("blocks syscalls not whitelisted in the default seccomp profile", func() {
@@ -533,7 +533,7 @@ var _ = Describe("Security", func() {
 
 		Context("with a docker image", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///cfgarden/preexisting_users"
+				imageRef.URI = "docker:///cfgarden/preexisting_users"
 			})
 
 			JustBeforeEach(func() {
@@ -706,7 +706,7 @@ var _ = Describe("Security", func() {
 
 		Context("when the process is run as non-root user", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///ubuntu#14.04"
+				imageRef.URI = "docker:///ubuntu#14.04"
 			})
 
 			Context("and the user changes to root", func() {

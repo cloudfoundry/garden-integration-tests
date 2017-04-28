@@ -26,7 +26,7 @@ var (
 	assertContainerCreate bool
 
 	handle              string
-	rootfs              string
+	imageRef            garden.ImageRef
 	networkSpec         string
 	privilegedContainer bool
 	properties          garden.Properties
@@ -46,7 +46,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 	BeforeEach(func() {
 		assertContainerCreate = true
 		handle = ""
-		rootfs = ""
+		imageRef = garden.ImageRef{}
 		networkSpec = ""
 		privilegedContainer = false
 		properties = garden.Properties{}
@@ -70,7 +70,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 	JustBeforeEach(func() {
 		container, containerCreateErr = gardenClient.Create(garden.ContainerSpec{
 			Handle:     handle,
-			RootFSPath: rootfs,
+			Image:      imageRef,
 			Privileged: privilegedContainer,
 			Properties: properties,
 			Env:        env,

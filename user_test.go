@@ -14,7 +14,7 @@ import (
 var _ = Describe("users", func() {
 	Context("when nobody maps to 65534", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///ubuntu"
+			imageRef.URI = "docker:///ubuntu"
 		})
 
 		It("should be able to su to nobody", func() {
@@ -59,7 +59,7 @@ var _ = Describe("users", func() {
 
 	Context("when creating users", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cfgarden/garden-busybox"
+			imageRef.URI = "docker:///cfgarden/garden-busybox"
 		})
 
 		It("creates a user with a large uid and gid", func() {
@@ -103,7 +103,7 @@ var _ = Describe("users", func() {
 
 	Context("when rootfs defines user/groups", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cfgarden/with-user-with-groups"
+			imageRef.URI = "docker:///cfgarden/with-user-with-groups"
 		})
 
 		It("ignores additional groups", func() {

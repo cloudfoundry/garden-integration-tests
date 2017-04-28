@@ -114,7 +114,7 @@ var _ = Describe("Limits", func() {
 
 		Context("when the scope is total", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///busybox#1.23"
+				imageRef.URI = "docker:///busybox#1.23"
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
@@ -155,7 +155,7 @@ var _ = Describe("Limits", func() {
 			Context("when rootfs exceeds the quota", func() {
 				BeforeEach(func() {
 					assertContainerCreate = false
-					rootfs = "docker:///ubuntu#trusty-20160323"
+					imageRef.URI = "docker:///ubuntu#trusty-20160323"
 				})
 
 				It("should fail to create a container", func() {
@@ -273,7 +273,7 @@ var _ = Describe("Limits", func() {
 				JustBeforeEach(func() {
 					container2, err = gardenClient.Create(garden.ContainerSpec{
 						Privileged: privilegedContainer,
-						RootFSPath: rootfs,
+						Image:      imageRef,
 						Limits:     limits,
 					})
 					Expect(err).ToNot(HaveOccurred())

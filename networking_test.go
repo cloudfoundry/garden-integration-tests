@@ -70,7 +70,7 @@ var _ = Describe("Networking", func() {
 
 	Describe("running as a user other than container root", func() {
 		BeforeEach(func() {
-			rootfs = "docker:///cfgarden/preexisting_users"
+			imageRef.URI = "docker:///cfgarden/preexisting_users"
 		})
 
 		It("non-container-root can't overwrite /etc/hosts", func() {
@@ -142,7 +142,7 @@ var _ = Describe("Networking", func() {
 
 		Context("when the rootFS contains /etc/resolv.conf", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///debian#jessie"
+				imageRef.URI = "docker:///debian#jessie"
 			})
 
 			It("can resolve domain names", func() {
@@ -152,7 +152,7 @@ var _ = Describe("Networking", func() {
 
 		Context("when the rootFS doesn't contain /etc/hosts or /etc/resolv.conf", func() {
 			BeforeEach(func() {
-				rootfs = "docker:///busybox#buildroot-2014.02"
+				imageRef.URI = "docker:///busybox#buildroot-2014.02"
 			})
 
 			It("can still resolve domain names because garden modifies /etc/resolv.conf", func() {
