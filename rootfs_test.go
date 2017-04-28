@@ -93,7 +93,7 @@ var _ = Describe("Rootfses", func() {
 				})
 
 				It("fails", func() {
-					Expect(containerCreateErr).To(MatchError(ContainSubstring("resource is not authorized")))
+					Expect(containerCreateErr).NotTo(Succeed())
 				})
 			})
 		})
