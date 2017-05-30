@@ -6,10 +6,8 @@ import (
 	"io"
 	"os/exec"
 	"strings"
-	"time"
 
 	"code.cloudfoundry.org/garden"
-	"github.com/eapache/go-resiliency/retrier"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -110,26 +108,24 @@ var _ = Describe("Networking", func() {
 				err := gardenClient.Destroy(container.Handle())
 				Expect(err).NotTo(HaveOccurred())
 			}()
-			output := gbytes.NewBuffer()
 
-			err := retrier.New(retrier.ConstantBackoff(30, 2*time.Second), nil).Run(func() error {
+			Eventually(func() *gbytes.Buffer {
+				output := gbytes.NewBuffer()
+
 				proc, err := container.Run(garden.ProcessSpec{
-					// We are using ping here rather than nslookup as we saw some
-					// flakey behaviour with nslookup on our local concourse machines.
-					// We're testing on the output of ping, which reports "bad address"
-					// if it is unable to resolve a domain.
 					Path: "ping",
 					Args: []string{"-c", "1", domainName},
-					User: "root",
-				}, garden.ProcessIO{Stdout: output, Stderr: output})
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(GinkgoWriter, output),
+					Stderr: io.MultiWriter(GinkgoWriter, output),
+				})
 				Expect(err).NotTo(HaveOccurred())
 
 				_, err = proc.Wait()
-				return err
-			})
+				Expect(err).NotTo(HaveOccurred())
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(output).ToNot(gbytes.Say("ping: bad address"))
+				return output
+			}, 10, 1).Should(gbytes.Say("1 packets transmitted, 1 packets received"))
 		}
 
 		It("can resolve localhost", func() {
