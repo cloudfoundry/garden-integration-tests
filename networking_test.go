@@ -112,17 +112,18 @@ var _ = Describe("Networking", func() {
 			Eventually(func() *gbytes.Buffer {
 				output := gbytes.NewBuffer()
 
-				Expect(domainName).NotTo(BeEmpty())
 				proc, err := container.Run(garden.ProcessSpec{
 					Path: "ping",
-					Args: []string{"-c", "1", domainName},
+					Args: []string{"-W", "2", "-c", "1", domainName},
 				}, garden.ProcessIO{
 					Stdout: io.MultiWriter(GinkgoWriter, output),
 					Stderr: io.MultiWriter(GinkgoWriter, output),
 				})
 				Expect(err).NotTo(HaveOccurred())
 
-				_, err = proc.Wait()
+				code, err := proc.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				_, err = output.Write([]byte(fmt.Sprintf("Exit Code = %d", code)))
 				Expect(err).NotTo(HaveOccurred())
 
 				return output
