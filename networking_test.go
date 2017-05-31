@@ -112,6 +112,7 @@ var _ = Describe("Networking", func() {
 			Eventually(func() *gbytes.Buffer {
 				output := gbytes.NewBuffer()
 
+				Expect(domainName).NotTo(BeEmpty())
 				proc, err := container.Run(garden.ProcessSpec{
 					Path: "ping",
 					Args: []string{"-c", "1", domainName},
@@ -125,7 +126,7 @@ var _ = Describe("Networking", func() {
 				Expect(err).NotTo(HaveOccurred())
 
 				return output
-			}, 10, 1).Should(gbytes.Say("1 packets transmitted, 1 packets received"))
+			}, "20s", "2s").Should(gbytes.Say("1 packets transmitted, 1 packets received"))
 		}
 
 		It("can resolve localhost", func() {
