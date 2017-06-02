@@ -6,6 +6,7 @@ import (
 	"io"
 	"os/exec"
 	"strings"
+	"time"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
@@ -103,31 +104,43 @@ var _ = Describe("Networking", func() {
 	})
 
 	Describe("domain name resolution", func() {
+		tryPing := func(address string) string {
+			var output bytes.Buffer
+
+			proc, err := container.Run(garden.ProcessSpec{
+				Path: "ping",
+				Args: []string{"-W", "2", "-c", "1", address},
+			}, garden.ProcessIO{
+				Stdout: io.MultiWriter(GinkgoWriter, &output),
+				Stderr: io.MultiWriter(GinkgoWriter, &output),
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			pingExitCh := make(chan struct{})
+			go func(pingProc garden.Process, exitCh chan<- struct{}) {
+				defer GinkgoRecover()
+				_, err := pingProc.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				close(pingExitCh)
+			}(proc, pingExitCh)
+
+			select {
+			case <-pingExitCh:
+				return output.String()
+			case <-time.After(time.Second * 2):
+				return "timed out after 2 seconds"
+			}
+		}
+
 		itCanResolve := func(domainName string) {
 			defer func() {
 				err := gardenClient.Destroy(container.Handle())
 				Expect(err).NotTo(HaveOccurred())
 			}()
 
-			Eventually(func() *gbytes.Buffer {
-				output := gbytes.NewBuffer()
-
-				proc, err := container.Run(garden.ProcessSpec{
-					Path: "ping",
-					Args: []string{"-W", "2", "-c", "1", domainName},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, output),
-					Stderr: io.MultiWriter(GinkgoWriter, output),
-				})
-				Expect(err).NotTo(HaveOccurred())
-
-				code, err := proc.Wait()
-				Expect(err).NotTo(HaveOccurred())
-				_, err = output.Write([]byte(fmt.Sprintf("Exit Code = %d", code)))
-				Expect(err).NotTo(HaveOccurred())
-
-				return output
-			}, "20s", "2s").Should(gbytes.Say("1 packets transmitted, 1 packets received"))
+			Eventually(func() string {
+				return tryPing(domainName)
+			}).Should(ContainSubstring("1 packets transmitted, 1 packets received"))
 		}
 
 		It("can resolve localhost", func() {
