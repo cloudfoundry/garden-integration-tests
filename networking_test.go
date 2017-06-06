@@ -124,6 +124,15 @@ var _ = Describe("Networking", func() {
 				close(pingExitCh)
 			}(proc, pingExitCh)
 
+			_, err = container.Run(garden.ProcessSpec{
+				Path: "cat",
+				Args: []string{"/etc/resolv.conf", "/etc/hosts"},
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).NotTo(HaveOccurred())
+
 			select {
 			case <-pingExitCh:
 				return output.String()
@@ -133,11 +142,6 @@ var _ = Describe("Networking", func() {
 		}
 
 		itCanResolve := func(domainName string) {
-			defer func() {
-				err := gardenClient.Destroy(container.Handle())
-				Expect(err).NotTo(HaveOccurred())
-			}()
-
 			Eventually(func() string {
 				return tryPing(domainName)
 			}).Should(ContainSubstring("1 packets transmitted, 1 packets received"))
