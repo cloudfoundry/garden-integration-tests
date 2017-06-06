@@ -125,8 +125,8 @@ var _ = Describe("Networking", func() {
 			}(proc, pingExitCh)
 
 			_, err = container.Run(garden.ProcessSpec{
-				Path: "cat",
-				Args: []string{"/etc/resolv.conf", "/etc/hosts"},
+				Path: "ping",
+				Args: []string{"-W", "4", "-c", "3", "8.8.8.8"},
 			}, garden.ProcessIO{
 				Stdout: GinkgoWriter,
 				Stderr: GinkgoWriter,
