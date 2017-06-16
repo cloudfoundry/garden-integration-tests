@@ -247,6 +247,40 @@ var _ = Describe("Lifecycle", func() {
 			})
 		})
 
+		It("all attached clients should get stdout and stderr", func() {
+			var runStdout, attachStdout, runStderr, attachStderr bytes.Buffer
+
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{"-c", `sleep 1; for i in $(seq 1 10); do echo $i; echo $i >&2; done`},
+			}, garden.ProcessIO{
+				Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
+				Stderr: io.MultiWriter(&runStderr, GinkgoWriter),
+			})
+			Expect(err).ToNot(HaveOccurred())
+
+			attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
+				Stdout: io.MultiWriter(&attachStdout, GinkgoWriter),
+				Stderr: io.MultiWriter(&attachStderr, GinkgoWriter),
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			exitCode, err := process.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
+
+			// Looks redundant, but avoids race as we have 2 representations of the process
+			exitCode, err = attachedProcess.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
+
+			Expect(runStdout.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "1st buffer:")
+			Expect(attachStdout.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "2nd buffer:")
+
+			Expect(runStderr.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "1st buffer:")
+			Expect(attachStderr.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "2nd buffer:")
+		})
+
 		It("sends a TERM signal to the process if requested", func() {
 
 			stdout := gbytes.NewBuffer()
@@ -645,6 +679,38 @@ var _ = Describe("Lifecycle", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(process.Wait()).To(Equal(0))
+			})
+
+			It("all attached clients should get stdout and stderr", func() {
+				var runStdout, attachStdout bytes.Buffer
+
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{"-c", `sleep 1; for i in $(seq 1 5); do echo $i; echo $i >&2; done`},
+					TTY:  &garden.TTYSpec{},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+
+				attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
+					Stdout: io.MultiWriter(&attachStdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).NotTo(HaveOccurred())
+
+				exitCode, err := process.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exitCode).To(Equal(0))
+
+				// Looks redundant, but avoids race as we have 2 representations of the process
+				exitCode, err = attachedProcess.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exitCode).To(Equal(0))
+
+				Expect(runStdout.String()).To(Equal("1\r\n1\r\n2\r\n2\r\n3\r\n3\r\n4\r\n4\r\n5\r\n5\r\n"), "1st buffer:")
+				Expect(attachStdout.String()).To(Equal("1\r\n1\r\n2\r\n2\r\n3\r\n3\r\n4\r\n4\r\n5\r\n5\r\n"), "2nd buffer:")
 			})
 		})
 
