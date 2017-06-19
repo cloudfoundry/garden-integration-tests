@@ -3,9 +3,7 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"io"
-	"os"
 	"runtime/debug"
-	"runtime/pprof"
 	"time"
 
 	"code.cloudfoundry.org/garden"
@@ -139,12 +137,11 @@ var _ = Describe("Process", func() {
 				  }
 
 				  trap cleanup TERM
-				  # Use stderr to avoid buffering in the shell.
-				  echo trapping >&2
-
 				  set -x
 				  sleep 1000 &
 				  child_pid=$!
+				  # Use stderr to avoid buffering in the shell.
+				  echo trapping >&2
 				  wait
 				`},
 			}, garden.ProcessIO{Stderr: stderr})
@@ -167,7 +164,6 @@ var _ = Describe("Process", func() {
 				Expect(status).To(Equal(42))
 			case <-time.After(time.Second * 20):
 				debug.PrintStack()
-				err := pprof.Lookup("goroutine").WriteTo(os.Stdout, 2)
 				Expect(err).NotTo(HaveOccurred())
 				fmt.Printf("Process Stderr: %s", string(stderr.Contents()))
 				Fail("timed out!")
