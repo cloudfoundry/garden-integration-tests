@@ -1099,7 +1099,7 @@ var _ = Describe("Lifecycle", func() {
 		var containerHandle string
 
 		It("should disappear after grace time and before timeout", func() {
-			container.SetGraceTime(500 * time.Millisecond)
+			Expect(container.SetGraceTime(500 * time.Millisecond)).To(Succeed())
 			containerHandle = container.Handle()
 
 			_, err := gardenClient.Lookup(containerHandle)
@@ -1109,7 +1109,7 @@ var _ = Describe("Lifecycle", func() {
 			Eventually(func() error {
 				_, err := gardenClient.Lookup(containerHandle)
 				return err
-			}, "10s").Should(HaveOccurred())
+			}, "10s", "1s").Should(HaveOccurred())
 		})
 
 		It("returns an unknown handle error when calling the API", func() {
