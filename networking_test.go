@@ -239,7 +239,7 @@ func checkConnection(container garden.Container, ip string, port int) error {
 	process, err := container.Run(garden.ProcessSpec{
 		User: "root",
 		Path: "sh",
-		Args: []string{"-c", fmt.Sprintf("echo hello | nc -w1 %s %d", ip, port)},
+		Args: []string{"-c", fmt.Sprintf("echo hello | nc -w3 %s %d", ip, port)},
 	}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
 	if err != nil {
 		return err
