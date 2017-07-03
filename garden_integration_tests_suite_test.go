@@ -89,26 +89,12 @@ func TestGardenIntegrationTests(t *testing.T) {
 			theContainer, _ := gardenClient.Lookup(container.Handle())
 
 			if theContainer != nil {
-				destroyContainer(container.Handle())
+				Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
 			}
 		}
 	})
 
 	RunSpecs(t, "GardenIntegrationTests Suite")
-}
-
-func destroyContainer(handle string) {
-	err := gardenClient.Destroy(handle)
-	if err == nil {
-		return
-	}
-
-	if os.Getenv("NESTED") != "true" {
-		Expect(err).NotTo(HaveOccurred())
-	} else {
-		Expect(err).To(MatchError("unmounting the loop device: unmounting file: exit status 1"))
-		fmt.Printf("We have ignored the 4.4 umount err: %s\n", err)
-	}
 }
 
 func getContainerHandles() []string {
