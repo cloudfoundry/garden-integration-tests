@@ -78,6 +78,10 @@ func TestGardenIntegrationTests(t *testing.T) {
 			Network:    networkSpec,
 		})
 
+		if container != nil {
+			fmt.Fprintf(GinkgoWriter, "Container handle: %s\n", container.Handle())
+		}
+
 		if assertContainerCreate {
 			Expect(containerCreateErr).ToNot(HaveOccurred())
 		}
