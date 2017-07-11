@@ -132,8 +132,9 @@ var _ = Describe("Process", func() {
 
 				  cleanup ()
 				  {
-				  	kill $child_pid
-				  	exit 42
+						cat /proc/$child_pid/stat >&2
+						kill $child_pid
+						exit 42
 				  }
 
 				  trap cleanup TERM
