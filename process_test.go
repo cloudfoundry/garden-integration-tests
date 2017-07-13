@@ -133,6 +133,7 @@ var _ = Describe("Process", func() {
 				  cleanup ()
 				  {
 						cat /proc/$child_pid/stat >&2
+						ps -a >&2
 						kill $child_pid
 						exit 42
 				  }
