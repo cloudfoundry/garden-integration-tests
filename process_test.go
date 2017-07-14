@@ -132,7 +132,6 @@ var _ = Describe("Process", func() {
 
 				  cleanup ()
 				  {
-						cat /proc/$child_pid/stat >&2
 						ps -a >&2
 						kill $child_pid
 						exit 42
@@ -142,6 +141,8 @@ var _ = Describe("Process", func() {
 				  set -x
 				  sleep 1000 &
 				  child_pid=$!
+				  # Make sure that sleep process has been forked before trapping
+				  while [ ! $(ps -o comm | grep sleep) ] ;do : ; done
 				  # Use stderr to avoid buffering in the shell.
 				  echo trapping >&2
 				  wait
