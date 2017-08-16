@@ -34,6 +34,7 @@ var _ = Describe("Devices", func() {
 		Entry("should have the zero device", "/dev/zero", 1, 5),
 		Entry("should have the full device", "/dev/full", 1, 7),
 		Entry("should have the /dev/pts/ptmx device", "/dev/pts/ptmx", 5, 2),
+		Entry("should have the fuse device", "/dev/fuse", 10, 229),
 	)
 
 	DescribeTable("Process",
