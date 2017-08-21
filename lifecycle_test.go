@@ -170,6 +170,15 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
+	Describe("attaching to a process", func() {
+		Context("when the process doesn't exist", func() {
+			It("returns a ProcessNotFound error", func() {
+				_, err := container.Attach("idontexist", garden.ProcessIO{})
+				Expect(err).To(MatchError(garden.ProcessNotFoundError{ProcessID: "idontexist"}))
+			})
+		})
+	})
+
 	Describe("running a process", func() {
 		Context("when root is requested", func() {
 			It("runs as root inside the container", func() {
