@@ -34,8 +34,28 @@ var _ = Describe("Devices", func() {
 		Entry("should have the zero device", "/dev/zero", 1, 5),
 		Entry("should have the full device", "/dev/full", 1, 7),
 		Entry("should have the /dev/pts/ptmx device", "/dev/pts/ptmx", 5, 2),
-		Entry("should have the fuse device", "/dev/fuse", 10, 229),
 	)
+
+	Context("in a privileged container", func() {
+		BeforeEach(func() {
+			privilegedContainer = true
+		})
+
+		It("should have the fuse device", func() {
+			buffer := gbytes.NewBuffer()
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "ls",
+				Args: []string{"-l", "/dev/fuse"},
+			}, garden.ProcessIO{Stdout: buffer, Stderr: GinkgoWriter})
+			Expect(err).ToNot(HaveOccurred())
+
+			exitCode, err := process.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
+
+			Expect(buffer).To(gbytes.Say(`10,\s*229`))
+		})
+	})
 
 	DescribeTable("Process",
 		func(device, fd string) {
