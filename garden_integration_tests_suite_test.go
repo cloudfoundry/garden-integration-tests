@@ -2,7 +2,9 @@ package garden_integration_tests_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -38,6 +40,42 @@ var (
 	}
 )
 
+// We suspect that bosh powerdns lookups have a low success rate (less than
+// 99%) and when it fails, we get an empty string IP address instead of an
+// actual error.
+// Therefore, we explicity look up the IP once at the start of the suite with
+// retries to minimise flakes.
+func resolveHost(host string) string {
+	if net.ParseIP(host) != nil {
+		return host
+	}
+
+	var ip net.IP
+	Eventually(func() error {
+		ips, err := net.LookupIP(host)
+		if err != nil {
+			return err
+		}
+		if len(ips) == 0 {
+			return errors.New("0 IPs returned from DNS")
+		}
+		ip = ips[0]
+		return nil
+	}, time.Minute, time.Second*5).Should(Succeed())
+
+	return ip.String()
+}
+
+var _ = SynchronizedBeforeSuite(func() []byte {
+	host := os.Getenv("GARDEN_ADDRESS")
+	if host == "" {
+		host = "10.244.16.6"
+	}
+	return []byte(resolveHost(host))
+}, func(data []byte) {
+	gardenHost = string(data)
+})
+
 func TestGardenIntegrationTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
@@ -52,10 +90,6 @@ func TestGardenIntegrationTests(t *testing.T) {
 		properties = garden.Properties{}
 		limits = garden.Limits{}
 		env = []string{}
-		gardenHost = os.Getenv("GARDEN_ADDRESS")
-		if gardenHost == "" {
-			gardenHost = "10.244.16.6"
-		}
 		gardenPort = os.Getenv("GARDEN_PORT")
 		if gardenPort == "" {
 			gardenPort = "7777"
