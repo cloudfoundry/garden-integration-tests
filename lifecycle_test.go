@@ -488,8 +488,8 @@ var _ = Describe("Lifecycle", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", "echo $(seq 10000)"},
-					TTY:  &garden.TTYSpec{},
+					Args: []string{"-c", `seq -s " " 10000`},
+					TTY:  new(garden.TTYSpec),
 				}, garden.ProcessIO{
 					Stdout: stdout,
 				})
