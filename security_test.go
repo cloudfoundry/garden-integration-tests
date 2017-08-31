@@ -123,6 +123,7 @@ var _ = Describe("Security", func() {
 
 		Context("in a privileged container", func() {
 			BeforeEach(func() {
+				skipIfRootless()
 				privilegedContainer = true
 			})
 
@@ -622,6 +623,7 @@ var _ = Describe("Security", func() {
 
 	Context("when the 'privileged' flag is set on the create call", func() {
 		BeforeEach(func() {
+			skipIfRootless()
 			privilegedContainer = true
 		})
 

@@ -18,6 +18,7 @@ var _ = Describe("users", func() {
 		})
 
 		It("should be able to su to nobody", func() {
+			skipIfRootless()
 			// Delete guff.
 			proc, err := container.Run(garden.ProcessSpec{
 				User: "root",
@@ -103,6 +104,7 @@ var _ = Describe("users", func() {
 
 	Context("when rootfs defines user/groups", func() {
 		BeforeEach(func() {
+			skipIfRootless()
 			imageRef.URI = "docker:///cfgarden/with-user-with-groups"
 		})
 

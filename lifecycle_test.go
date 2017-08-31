@@ -163,6 +163,7 @@ var _ = Describe("Lifecycle", func() {
 
 	Context("and sending an Info request", func() {
 		It("returns the container's info", func() {
+			skipIfRootless()
 			info, err := container.Info()
 			Expect(err).ToNot(HaveOccurred())
 
@@ -817,6 +818,8 @@ var _ = Describe("Lifecycle", func() {
 			}, 15)
 
 			It("changes the container's state to 'stopped'", func() {
+				skipIfRootless() // this probably works, but we can't assert because .Info is broken in rootless mode
+
 				err := container.Stop(false)
 				Expect(err).ToNot(HaveOccurred())
 
@@ -982,6 +985,7 @@ var _ = Describe("Lifecycle", func() {
 
 			Context("in a privileged container", func() {
 				BeforeEach(func() {
+					skipIfRootless()
 					privilegedContainer = true
 				})
 

@@ -38,6 +38,7 @@ var _ = Describe("Devices", func() {
 
 	Context("in a privileged container", func() {
 		BeforeEach(func() {
+			skipIfRootless()
 			privilegedContainer = true
 		})
 
@@ -95,6 +96,6 @@ var _ = Describe("Devices", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(exitCode).To(Equal(0))
 
-		Expect(stdout).To(gbytes.Say("devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=666"))
+		Expect(stdout).To(gbytes.Say(`devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=\d+,mode=620,ptmxmode=666`))
 	})
 })

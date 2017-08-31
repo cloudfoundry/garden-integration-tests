@@ -16,6 +16,10 @@ import (
 )
 
 var _ = Describe("Networking", func() {
+	BeforeEach(func() {
+		skipIfRootless()
+	})
+
 	It("can be contacted after a NetIn", func() {
 		_, err := container.Run(garden.ProcessSpec{
 			Path: "sh",

@@ -199,6 +199,10 @@ var _ = Describe("Process", func() {
 			})
 
 			Context("when working directory does not exist", func() {
+				BeforeEach(func() {
+					skipIfRootless()
+				})
+
 				It("spawns the process", func() {
 					stdout := gbytes.NewBuffer()
 					process, err := container.Run(garden.ProcessSpec{
@@ -269,6 +273,10 @@ var _ = Describe("Process", func() {
 			})
 
 			Context("when working directory does not exist", func() {
+				BeforeEach(func() {
+					skipIfRootless()
+				})
+
 				It("should create the working directory, and succeed", func() {
 					stderr := gbytes.NewBuffer()
 					process, err := container.Run(garden.ProcessSpec{
