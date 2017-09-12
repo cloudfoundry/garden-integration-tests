@@ -2,6 +2,8 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
@@ -56,6 +58,49 @@ var _ = Describe("Devices", func() {
 
 			Expect(buffer).To(gbytes.Say(`10,\s*229`))
 		})
+
+		It("allows permitting all devices", func() {
+			if os.Getenv("NESTED") != "true" {
+				Skip("Supported on nested environments")
+			}
+
+			buffer := gbytes.NewBuffer()
+			proc, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				User: "root",
+				Args: []string{"-c", `
+					devices_mount_info="$( cat /proc/self/cgroup | grep devices )"
+					if [ -z "$devices_mount_info" ]; then
+						# cgroups not set up; must not be in a container
+						return
+					fi
+					devices_subsytems=$(echo $devices_mount_info | cut -d: -f2)
+					devices_subdir=$(echo $devices_mount_info | cut -d: -f3)
+
+					if [ "$devices_subdir" = "/" ]; then
+						# we're in the root devices cgroup; must not be in a container
+						return
+					fi
+
+					if [ ! -e /tmp/devices-cgroup ]; then
+						# mount our container's devices subsystem somewhere
+						mkdir /tmp/devices-cgroup
+						mount -t cgroup -o $devices_subsytems none /tmp/devices-cgroup
+					fi
+
+					# permit our cgroup to do everything with all devices
+					echo a > /tmp/devices-cgroup${devices_subdir}/devices.allow
+					cat  /tmp/devices-cgroup${devices_subdir}/devices.list
+				`},
+			}, garden.ProcessIO{
+				Stdout: buffer,
+			})
+			Expect(err).NotTo(HaveOccurred())
+			Expect(proc.Wait()).To(Equal(0))
+			out := strings.TrimSpace(string(buffer.Contents()))
+			Expect(out).To(Equal("a *:* rwm"))
+		})
+
 	})
 
 	DescribeTable("Process",
