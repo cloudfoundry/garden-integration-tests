@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"fmt"
 	"io"
 	"strings"
 
@@ -96,6 +97,27 @@ var _ = Describe("Security", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(process.Wait()).To(Equal(0))
 			Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs"))
+		})
+
+		It("/sys/fs/cgroup is mounted as Read-Only", func() {
+			stdout := gbytes.NewBuffer()
+
+			process, err := container.Run(garden.ProcessSpec{
+				User: "root",
+				Path: "cat",
+				Args: []string{"/proc/mounts"},
+			}, garden.ProcessIO{
+				Stdout: stdout,
+				Stderr: GinkgoWriter,
+			})
+
+			Expect(err).ToNot(HaveOccurred())
+			Expect(process.Wait()).To(Equal(0))
+			out := stdout.Contents()
+			for _, c := range []string{"memory", "cpu", "blkio", "cpuset", "cpu", "cpuacct", "blkio", "devices", "freezer", "net_cls", "perf_event", "net_prio", "hugetlb", "pids"} {
+				line := fmt.Sprintf("cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s", c, c)
+				Expect(out).To(ContainSubstring(line))
+			}
 		})
 
 		Context("in an unprivileged container", func() {
