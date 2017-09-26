@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -99,27 +100,6 @@ var _ = Describe("Security", func() {
 			Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs"))
 		})
 
-		It("/sys/fs/cgroup is mounted as Read-Only", func() {
-			stdout := gbytes.NewBuffer()
-
-			process, err := container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "cat",
-				Args: []string{"/proc/mounts"},
-			}, garden.ProcessIO{
-				Stdout: stdout,
-				Stderr: GinkgoWriter,
-			})
-
-			Expect(err).ToNot(HaveOccurred())
-			Expect(process.Wait()).To(Equal(0))
-			out := stdout.Contents()
-			for _, c := range []string{"memory", "cpu", "blkio", "cpuset", "cpu", "cpuacct", "blkio", "devices", "freezer", "net_cls", "perf_event", "net_prio", "hugetlb", "pids"} {
-				line := fmt.Sprintf("cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s", c, c)
-				Expect(out).To(ContainSubstring(line))
-			}
-		})
-
 		Context("in an unprivileged container", func() {
 			BeforeEach(func() {
 				privilegedContainer = false
@@ -140,6 +120,27 @@ var _ = Describe("Security", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("sysfs /sys sysfs ro"))
+			})
+
+			It("cgroup filesystems are mounted as read-only", func() {
+				stdout := gbytes.NewBuffer()
+
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "cat",
+					Args: []string{"/proc/mounts"},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(stdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+				out := stdout.Contents()
+				for _, c := range []string{"memory", "cpu", "blkio", "cpuset", "cpu", "cpuacct", "blkio", "devices", "freezer", "net_cls", "perf_event", "net_prio", "hugetlb", "pids"} {
+					line := fmt.Sprintf("cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s", c, c)
+					Expect(out).To(ContainSubstring(line))
+				}
 			})
 		})
 
@@ -181,6 +182,22 @@ var _ = Describe("Security", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("sysfs /sys sysfs ro"))
+			})
+
+			It("cgroup filesystems are not mounted", func() {
+				var stdout bytes.Buffer
+				process, err := container.Run(garden.ProcessSpec{
+					User: "root",
+					Path: "cat",
+					Args: []string{"/proc/mounts"},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(&stdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+
+				Expect(stdout.String()).NotTo(ContainSubstring("cgroup"))
 			})
 		})
 	})
