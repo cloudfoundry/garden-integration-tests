@@ -89,6 +89,35 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
+	checkMappings := func(mappingType string) {
+		var stdout bytes.Buffer
+		proc, err := container.Run(garden.ProcessSpec{
+			Path: "cat",
+			Args: []string{fmt.Sprintf("/proc/self/%sid_map", mappingType)},
+		}, garden.ProcessIO{
+			Stdout: io.MultiWriter(&stdout, GinkgoWriter),
+			Stderr: GinkgoWriter,
+		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(proc.Wait()).To(Equal(0))
+
+		mappingSize := `0\s+4294967294\s+1\n\s+1\s+1\s+4294967293`
+		if rootless() {
+			mappingSize = `0\s+4294967294\s+1\n\s+1\s+65536\s+4294901758`
+		}
+		Expect(stdout.String()).To(MatchRegexp(mappingSize))
+	}
+
+	Describe("Creating a container with uid/gid mappings", func() {
+		It("should have the proper uid mappings", func() {
+			checkMappings("u")
+		})
+
+		It("should have the proper gid mappings", func() {
+			checkMappings("g")
+		})
+	})
+
 	It("returns garden.ContainerNotFound when destroying a container that doesn't exist", func() {
 		Expect(gardenClient.Destroy("potato-sandwhich-policy")).To(MatchError(garden.ContainerNotFoundError{Handle: "potato-sandwhich-policy"}))
 	})

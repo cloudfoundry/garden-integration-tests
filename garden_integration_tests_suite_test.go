@@ -190,7 +190,11 @@ func getKernelVersion() (int, int) {
 }
 
 func skipIfRootless() {
-	if os.Getenv("ROOTLESS") != "" {
+	if rootless() {
 		Skip("behaviour being tested is either not relevant or not implemented in rootless")
 	}
+}
+
+func rootless() bool {
+	return os.Getenv("ROOTLESS") != ""
 }

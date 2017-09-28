@@ -576,10 +576,6 @@ var _ = Describe("Security", func() {
 				imageRef.URI = "docker:///cfgarden/preexisting_users"
 			})
 
-			JustBeforeEach(func() {
-				createUser(container, "alice")
-			})
-
 			It("sees root-owned files in the rootfs as owned by the container's root user", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
