@@ -283,7 +283,7 @@ var _ = Describe("Limits", func() {
 
 				AfterEach(func() {
 					if container2 != nil {
-						Expect(gardenClient.Destroy(container2.Handle())).To(Succeed())
+						destroyContainer(gardenClient, container2.Handle())
 					}
 				})
 
