@@ -71,7 +71,7 @@ func resolveHost(host string) string {
 var _ = SynchronizedBeforeSuite(func() []byte {
 	host := os.Getenv("GARDEN_ADDRESS")
 	if host == "" {
-		host = "10.244.16.6"
+		host = "10.244.0.2"
 	}
 	return []byte(resolveHost(host))
 }, func(data []byte) {
