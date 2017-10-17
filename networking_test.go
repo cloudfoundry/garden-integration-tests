@@ -155,23 +155,6 @@ var _ = Describe("Networking", func() {
 			itCanResolve("localhost")
 		})
 
-		It("can resolve localhost as an IPv6 address", func() {
-			// Bosh Linux stemcells disable ipv6 using a kernel parameter. We can't
-			// run an analogue of our ipv4 localhost resolution using ping6.
-
-			var stdout bytes.Buffer
-			proc, err := container.Run(garden.ProcessSpec{
-				Path: "cat",
-				Args: []string{"/etc/hosts"},
-			}, garden.ProcessIO{
-				Stdout: io.MultiWriter(&stdout, GinkgoWriter),
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
-			Expect(stdout.String()).To(ContainSubstring("::1 localhost"))
-		})
-
 		It("can resolve its hostname", func() {
 			itCanResolve(container.Handle())
 		})
