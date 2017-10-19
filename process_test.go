@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"runtime/debug"
@@ -171,6 +172,40 @@ var _ = Describe("Process", func() {
 				fmt.Printf("Process Stderr: %s", string(stderr.Contents()))
 				Fail("timed out!")
 			}
+		})
+	})
+
+	Describe("user", func() {
+		Context("when the user is specified in the form uid:gid", func() {
+			It("runs the process as that user", func() {
+				var stdout bytes.Buffer
+				process, err := container.Run(garden.ProcessSpec{
+					User: "1001:1002",
+					Path: "sh",
+					Args: []string{"-c", "echo $(id -u):$(id -g)"},
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(&stdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).NotTo(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+				Expect(stdout.String()).To(Equal("1001:1002\n"))
+			})
+		})
+
+		Context("when the user is not specified", func() {
+			It("runs the process as root", func() {
+				var stdout bytes.Buffer
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "whoami",
+				}, garden.ProcessIO{
+					Stdout: io.MultiWriter(&stdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).NotTo(HaveOccurred())
+				Expect(process.Wait()).To(Equal(0))
+				Expect(stdout.String()).To(Equal("root\n"))
+			})
 		})
 	})
 
