@@ -167,12 +167,12 @@ func createUser(container garden.Container, username string) {
 }
 
 func getKernelVersion() (int, int) {
-	container, err := gardenClient.Create(garden.ContainerSpec{})
+	ctr, err := gardenClient.Create(garden.ContainerSpec{})
 	Expect(err).NotTo(HaveOccurred())
-	defer gardenClient.Destroy(container.Handle())
+	defer gardenClient.Destroy(ctr.Handle())
 
 	var outBytes bytes.Buffer
-	process, err := container.Run(garden.ProcessSpec{
+	process, err := ctr.Run(garden.ProcessSpec{
 		User: "root",
 		Path: "uname",
 		Args: []string{"-r"},
