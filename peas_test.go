@@ -71,7 +71,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					Stdout: GinkgoWriter,
 					Stderr: GinkgoWriter,
 				})
-				Expect(err).To(MatchError(ContainSubstring("processes that use an `Image` field must not use usernames")))
+				Expect(err).To(MatchError(ContainSubstring("'root' is not a valid uid:gid")))
 			})
 		})
 	})
