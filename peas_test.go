@@ -126,6 +126,16 @@ var _ = Describe("Partially shared containers (peas)", func() {
 		Expect(contentsInPea).To(Equal(contentsInContainer))
 	})
 
+	Context("when no working directory is specified", func() {
+		It("defaults to /", func() {
+			exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+				Path:  "pwd",
+				Image: peaImage,
+			})
+			Expect(exitCode).To(Equal(0))
+			Expect(stdout).To(Equal("/\n"))
+		})
+	})
 })
 
 func getNS(nsName string, container garden.Container, image garden.ImageRef) string {
