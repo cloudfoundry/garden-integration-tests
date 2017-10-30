@@ -20,7 +20,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 		Expect(sandboxContainerMntNs).NotTo(Equal(peaContainerMntNs))
 
 		for _, ns := range []string{"net", "ipc", "pid", "user", "uts"} {
-			sandboxContainerNs := getNS(ns, container, peaImage)
+			sandboxContainerNs := getNS(ns, container, noImage)
 			peaContainerNs := getNS(ns, container, peaImage)
 			Expect(sandboxContainerNs).To(Equal(peaContainerNs))
 		}
