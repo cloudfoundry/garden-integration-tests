@@ -136,6 +136,51 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			Expect(stdout).To(Equal("/\n"))
 		})
 	})
+
+	Describe("Limits", func() {
+		BeforeEach(func() {
+			limits = garden.Limits{Memory: garden.MemoryLimits{
+				LimitInBytes: 64 * 1024 * 1024,
+			}}
+		})
+
+		Context("when there is no memory limit on the pea", func() {
+			It("shares that limit with the container", func() {
+				proc, err := container.Run(
+					garden.ProcessSpec{
+						Path:  "dd",
+						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+						Image: peaImage,
+					},
+					garden.ProcessIO{
+						Stdout: GinkgoWriter,
+						Stderr: GinkgoWriter,
+					},
+				)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(proc.Wait()).NotTo(Equal(0))
+			})
+		})
+
+		Context("when there are any limits on the pea", func() {
+			It("does not share memory limit with the container", func() {
+				proc, err := container.Run(
+					garden.ProcessSpec{
+						Path:  "dd",
+						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+						Image: peaImage,
+						OverrideContainerLimits: &garden.ProcessLimits{},
+					},
+					garden.ProcessIO{
+						Stdout: GinkgoWriter,
+						Stderr: GinkgoWriter,
+					},
+				)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(proc.Wait()).To(Equal(0))
+			})
+		})
+	})
 })
 
 func getNS(nsName string, container garden.Container, image garden.ImageRef) string {
