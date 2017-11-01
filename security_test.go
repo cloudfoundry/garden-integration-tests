@@ -295,12 +295,12 @@ var _ = Describe("Security", func() {
 				createUser(container, "alice")
 			})
 
-			It("executes with setuid and setgid", func() {
+			It("executes with correct uid, gid, and supplementary gids", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "/bin/sh",
-					Args: []string{"-c", "id -u; id -g"},
+					Args: []string{"-c", "id -u; id -g; id -G"},
 				}, garden.ProcessIO{
 					Stdout: stdout,
 					Stderr: GinkgoWriter,
@@ -310,7 +310,7 @@ var _ = Describe("Security", func() {
 				exitStatus, err := process.Wait()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("1001\n1001\n"))
+				Expect(stdout).To(gbytes.Say("1001\n1001\n1001\n"))
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
@@ -420,12 +420,12 @@ var _ = Describe("Security", func() {
 		})
 
 		Context("when running a command as root", func() {
-			It("executes with setuid and setgid", func() {
+			It("executes with uid 0, gid 0, and supplementary gid 0", func() {
 				stdout := gbytes.NewBuffer()
 				process, err := container.Run(garden.ProcessSpec{
 					User: "root",
 					Path: "/bin/sh",
-					Args: []string{"-c", "id -u; id -g"},
+					Args: []string{"-c", "id -u; id -g; id -G"},
 				}, garden.ProcessIO{
 					Stdout: stdout,
 					Stderr: GinkgoWriter,
@@ -435,7 +435,7 @@ var _ = Describe("Security", func() {
 				exitStatus, err := process.Wait()
 				Expect(err).ToNot(HaveOccurred())
 				Expect(exitStatus).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("0\n0\n"))
+				Expect(stdout).To(gbytes.Say("0\n0\n0\n"))
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
