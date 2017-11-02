@@ -24,7 +24,6 @@ var _ = Describe("Container information", func() {
 
 		Describe("info for one container", func() {
 			It("includes the properties", func() {
-				skipIfRootless()
 				info, err := container.Info()
 				Expect(err).ToNot(HaveOccurred())
 
@@ -56,7 +55,6 @@ var _ = Describe("Container information", func() {
 
 		Describe("updating container properties", func() {
 			It("can CRUD", func() {
-				skipIfRootless()
 				value, err := container.Property("foo")
 				Expect(err).ToNot(HaveOccurred())
 				Expect(value).To(Equal(bar))

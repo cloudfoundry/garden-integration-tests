@@ -209,3 +209,8 @@ func skipIfRootless() {
 func rootless() bool {
 	return os.Getenv("ROOTLESS") != ""
 }
+
+func setPrivileged() {
+	privilegedContainer = true
+	skipIfRootless()
+}

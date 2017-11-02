@@ -309,7 +309,7 @@ var _ = Describe("Limits", func() {
 
 		Context("when the container is privileged", func() {
 			BeforeEach(func() {
-				privilegedContainer = true
+				setPrivileged()
 
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024

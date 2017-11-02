@@ -12,50 +12,18 @@ import (
 )
 
 var _ = Describe("users", func() {
-	Context("when nobody maps to 65534", func() {
-		BeforeEach(func() {
-			imageRef.URI = "docker:///ubuntu"
+	It("has a sufficiently large UID/GID range", func() {
+		var stdout bytes.Buffer
+		proc, err := container.Run(garden.ProcessSpec{
+			User: "1000000000:1000000000",
+			Path: "id",
+		}, garden.ProcessIO{
+			Stdout: io.MultiWriter(&stdout, GinkgoWriter),
+			Stderr: GinkgoWriter,
 		})
-
-		It("should be able to su to nobody", func() {
-			skipIfRootless()
-			// Delete guff.
-			proc, err := container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "rm",
-				Args: []string{"-f", "/etc/passwd-"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
-
-			// Ensure "nobody" has a shell.
-			proc, err = container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "chsh",
-				Args: []string{"-s", "/bin/bash", "nobody"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
-
-			var buf bytes.Buffer
-			proc, err = container.Run(garden.ProcessSpec{
-				User: "root",
-				Path: "su",
-				Args: []string{"nobody", "-c", "whoami"},
-			}, garden.ProcessIO{
-				Stdout: io.MultiWriter(&buf, GinkgoWriter),
-				Stderr: io.MultiWriter(&buf, GinkgoWriter),
-			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
-			Expect(buf.String()).To(Equal("nobody\n"))
-		})
+		Expect(err).NotTo(HaveOccurred())
+		Expect(proc.Wait()).To(Equal(0))
+		Expect(stdout.String()).To(Equal("uid=1000000000 gid=1000000000\n"))
 	})
 
 	Context("when creating users", func() {
@@ -104,7 +72,6 @@ var _ = Describe("users", func() {
 
 	Context("when rootfs defines user/groups", func() {
 		BeforeEach(func() {
-			skipIfRootless()
 			imageRef.URI = "docker:///cfgarden/with-user-with-groups"
 		})
 

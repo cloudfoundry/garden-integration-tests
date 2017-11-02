@@ -146,8 +146,7 @@ var _ = Describe("Security", func() {
 
 		Context("in a privileged container", func() {
 			BeforeEach(func() {
-				skipIfRootless()
-				privilegedContainer = true
+				setPrivileged()
 			})
 
 			It("/proc IS mounted as Read-Write", func() {
@@ -658,8 +657,7 @@ var _ = Describe("Security", func() {
 
 	Context("when the 'privileged' flag is set on the create call", func() {
 		BeforeEach(func() {
-			skipIfRootless()
-			privilegedContainer = true
+			setPrivileged()
 		})
 
 		Context("and the user is root", func() {

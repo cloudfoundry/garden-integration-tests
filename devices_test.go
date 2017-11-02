@@ -40,8 +40,7 @@ var _ = Describe("Devices", func() {
 
 	Context("in a privileged container", func() {
 		BeforeEach(func() {
-			skipIfRootless()
-			privilegedContainer = true
+			setPrivileged()
 		})
 
 		It("should have the fuse device", func() {
