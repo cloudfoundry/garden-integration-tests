@@ -8,6 +8,7 @@ import (
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Partially shared containers (peas)", func() {
@@ -134,6 +135,34 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			})
 			Expect(exitCode).To(Equal(0))
 			Expect(stdout).To(Equal("/\n"))
+		})
+	})
+
+	Describe("signalling", func() {
+		It("sends a TERM signal to the process if requested", func() {
+			stdout := gbytes.NewBuffer()
+
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{"-c", `
+				trap 'echo termed; exit 42' SIGTERM
+
+				while true; do
+					echo waiting
+					sleep 1
+				done
+			`},
+				Image: peaImage,
+			}, garden.ProcessIO{
+				Stdout: io.MultiWriter(GinkgoWriter, stdout),
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).ToNot(HaveOccurred())
+
+			Eventually(stdout).Should(gbytes.Say("waiting"))
+			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+			Eventually(stdout, "2s").Should(gbytes.Say("termed"))
+			Expect(process.Wait()).To(Equal(42))
 		})
 	})
 
