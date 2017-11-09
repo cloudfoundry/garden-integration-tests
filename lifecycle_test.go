@@ -1033,6 +1033,20 @@ var _ = Describe("Lifecycle", func() {
 				})
 			})
 
+			Context("when running rootless", func() {
+				BeforeEach(func() {
+					if !rootless() {
+						Skip("this behaviour only makes sense when rootless")
+					}
+					privilegedContainer = true
+					assertContainerCreate = false
+				})
+
+				It("cannot create privileged containers", func() {
+					Expect(containerCreateErr).To(MatchError("privileged container creation is disabled"))
+				})
+			})
+
 			It("streams in relative to the default run directory", func() {
 				err := container.StreamIn(garden.StreamInSpec{
 					User:      "alice",
