@@ -39,6 +39,26 @@ var _ = Describe("Process", func() {
 		})
 	})
 
+	Describe("when we try to create a container process with bind mounts", func() {
+		It("should explode", func() {
+			stdout := gbytes.NewBuffer()
+
+			_, err := container.Run(garden.ProcessSpec{
+				User: "root",
+				Path: "whoami",
+				Args: []string{},
+				BindMounts: []garden.BindMount{
+					garden.BindMount{
+						SrcPath: "src",
+						DstPath: "dst",
+					},
+				},
+			}, garden.ProcessIO{
+				Stdout: stdout,
+			})
+			Expect(err).To(HaveOccurred())
+		})
+	})
 	Describe("process ID", func() {
 		It("return a process containing the ID passed in the process spec", func() {
 			process, err := container.Run(garden.ProcessSpec{
