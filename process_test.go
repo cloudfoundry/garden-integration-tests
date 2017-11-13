@@ -40,7 +40,7 @@ var _ = Describe("Process", func() {
 	})
 
 	Describe("when we try to create a container process with bind mounts", func() {
-		It("should explode", func() {
+		It("should return an error", func() {
 			stdout := gbytes.NewBuffer()
 
 			_, err := container.Run(garden.ProcessSpec{
