@@ -1,7 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 
@@ -28,37 +27,34 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	})
 
 	It("runs a process in its own rootfs", func() {
-		processExitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			Path:  "cat",
 			Args:  []string{"/etc/os-release"},
 			Image: peaImage,
 		})
-		Expect(processExitCode).To(Equal(0))
-		Expect(stdout).To(ContainSubstring(`NAME="Alpine Linux"`))
+		Expect(stdout).To(gbytes.Say(`NAME="Alpine Linux"`))
 	})
 
 	Describe("pea process user and group", func() {
 		It("runs the process as uid and gid 0 by default", func() {
-			processExitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path:  "sh",
 				Args:  []string{"-c", "echo -n $(id -u):$(id -g)"},
 				Image: peaImage,
 			})
-			Expect(processExitCode).To(Equal(0))
-			Expect(stdout).To(Equal("0:0"))
+			Expect(stdout).To(gbytes.Say("0:0"))
 		})
 
 		Context("when a uid:gid is provided", func() {
 			It("runs the process as the specified uid and gid", func() {
 				userGUIDs := "1001:1002"
-				processExitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					Path:  "sh",
 					Args:  []string{"-c", "echo -n $(id -u):$(id -g)"},
 					User:  userGUIDs,
 					Image: peaImage,
 				})
-				Expect(processExitCode).To(Equal(0))
-				Expect(stdout).To(Equal(userGUIDs))
+				Expect(stdout).To(gbytes.Say(userGUIDs))
 			})
 		})
 
@@ -96,8 +92,8 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			})
 
 			Expect(processExitCode).To(Equal(0))
-			Expect(stdout).To(Equal("stdout\n"))
-			Expect(stderr).To(Equal("stderr\n"))
+			Expect(stdout).To(gbytes.Say("stdout\n"))
+			Expect(stderr).To(gbytes.Say("stderr\n"))
 		})
 	})
 
@@ -129,12 +125,11 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Context("when no working directory is specified", func() {
 		It("defaults to /", func() {
-			exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path:  "pwd",
 				Image: peaImage,
 			})
-			Expect(exitCode).To(Equal(0))
-			Expect(stdout).To(Equal("/\n"))
+			Expect(stdout).To(gbytes.Say("/\n"))
 		})
 	})
 
@@ -175,38 +170,26 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when there is no memory limit on the pea", func() {
 			It("shares that limit with the container", func() {
-				proc, err := container.Run(
+				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
 						Path:  "dd",
 						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
 						Image: peaImage,
-					},
-					garden.ProcessIO{
-						Stdout: GinkgoWriter,
-						Stderr: GinkgoWriter,
-					},
-				)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(proc.Wait()).NotTo(Equal(0))
+					})
+				Expect(exitCode).NotTo(Equal(0))
 			})
 		})
 
 		Context("when there are any limits on the pea", func() {
 			It("does not share memory limit with the container", func() {
-				proc, err := container.Run(
+				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
 						Path:  "dd",
 						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
 						Image: peaImage,
 						OverrideContainerLimits: &garden.ProcessLimits{},
-					},
-					garden.ProcessIO{
-						Stdout: GinkgoWriter,
-						Stderr: GinkgoWriter,
-					},
-				)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(proc.Wait()).To(Equal(0))
+					})
+				Expect(exitCode).To(Equal(0))
 			})
 		})
 	})
@@ -222,21 +205,7 @@ func getNS(nsName string, container garden.Container, image garden.ImageRef) str
 	exitCode, namespaceInode, _ := runProcess(container, processSpec)
 	Expect(exitCode).To(Equal(0))
 
-	return namespaceInode
-}
-
-func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr string) {
-	var stdOut, stdErr bytes.Buffer
-	proc, err := container.Run(
-		processSpec,
-		garden.ProcessIO{
-			Stdout: io.MultiWriter(&stdOut, GinkgoWriter),
-			Stderr: io.MultiWriter(&stdErr, GinkgoWriter),
-		})
-	Expect(err).NotTo(HaveOccurred())
-	processExitCode, err := proc.Wait()
-	Expect(err).NotTo(HaveOccurred())
-	return processExitCode, stdOut.String(), stdErr.String()
+	return string(namespaceInode.Contents())
 }
 
 func readFileInContainer(container garden.Container, filePath string, image garden.ImageRef) string {
@@ -247,7 +216,7 @@ func readFileInContainer(container garden.Container, filePath string, image gard
 	})
 	Expect(exitCode).To(Equal(0))
 
-	return stdout
+	return string(stdout.Contents())
 }
 
 func appendFileInContainer(container garden.Container, filePath, content string, image garden.ImageRef) {

@@ -39,24 +39,22 @@ var _ = Describe("Limits", func() {
 		})
 
 		It("kills a process if it uses too much memory", func() {
-			process, err := container.Run(garden.ProcessSpec{
+			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
 				Path: "dd",
 				Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
-			}, garden.ProcessIO{})
-			Expect(err).ToNot(HaveOccurred())
+			})
 
-			Expect(process.Wait()).ToNot(Equal(0))
+			Expect(exitCode).ToNot(Equal(0))
 		})
 
 		It("doesn't kill a process that uses lots of memory within the limit", func() {
-			process, err := container.Run(garden.ProcessSpec{
+			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
 				Path: "dd",
 				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=50"},
-			}, ginkgoIO)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(process.Wait()).To(Equal(0))
+			})
+			Expect(exitCode).To(Equal(0))
 		})
 	})
 
@@ -78,23 +76,21 @@ var _ = Describe("Limits", func() {
 				createUser(container, "alice")
 
 				initialBytes := reporter()
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "dd",
 					Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=3"},
-				}, ginkgoIO)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
+				})
+				Expect(exitCode).To(Equal(0))
 
 				Eventually(reporter).Should(BeNumerically("~", initialBytes+3*1024*1024, 1024*1024))
 
-				process, err = container.Run(garden.ProcessSpec{
+				exitCode, _, _ = runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "dd",
 					Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
-				}, ginkgoIO)
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
+				})
+				Expect(exitCode).To(Equal(0))
 
 				Eventually(reporter).Should(BeNumerically("~", initialBytes+uint64(13*1024*1024), 1024*1024))
 			},
@@ -130,25 +126,23 @@ var _ = Describe("Limits", func() {
 
 			Context("and run a process that does not exceed the limit", func() {
 				It("does not kill the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=7"},
-					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).To(Equal(0))
+					})
+					Expect(exitCode).To(Equal(0))
 				})
 			})
 
 			Context("and run a process that exceeds the quota due to the size of the rootfs", func() {
 				It("kills the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for > 1 MB
-					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 
@@ -173,25 +167,23 @@ var _ = Describe("Limits", func() {
 
 			Context("and run a process that would exceed the quota due to the size of the rootfs", func() {
 				It("does not kill the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
-					}, garden.ProcessIO{Stdout: GinkgoWriter, Stderr: GinkgoWriter})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).To(Equal(0))
+					})
+					Expect(exitCode).To(Equal(0))
 				})
 			})
 
 			Context("and run a process that exceeds the quota", func() {
 				It("kills the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 		})
@@ -210,53 +202,43 @@ var _ = Describe("Limits", func() {
 
 			Context("and run a process that exceeds the quota as bob", func() {
 				It("kills the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "bob",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/bob/test", "bs=1M", "count=11"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 
 			Context("and run a process that exceeds the quota as alice", func() {
 				It("kills the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/alice/test", "bs=1M", "count=11"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 
 			Context("user alice is getting near the set limit", func() {
 				JustBeforeEach(func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/alice/test", "bs=1M", "count=8"},
-					}, garden.ProcessIO{
-						Stderr: GinkgoWriter,
-						Stdout: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).To(Equal(0))
+					Expect(exitCode).To(Equal(0))
 				})
 
 				It("kills the process if user bob tries to exceed the shared limit", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "bob",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/bob/test", "bs=1M", "count=3"},
-					}, garden.ProcessIO{
-						Stderr: GinkgoWriter,
-						Stdout: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 
@@ -288,21 +270,19 @@ var _ = Describe("Limits", func() {
 				})
 
 				It("gives each container its own quota", func() {
-					process, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
+					})
+					Expect(exitCode).To(Equal(0))
 
-					process, err = container2.Run(garden.ProcessSpec{
+					exitCode, _, _ = runProcess(container2, garden.ProcessSpec{
 						User: "alice",
 						Path: "dd",
 						Args: []string{"if=/dev/urandom", "of=/tmp/some-file", "bs=1M", "count=40"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
+					})
+					Expect(exitCode).To(Equal(0))
 				})
 			})
 		})
@@ -318,13 +298,12 @@ var _ = Describe("Limits", func() {
 
 			Context("and run a process that exceeds the quota as root", func() {
 				It("kills the process", func() {
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 
@@ -332,13 +311,12 @@ var _ = Describe("Limits", func() {
 				It("kills the process", func() {
 					createUser(container, "bob")
 
-					dd, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "bob",
 						Path: "dd",
 						Args: []string{"if=/dev/zero", "of=/home/bob/test", "bs=1M", "count=11"},
-					}, ginkgoIO)
-					Expect(err).ToNot(HaveOccurred())
-					Expect(dd.Wait()).ToNot(Equal(0))
+					})
+					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
 		})
@@ -356,20 +334,13 @@ var _ = Describe("Limits", func() {
 			})
 
 			It("prevents forking of processes", func() {
-				stderr := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
 					Args: []string{"-c", "for i in `seq 1 20`; do sleep 2 & done"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: stderr,
 				})
-				Expect(err).NotTo(HaveOccurred())
 
-				exitCode, err := process.Wait()
 				Expect(exitCode).To(Equal(2))
-				Expect(err).NotTo(HaveOccurred())
 				Expect(stderr).To(gbytes.Say("sh: can't fork"))
 			})
 		})
@@ -380,20 +351,12 @@ var _ = Describe("Limits", func() {
 			})
 
 			It("applies no limit", func() {
-				stderr := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
 					Args: []string{"-c", "ps"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: stderr,
 				})
-				Expect(err).NotTo(HaveOccurred())
-
-				exitCode, err := process.Wait()
 				Expect(exitCode).To(Equal(0))
-				Expect(err).NotTo(HaveOccurred())
 			})
 		})
 	})

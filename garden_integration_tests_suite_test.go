@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"strconv"
@@ -16,6 +17,7 @@ import (
 	"code.cloudfoundry.org/garden/client/connection"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 )
 
 const KNOWN_NESTED_UMOUNT_ERR = "unmounting the loop device: unmounting file: exit status 1"
@@ -213,4 +215,24 @@ func rootless() bool {
 func setPrivileged() {
 	privilegedContainer = true
 	skipIfRootless()
+}
+
+func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr *gbytes.Buffer) {
+	stdOut, stdErr := gbytes.NewBuffer(), gbytes.NewBuffer()
+	proc, err := container.Run(
+		processSpec,
+		garden.ProcessIO{
+			Stdout: io.MultiWriter(stdOut, GinkgoWriter),
+			Stderr: io.MultiWriter(stdErr, GinkgoWriter),
+		})
+	Expect(err).NotTo(HaveOccurred())
+	processExitCode, err := proc.Wait()
+	Expect(err).NotTo(HaveOccurred())
+	return processExitCode, stdOut, stdErr
+}
+
+func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {
+	exitCode, stdout, _ := runProcess(container, processSpec)
+	Expect(exitCode).To(Equal(0))
+	return stdout
 }

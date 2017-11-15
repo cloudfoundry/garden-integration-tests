@@ -9,17 +9,11 @@ import (
 
 var _ = Describe("smoke tests", func() {
 	It("can run a process inside a container", func() {
-		stdout := gbytes.NewBuffer()
-
-		_, err := container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			Path: "whoami",
 			User: "root",
-		}, garden.ProcessIO{
-			Stdout: stdout,
-			Stderr: GinkgoWriter,
 		})
 
-		Expect(err).ToNot(HaveOccurred())
-		Eventually(stdout).Should(gbytes.Say("root\n"))
+		Expect(stdout).To(gbytes.Say("root\n"))
 	})
 })

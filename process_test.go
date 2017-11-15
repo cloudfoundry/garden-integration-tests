@@ -1,9 +1,7 @@
 package garden_integration_tests_test
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"runtime/debug"
 	"time"
 
@@ -94,23 +92,15 @@ var _ = Describe("Process", func() {
 
 	Describe("environment", func() {
 		It("should apply the specified environment", func() {
-			stdout := gbytes.NewBuffer()
-
-			process, err := container.Run(garden.ProcessSpec{
+			exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
 				Path: "env",
 				Env: []string{
 					"TEST=hello",
 					"FRUIT=banana",
 				},
-			}, garden.ProcessIO{
-				Stdout: stdout,
 			})
-			Expect(err).ToNot(HaveOccurred())
-			exitCode, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
 			Expect(exitCode).To(Equal(0))
-
-			Expect(stdout.Contents()).To(ContainSubstring("TEST=hello\nFRUIT=banana"))
+			Expect(stdout).To(gbytes.Say("TEST=hello\nFRUIT=banana"))
 		})
 
 		Context("when the container has container spec environment specified", func() {
@@ -122,23 +112,15 @@ var _ = Describe("Process", func() {
 			})
 
 			It("should apply the merged environment variables", func() {
-				stdout := gbytes.NewBuffer()
-
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
 					Path: "env",
 					Env: []string{
 						"TEST=hello",
 						"FRUIT=banana",
 					},
-				}, garden.ProcessIO{
-					Stdout: stdout,
 				})
-				Expect(err).ToNot(HaveOccurred())
-				exitCode, err := process.Wait()
-				Expect(err).NotTo(HaveOccurred())
 				Expect(exitCode).To(Equal(0))
-
-				Expect(stdout.Contents()).To(ContainSubstring("CONTAINER_ENV=1\nTEST=hello\nFRUIT=banana"))
+				Expect(stdout).To(gbytes.Say("CONTAINER_ENV=1\nTEST=hello\nFRUIT=banana"))
 			})
 		})
 	})
@@ -198,33 +180,21 @@ var _ = Describe("Process", func() {
 	Describe("user", func() {
 		Context("when the user is specified in the form uid:gid", func() {
 			It("runs the process as that user", func() {
-				var stdout bytes.Buffer
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "1001:1002",
 					Path: "sh",
 					Args: []string{"-c", "echo $(id -u):$(id -g)"},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(&stdout, GinkgoWriter),
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).NotTo(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-				Expect(stdout.String()).To(Equal("1001:1002\n"))
+				Expect(stdout).To(gbytes.Say("1001:1002\n"))
 			})
 		})
 
 		Context("when the user is not specified", func() {
 			It("runs the process as root", func() {
-				var stdout bytes.Buffer
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					Path: "whoami",
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(&stdout, GinkgoWriter),
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).NotTo(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
-				Expect(stdout.String()).To(Equal("root\n"))
+				Expect(stdout).To(gbytes.Say("root\n"))
 			})
 		})
 	})
@@ -237,19 +207,13 @@ var _ = Describe("Process", func() {
 		Context("when user has access to working directory", func() {
 			Context("when working directory exists", func() {
 				It("spawns the process", func() {
-					stdout := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "alice",
 						Dir:  "/home/alice",
 						Path: "pwd",
-					}, garden.ProcessIO{
-						Stdout: stdout,
-						Stderr: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
 
-					Expect(process.Wait()).To(Equal(0))
-					Eventually(stdout).Should(gbytes.Say("/home/alice"))
+					Expect(stdout).To(gbytes.Say("/home/alice"))
 				})
 			})
 
@@ -259,70 +223,48 @@ var _ = Describe("Process", func() {
 				})
 
 				It("spawns the process", func() {
-					stdout := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "alice",
 						Dir:  "/home/alice/nonexistent",
 						Path: "pwd",
-					}, garden.ProcessIO{
-						Stdout: stdout,
-						Stderr: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
 
-					Expect(process.Wait()).To(Equal(0))
-					Eventually(stdout).Should(gbytes.Say("/home/alice/nonexistent"))
+					Expect(stdout).To(gbytes.Say("/home/alice/nonexistent"))
 				})
 
 				It("is created owned by the requested user", func() {
-					stdout := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "root",
 						Dir:  "/root/nonexistent",
 						Path: "sh",
 						Args: []string{"-c", "ls -la . | head -n 2 | tail -n 1"},
-					}, garden.ProcessIO{
-						Stdout: stdout,
-						Stderr: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
 
-					Expect(process.Wait()).To(Equal(0))
-					Eventually(stdout).Should(gbytes.Say("root"))
+					Expect(stdout).To(gbytes.Say("root"))
 				})
 			})
 		})
 
 		Context("when user does not have access to working directory", func() {
 			JustBeforeEach(func() {
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", "mkdir -p /home/alice/nopermissions && chmod 0555 /home/alice/nopermissions"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).ToNot(HaveOccurred())
-				exitStatus, err := process.Wait()
-				Expect(exitStatus).To(Equal(0))
+				Expect(exitCode).To(Equal(0))
 			})
 
 			Context("when working directory does exist", func() {
 				It("returns an error", func() {
-					stderr := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Dir:  "/home/alice/nopermissions",
 						Path: "touch",
 						Args: []string{"test.txt"},
-					}, garden.ProcessIO{
-						Stdout: GinkgoWriter,
-						Stderr: io.MultiWriter(GinkgoWriter, stderr),
 					})
-					Expect(err).ToNot(HaveOccurred())
-					exitStatus, err := process.Wait()
-					Expect(exitStatus).ToNot(Equal(0))
+
+					Expect(exitCode).ToNot(Equal(0))
 					Expect(stderr).To(gbytes.Say("Permission denied"))
 				})
 			})
@@ -333,37 +275,26 @@ var _ = Describe("Process", func() {
 				})
 
 				It("should create the working directory, and succeed", func() {
-					stderr := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Dir:  "/home/alice/nopermissions/nonexistent",
 						Path: "touch",
 						Args: []string{"test.txt"},
-					}, garden.ProcessIO{
-						Stdout: GinkgoWriter,
-						Stderr: stderr,
 					})
-					Expect(err).ToNot(HaveOccurred())
-					Expect(process.Wait()).To(Equal(0))
+
+					Expect(exitCode).To(Equal(0))
 				})
 			})
 		})
 
 		Context("when the user does not specify the working directory", func() {
 			It("should have the user home directory in the output", func() {
-				out := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "pwd",
-				}, garden.ProcessIO{
-					Stdout: out,
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).NotTo(HaveOccurred())
 
-				exitStatus, err := process.Wait()
-				Expect(exitStatus).To(Equal(0))
-				Expect(out).To(gbytes.Say("/home/alice"))
+				Expect(stdout).To(gbytes.Say("/home/alice"))
 			})
 		})
 	})

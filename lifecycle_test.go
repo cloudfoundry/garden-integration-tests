@@ -90,22 +90,16 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	checkMappings := func(mappingType string) {
-		var stdout bytes.Buffer
-		proc, err := container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			Path: "cat",
 			Args: []string{fmt.Sprintf("/proc/self/%sid_map", mappingType)},
-		}, garden.ProcessIO{
-			Stdout: io.MultiWriter(&stdout, GinkgoWriter),
-			Stderr: GinkgoWriter,
 		})
-		Expect(err).NotTo(HaveOccurred())
-		Expect(proc.Wait()).To(Equal(0))
 
 		mappingSize := `0\s+4294967294\s+1\n\s+1\s+1\s+4294967293`
 		if rootless() {
 			mappingSize = `0\s+4294967294\s+1\n\s+1\s+65536\s+4294901758`
 		}
-		Expect(stdout.String()).To(MatchRegexp(mappingSize))
+		Expect(stdout).To(gbytes.Say(mappingSize))
 	}
 
 	Describe("Creating a container with uid/gid mappings", func() {
@@ -123,43 +117,29 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	It("provides /dev/shm as tmpfs in the container", func() {
-		process, err := container.Run(garden.ProcessSpec{
+		exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 			User: "alice",
 			Path: "dd",
 			Args: []string{"if=/dev/urandom", "of=/dev/shm/some-data", "count=64", "bs=1k"},
-		}, garden.ProcessIO{})
-		Expect(err).ToNot(HaveOccurred())
+		})
 
-		Expect(process.Wait()).To(Equal(0))
+		Expect(exitCode).To(Equal(0))
 
-		outBuf := gbytes.NewBuffer()
-
-		process, err = container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			User: "alice",
 			Path: "cat",
 			Args: []string{"/proc/mounts"},
-		}, garden.ProcessIO{
-			Stdout: outBuf,
-			Stderr: GinkgoWriter,
 		})
-		Expect(err).ToNot(HaveOccurred())
 
-		Expect(process.Wait()).To(Equal(0))
-
-		Expect(outBuf).To(gbytes.Say("tmpfs /dev/shm tmpfs"))
-		Expect(outBuf).To(gbytes.Say("rw,nodev,relatime"))
+		Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs"))
+		Expect(stdout).To(gbytes.Say("rw,nodev,relatime"))
 	})
 
 	It("gives the container a hostname based on its handle", func() {
-		stdout := gbytes.NewBuffer()
-
-		_, err := container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			User: "alice",
 			Path: "hostname",
-		}, garden.ProcessIO{
-			Stdout: stdout,
 		})
-		Expect(err).ToNot(HaveOccurred())
 
 		Eventually(stdout).Should(gbytes.Say(fmt.Sprintf("%s\n", container.Handle())))
 	})
@@ -170,15 +150,10 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("should use the last 49 characters of the handle as the hostname", func() {
-			stdout := gbytes.NewBuffer()
-
-			_, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "hostname",
-			}, garden.ProcessIO{
-				Stdout: stdout,
 			})
-			Expect(err).ToNot(HaveOccurred())
 
 			Eventually(stdout).Should(gbytes.Say("ec774112a9cd-101f8293-230e-4fa8-4138-e8244e6dcfa1"))
 		})
@@ -211,39 +186,26 @@ var _ = Describe("Lifecycle", func() {
 	Describe("running a process", func() {
 		Context("when root is requested", func() {
 			It("runs as root inside the container", func() {
-				stdout := gbytes.NewBuffer()
-
-				_, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					Path: "whoami",
 					User: "root",
-				}, garden.ProcessIO{
-					Stdout: stdout,
-					Stderr: GinkgoWriter,
 				})
 
-				Expect(err).ToNot(HaveOccurred())
-				Eventually(stdout).Should(gbytes.Say("root\n"))
+				Expect(stdout).To(gbytes.Say("root\n"))
 			})
 		})
 
 		It("streams output back and reports the exit status", func() {
-			stdout := gbytes.NewBuffer()
-			stderr := gbytes.NewBuffer()
-
-			process, err := container.Run(garden.ProcessSpec{
+			exitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", "sleep 0.5; echo $FIRST; sleep 0.5; echo $SECOND >&2; sleep 0.5; exit 42"},
 				Env:  []string{"FIRST=hello", "SECOND=goodbye"},
-			}, garden.ProcessIO{
-				Stdout: stdout,
-				Stderr: stderr,
 			})
-			Expect(err).ToNot(HaveOccurred())
 
-			Eventually(stdout).Should(gbytes.Say("hello\n"))
-			Eventually(stderr).Should(gbytes.Say("goodbye\n"))
-			Expect(process.Wait()).To(Equal(42))
+			Expect(exitCode).To(Equal(42))
+			Expect(stdout).To(gbytes.Say("hello\n"))
+			Expect(stderr).To(gbytes.Say("goodbye\n"))
 		})
 
 		Context("when multiple clients attach to the same process", func() {
@@ -375,33 +337,21 @@ var _ = Describe("Lifecycle", func() {
 
 		Context("even when /bin/kill does not exist", func() {
 			JustBeforeEach(func() {
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "root",
 					Path: "rm",
 					Args: []string{"/bin/kill"},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).ToNot(HaveOccurred())
-				Expect(process.Wait()).To(Equal(0))
+				Expect(exitCode).To(Equal(0))
 			})
 
 			checkProcessIsGone := func(container garden.Container, argsPrefix string) {
 				Consistently(func() *gbytes.Buffer {
-					stdout := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "alice",
 						Path: "ps",
 						Args: []string{"ax", "-o", "args="},
-					}, garden.ProcessIO{
-						Stdout: io.MultiWriter(stdout, GinkgoWriter),
-						Stderr: GinkgoWriter,
 					})
-					Expect(err).ToNot(HaveOccurred())
-
-					_, err = process.Wait()
-					Expect(err).NotTo(HaveOccurred())
 
 					return stdout
 				}).ShouldNot(gbytes.Say(argsPrefix))
@@ -512,19 +462,13 @@ var _ = Describe("Lifecycle", func() {
 
 		It("collects the process's full output when tty is requested", func() {
 			for i := 0; i < 100; i++ {
-				stdout := gbytes.NewBuffer()
-
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", `seq -s " " 10000`},
 					TTY:  new(garden.TTYSpec),
-				}, garden.ProcessIO{
-					Stdout: stdout,
 				})
-				Expect(err).ToNot(HaveOccurred())
 
-				Expect(process.Wait()).To(Equal(0))
 				Expect(stdout).To(gbytes.Say("9999 10000"))
 			}
 		})
@@ -754,19 +698,13 @@ var _ = Describe("Lifecycle", func() {
 
 		Context("with a working directory", func() {
 			It("executes with the working directory as the dir", func() {
-				stdout := gbytes.NewBuffer()
-
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "pwd",
 					Dir:  "/usr",
-				}, garden.ProcessIO{
-					Stdout: stdout,
 				})
-				Expect(err).ToNot(HaveOccurred())
 
 				Eventually(stdout).Should(gbytes.Say("/usr\n"))
-				Expect(process.Wait()).To(Equal(0))
 			})
 		})
 
@@ -933,30 +871,22 @@ var _ = Describe("Lifecycle", func() {
 				})
 				Expect(err).ToNot(HaveOccurred())
 
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "test",
 					Args: []string{"-f", "/home/alice/some-temp-dir/some-temp-file"},
-				}, garden.ProcessIO{})
-				Expect(err).ToNot(HaveOccurred())
+				})
+				Expect(exitCode).To(Equal(0))
 
-				Expect(process.Wait()).To(Equal(0))
-
-				output := gbytes.NewBuffer()
-				process, err = container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "ls",
 					Args: []string{"-al", "/home/alice/some-temp-dir/some-temp-file"},
-				}, garden.ProcessIO{
-					Stdout: output,
 				})
-				Expect(err).ToNot(HaveOccurred())
-
-				Expect(process.Wait()).To(Equal(0))
 
 				// output should look like -rwxrwxrwx 1 alice alice 9 Jan  1  1970 /tmp/some-container-dir/some-temp-dir/some-temp-file
-				Expect(output).To(gbytes.Say("alice"))
-				Expect(output).To(gbytes.Say("alice"))
+				Expect(stdout).To(gbytes.Say("alice"))
+				Expect(stdout).To(gbytes.Say("alice"))
 			})
 
 			Context("when no user specified", func() {
@@ -967,19 +897,12 @@ var _ = Describe("Lifecycle", func() {
 					})
 					Expect(err).ToNot(HaveOccurred())
 
-					out := gbytes.NewBuffer()
-					process, err := container.Run(garden.ProcessSpec{
+					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "root",
 						Path: "ls",
 						Args: []string{"-la", "/home/alice/some-temp-dir/some-temp-file"},
-					}, garden.ProcessIO{
-						Stdout: out,
-						Stderr: out,
 					})
-					Expect(err).ToNot(HaveOccurred())
-
-					Expect(process.Wait()).To(Equal(0))
-					Expect(string(out.Contents())).To(ContainSubstring("root"))
+					Expect(stdout).To(gbytes.Say("root"))
 				})
 			})
 
@@ -1022,14 +945,13 @@ var _ = Describe("Lifecycle", func() {
 					})
 					Expect(err).ToNot(HaveOccurred())
 
-					process, err := container.Run(garden.ProcessSpec{
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "alice",
 						Path: "test",
 						Args: []string{"-f", "some-temp-dir/some-temp-file"},
-					}, garden.ProcessIO{})
-					Expect(err).ToNot(HaveOccurred())
+					})
 
-					Expect(process.Wait()).To(Equal(0))
+					Expect(exitCode).To(Equal(0))
 				})
 			})
 
@@ -1055,14 +977,13 @@ var _ = Describe("Lifecycle", func() {
 				})
 				Expect(err).ToNot(HaveOccurred())
 
-				process, err := container.Run(garden.ProcessSpec{
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "test",
 					Args: []string{"-f", "some-temp-dir/some-temp-file"},
-				}, garden.ProcessIO{})
-				Expect(err).ToNot(HaveOccurred())
+				})
 
-				Expect(process.Wait()).To(Equal(0))
+				Expect(exitCode).To(Equal(0))
 			})
 
 			It("returns an error when the tar process dies", func() {
@@ -1080,14 +1001,13 @@ var _ = Describe("Lifecycle", func() {
 			Context("and then copying them out", func() {
 				itStreamsTheDirectory := func(user string) {
 					It("streams the directory", func() {
-						process, err := container.Run(garden.ProcessSpec{
+						exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 							User: "alice",
 							Path: "sh",
 							Args: []string{"-c", `mkdir -p some-outer-dir/some-inner-dir && touch some-outer-dir/some-inner-dir/some-file`},
-						}, garden.ProcessIO{})
-						Expect(err).ToNot(HaveOccurred())
+						})
 
-						Expect(process.Wait()).To(Equal(0))
+						Expect(exitCode).To(Equal(0))
 
 						tarOutput, err := container.StreamOut(garden.StreamOutSpec{
 							User: user,
@@ -1117,14 +1037,13 @@ var _ = Describe("Lifecycle", func() {
 
 				Context("with a trailing slash", func() {
 					It("streams the contents of the directory", func() {
-						process, err := container.Run(garden.ProcessSpec{
+						exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 							User: "alice",
 							Path: "sh",
 							Args: []string{"-c", `mkdir -p some-container-dir && touch some-container-dir/some-file`},
-						}, garden.ProcessIO{})
-						Expect(err).ToNot(HaveOccurred())
+						})
 
-						Expect(process.Wait()).To(Equal(0))
+						Expect(exitCode).To(Equal(0))
 
 						tarOutput, err := container.StreamOut(garden.StreamOutSpec{
 							User: "alice",

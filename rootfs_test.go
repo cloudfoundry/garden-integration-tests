@@ -1,7 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"io"
 	"os"
 
 	"code.cloudfoundry.org/garden"
@@ -18,36 +17,22 @@ var _ = Describe("Rootfses", func() {
 	Context("when the rootfs path is a docker image URL", func() {
 		Context("and the image specifies $PATH", func() {
 			It("$PATH is taken from the docker image", func() {
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "/bin/sh",
 					Args: []string{"-c", "echo $PATH"},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
 				})
 
-				Expect(err).ToNot(HaveOccurred())
-
-				process.Wait()
 				Expect(stdout).To(gbytes.Say("/usr/local/bin:/usr/bin:/bin:/from-dockerfile"))
 			})
 
 			It("$TEST is taken from the docker image", func() {
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "/bin/sh",
 					Args: []string{"-c", "echo $TEST"},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
 				})
 
-				Expect(err).ToNot(HaveOccurred())
-
-				process.Wait()
 				Expect(stdout).To(gbytes.Say("second-test-from-dockerfile:test-from-dockerfile"))
 			})
 
@@ -55,18 +40,12 @@ var _ = Describe("Rootfses", func() {
 
 		Context("and the image specifies a VOLUME", func() {
 			It("creates the volume directory, if it does not already exist", func() {
-				stdout := gbytes.NewBuffer()
-				process, err := container.Run(garden.ProcessSpec{
+				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "ls",
 					Args: []string{"-l", "/"},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
 				})
 
-				Expect(err).ToNot(HaveOccurred())
-				process.Wait()
 				Expect(stdout).To(gbytes.Say("foo"))
 			})
 		})

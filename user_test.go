@@ -1,8 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"bytes"
-	"io"
 	"strconv"
 
 	"code.cloudfoundry.org/garden"
@@ -13,17 +11,11 @@ import (
 
 var _ = Describe("users", func() {
 	It("has a sufficiently large UID/GID range", func() {
-		var stdout bytes.Buffer
-		proc, err := container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			User: "1000000000:1000000000",
 			Path: "id",
-		}, garden.ProcessIO{
-			Stdout: io.MultiWriter(&stdout, GinkgoWriter),
-			Stderr: GinkgoWriter,
 		})
-		Expect(err).NotTo(HaveOccurred())
-		Expect(proc.Wait()).To(Equal(0))
-		Expect(stdout.String()).To(Equal("uid=1000000000 gid=1000000000\n"))
+		Expect(stdout).To(gbytes.Say("uid=1000000000 gid=1000000000\n"))
 	})
 
 	Context("when creating users", func() {
@@ -35,38 +27,26 @@ var _ = Describe("users", func() {
 			uid := 700000
 			gid := 700000
 
-			proc, err := container.Run(garden.ProcessSpec{
+			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
 				Path: "addgroup",
 				Args: []string{"-g", strconv.Itoa(gid), "bob"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
 			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
+			Expect(exitCode).To(Equal(0))
 
-			proc, err = container.Run(garden.ProcessSpec{
+			exitCode, _, _ = runProcess(container, garden.ProcessSpec{
 				User: "root",
 				Path: "adduser",
 				Args: []string{"-u", strconv.Itoa(uid), "-G", "bob", "-D", "bob"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
 			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
+			Expect(exitCode).To(Equal(0))
 
-			proc, err = container.Run(garden.ProcessSpec{
+			exitCode, _, _ = runProcess(container, garden.ProcessSpec{
 				User: "bob",
 				Path: "echo",
 				Args: []string{"Hello Baldrick"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
 			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
+			Expect(exitCode).To(Equal(0))
 		})
 	})
 
@@ -76,19 +56,12 @@ var _ = Describe("users", func() {
 		})
 
 		It("ignores additional groups", func() {
-			stdout := gbytes.NewBuffer()
-
-			proc, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "cat",
 				Args: []string{"/proc/self/status"},
-			}, garden.ProcessIO{
-				Stdout: stdout,
-				Stderr: GinkgoWriter,
 			})
 
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
 			Expect(stdout).To(gbytes.Say("Groups:\t\n"))
 			Expect(stdout).NotTo(gbytes.Say("1010"))
 			Expect(stdout).NotTo(gbytes.Say("1011"))

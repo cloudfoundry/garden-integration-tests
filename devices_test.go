@@ -3,7 +3,6 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
@@ -15,18 +14,12 @@ import (
 var _ = Describe("Devices", func() {
 	DescribeTable("Devices",
 		func(device string, major, minor int) {
-			buffer := gbytes.NewBuffer()
-			process, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path: "ls",
 				Args: []string{"-l", device},
-			}, garden.ProcessIO{Stdout: buffer, Stderr: GinkgoWriter})
-			Expect(err).ToNot(HaveOccurred())
+			})
 
-			exitCode, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(exitCode).To(Equal(0))
-
-			Expect(buffer).To(gbytes.Say(fmt.Sprintf(`%d,\s*%d`, major, minor)))
+			Expect(stdout).To(gbytes.Say(fmt.Sprintf(`%d,\s*%d`, major, minor)))
 		},
 
 		Entry("should have the TTY device", "/dev/tty", 5, 0),
@@ -40,22 +33,17 @@ var _ = Describe("Devices", func() {
 
 	Context("in a privileged container", func() {
 		BeforeEach(func() {
-			setPrivileged()
+			skipIfRootless()
+			privilegedContainer = true
 		})
 
 		It("should have the fuse device", func() {
-			buffer := gbytes.NewBuffer()
-			process, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path: "ls",
 				Args: []string{"-l", "/dev/fuse"},
-			}, garden.ProcessIO{Stdout: buffer, Stderr: GinkgoWriter})
-			Expect(err).ToNot(HaveOccurred())
+			})
 
-			exitCode, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(exitCode).To(Equal(0))
-
-			Expect(buffer).To(gbytes.Say(`10,\s*229`))
+			Expect(stdout).To(gbytes.Say(`10,\s*229`))
 		})
 
 		It("allows permitting all devices", func() {
@@ -63,8 +51,7 @@ var _ = Describe("Devices", func() {
 				Skip("Supported on nested environments")
 			}
 
-			buffer := gbytes.NewBuffer()
-			proc, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path: "sh",
 				User: "root",
 				Args: []string{"-c", `
@@ -91,31 +78,20 @@ var _ = Describe("Devices", func() {
 					echo a > /tmp/devices-cgroup${devices_subdir}/devices.allow
 					cat  /tmp/devices-cgroup${devices_subdir}/devices.list
 				`},
-			}, garden.ProcessIO{
-				Stdout: buffer,
 			})
-			Expect(err).NotTo(HaveOccurred())
-			Expect(proc.Wait()).To(Equal(0))
-			out := strings.TrimSpace(string(buffer.Contents()))
-			Expect(out).To(Equal("a *:* rwm"))
+			Expect(stdout).To(gbytes.Say("a \\*:\\* rwm"))
 		})
 
 	})
 
 	DescribeTable("Process",
 		func(device, fd string) {
-			buffer := gbytes.NewBuffer()
-			process, err := container.Run(garden.ProcessSpec{
+			stdout := runForStdout(container, garden.ProcessSpec{
 				Path: "ls",
 				Args: []string{"-l", device},
-			}, garden.ProcessIO{Stdout: buffer, Stderr: GinkgoWriter})
-			Expect(err).ToNot(HaveOccurred())
+			})
 
-			exitCode, err := process.Wait()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(exitCode).To(Equal(0))
-
-			Expect(buffer).To(gbytes.Say(fmt.Sprintf("%s -> %s", device, fd)))
+			Expect(stdout).To(gbytes.Say(fmt.Sprintf("%s -> %s", device, fd)))
 		},
 		Entry("should have /dev/fd", "/dev/fd", "/proc/self/fd"),
 		Entry("should have /dev/stdin", "/dev/stdin", "/proc/self/fd/0"),
@@ -124,21 +100,11 @@ var _ = Describe("Devices", func() {
 	)
 
 	It("should have devpts mounted", func() {
-		stdout := gbytes.NewBuffer()
-
-		process, err := container.Run(garden.ProcessSpec{
+		stdout := runForStdout(container, garden.ProcessSpec{
 			User: "root",
 			Path: "cat",
 			Args: []string{"/proc/mounts"},
-		}, garden.ProcessIO{
-			Stdout: stdout,
-			Stderr: GinkgoWriter,
 		})
-		Expect(err).ToNot(HaveOccurred())
-
-		exitCode, err := process.Wait()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(exitCode).To(Equal(0))
 
 		Expect(stdout).To(gbytes.Say(`devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=\d+,mode=620,ptmxmode=666`))
 	})
