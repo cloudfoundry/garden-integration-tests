@@ -307,20 +307,34 @@ var _ = Describe("Security", func() {
 
 	Context("by default (unprivileged)", func() {
 		Describe("seccomp", func() {
-			BeforeEach(func() {
-				imageRef.URI = "docker:///ubuntu"
-			})
+			itAppliesSeccomp := func(image garden.ImageRef) {
+				It("blocks syscalls not whitelisted in the default seccomp profile", func() {
+					stderr := gbytes.NewBuffer()
 
-			It("blocks syscalls not whitelisted in the default seccomp profile", func() {
-				stderr := gbytes.NewBuffer()
+					exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
+						Path:  "unshare",
+						Args:  []string{"--user", "whoami"},
+						Image: image,
+					})
 
-				exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
-					Path: "unshare",
-					Args: []string{"--user", "whoami"},
+					Expect(exitCode).NotTo(Equal(0))
+					Expect(stderr).To(gbytes.Say("Operation not permitted"))
 				})
 
-				Expect(exitCode).NotTo(Equal(0))
-				Expect(stderr).To(gbytes.Say("unshare: unshare failed: Operation not permitted"))
+				It("applies seccomp in filter mode", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						Path:  "grep",
+						Args:  []string{"Seccomp", "/proc/self/status"},
+						Image: image,
+					})
+					Expect(string(stdout.Contents())).To(MatchRegexp(`Seccomp:\s+2`))
+				})
+			}
+
+			itAppliesSeccomp(noImage)
+
+			Context("when running a pea", func() {
+				itAppliesSeccomp(peaImage)
 			})
 		})
 
