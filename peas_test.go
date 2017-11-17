@@ -193,6 +193,41 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			})
 		})
 	})
+
+	Describe("Metrics", func() {
+		BeforeEach(func() {
+			limits = garden.Limits{Memory: garden.MemoryLimits{
+				LimitInBytes: 64 * 1024 * 1024,
+			}}
+		})
+
+		Context("when there is no memory limit on the pea", func() {
+			It("should return bulk metrics", func() {
+				buffer := gbytes.NewBuffer()
+
+				proc, err := container.Run(
+					garden.ProcessSpec{
+						Path:  "sh",
+						Args:  []string{"-c", `echo hi && sleep 600`},
+						Image: peaImage,
+					},
+					garden.ProcessIO{
+						Stdout: buffer,
+						Stderr: GinkgoWriter,
+					},
+				)
+				Expect(err).NotTo(HaveOccurred())
+				Eventually(buffer).Should(gbytes.Say("hi"))
+
+				handle := proc.ID()
+				metrics, err := gardenClient.BulkMetrics([]string{handle})
+				Expect(err).NotTo(HaveOccurred())
+				Expect(metrics).To(HaveKey(handle))
+				Expect(metrics[handle].Err).NotTo(HaveOccurred())
+				Expect(metrics[handle].Metrics.MemoryStat.TotalUsageTowardLimit).NotTo(BeZero())
+			})
+		})
+	})
 })
 
 func getNS(nsName string, container garden.Container, image garden.ImageRef) string {
