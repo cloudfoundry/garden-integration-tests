@@ -343,34 +343,50 @@ var _ = Describe("Security", func() {
 		})
 
 		Context("as root", func() {
-			It("has a reduced set of capabilities, not including CAP_SYS_ADMIN", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					Path: "cat",
-					Args: []string{"/proc/self/status"},
+			itHasReducedCapabilities := func(image garden.ImageRef) {
+				It("has a reduced set of capabilities, not including CAP_SYS_ADMIN", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						Path:  "cat",
+						Args:  []string{"/proc/self/status"},
+						Image: image,
+					})
+					Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapEff:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
 				})
-				Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
-				Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+00000000a80425fb"))
-				Eventually(stdout).Should(gbytes.Say("CapEff:\\W+00000000a80425fb"))
-				Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+			}
+
+			itHasReducedCapabilities(noImage)
+
+			Context("when running a pea", func() {
+				itHasReducedCapabilities(peaImage)
 			})
 		})
 
 		Context("as non-root", func() {
-			JustBeforeEach(func() {
-				createUser(container, "alice")
-			})
+			itHasCorrectCapabilities := func(image garden.ImageRef) {
+				It("it has no effective caps and a reduced set of bounding capabilities, not including CAP_SYS_ADMIN", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User:  "1000:1000",
+						Path:  "cat",
+						Args:  []string{"/proc/self/status"},
+						Image: image,
+					})
 
-			It("it has no effective caps and a reduced set of bounding capabilities, not including CAP_SYS_ADMIN", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "cat",
-					Args: []string{"/proc/self/status"},
+					Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+0000000000000000"))
+					Eventually(stdout).Should(gbytes.Say("CapEff:\\W+0000000000000000"))
+					Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+					Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
 				})
+			}
 
-				Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
-				Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+0000000000000000"))
-				Eventually(stdout).Should(gbytes.Say("CapEff:\\W+0000000000000000"))
-				Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+			itHasCorrectCapabilities(noImage)
+
+			Context("when running a pea", func() {
+				itHasCorrectCapabilities(peaImage)
 			})
 		})
 
@@ -457,6 +473,7 @@ var _ = Describe("Security", func() {
 				Expect(stdout).To(gbytes.Say("CapPrm:\\W+0000003fffffffff"))
 				Expect(stdout).To(gbytes.Say("CapEff:\\W+0000003fffffffff"))
 				Expect(stdout).To(gbytes.Say("CapBnd:\\W+0000003fffffffff"))
+				Expect(stdout).To(gbytes.Say("CapAmb:\\W+0000000000000000"))
 			})
 		})
 
@@ -476,6 +493,7 @@ var _ = Describe("Security", func() {
 				Expect(stdout).To(gbytes.Say("CapPrm:\\W+0000000000000000"))
 				Expect(stdout).To(gbytes.Say("CapEff:\\W+0000000000000000"))
 				Expect(stdout).To(gbytes.Say("CapBnd:\\W+00000000a82425fb"))
+				Expect(stdout).To(gbytes.Say("CapAmb:\\W+0000000000000000"))
 			})
 		})
 

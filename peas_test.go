@@ -10,10 +10,10 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
-var _ = Describe("Partially shared containers (peas)", func() {
-	var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
-	var noImage = garden.ImageRef{}
+var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+var noImage = garden.ImageRef{}
 
+var _ = Describe("Partially shared containers (peas)", func() {
 	It("runs a process that shares all of the namespaces besides the mount one", func() {
 		sandboxContainerMntNs := getNS("mnt", container, noImage)
 		peaContainerMntNs := getNS("mnt", container, peaImage)
