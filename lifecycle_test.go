@@ -144,6 +144,14 @@ var _ = Describe("Lifecycle", func() {
 		Eventually(stdout).Should(gbytes.Say(fmt.Sprintf("%s\n", container.Handle())))
 	})
 
+	It("runs garden-init as pid 1", func() {
+		stdout := runForStdout(container, garden.ProcessSpec{
+			Path: "head",
+			Args: []string{"-n1", "/proc/1/status"},
+		})
+		Expect(stdout).To(gbytes.Say("garden-init"))
+	})
+
 	Context("when the handle is bigger than 49 characters", func() {
 		BeforeEach(func() {
 			handle = "7132-ec774112a9cd-101f8293-230e-4fa8-4138-e8244e6dcfa1"
