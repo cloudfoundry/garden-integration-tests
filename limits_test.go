@@ -49,10 +49,12 @@ var _ = Describe("Limits", func() {
 		})
 
 		It("doesn't kill a process that uses lots of memory within the limit", func() {
+			// Note: the dd process itself takes up a certain amount of memory, so we have to
+			// allow for that overhead. This is why we don't E.g. write 63MB.
 			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
 				Path: "dd",
-				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=50"},
+				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=58"},
 			})
 			Expect(exitCode).To(Equal(0))
 		})

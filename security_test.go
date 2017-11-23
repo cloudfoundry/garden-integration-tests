@@ -356,13 +356,12 @@ var _ = Describe("Security", func() {
 			Expect(exitCode).To(Equal(0))
 		})
 
-		Context("as root", func() {
-			itHasReducedCapabilities := func(image garden.ImageRef) {
+		Describe("capabilities", func() {
+			Describe("the init process", func() {
 				It("has a reduced set of capabilities, not including CAP_SYS_ADMIN", func() {
 					stdout := runForStdout(container, garden.ProcessSpec{
-						Path:  "cat",
-						Args:  []string{"/proc/self/status"},
-						Image: image,
+						Path: "cat",
+						Args: []string{"/proc/1/status"},
 					})
 					Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
 					Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+00000000a80425fb"))
@@ -370,37 +369,54 @@ var _ = Describe("Security", func() {
 					Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
 					Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
 				})
-			}
-
-			itHasReducedCapabilities(noImage)
-
-			Context("when running a pea", func() {
-				itHasReducedCapabilities(peaImage)
 			})
-		})
 
-		Context("as non-root", func() {
-			itHasCorrectCapabilities := func(image garden.ImageRef) {
-				It("it has no effective caps and a reduced set of bounding capabilities, not including CAP_SYS_ADMIN", func() {
-					stdout := runForStdout(container, garden.ProcessSpec{
-						User:  "1000:1000",
-						Path:  "cat",
-						Args:  []string{"/proc/self/status"},
-						Image: image,
+			Describe("a process running as the root user", func() {
+				itHasReducedCapabilities := func(image garden.ImageRef) {
+					It("has a reduced set of capabilities, not including CAP_SYS_ADMIN", func() {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							Path:  "cat",
+							Args:  []string{"/proc/self/status"},
+							Image: image,
+						})
+						Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapEff:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
 					})
+				}
 
-					Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
-					Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+0000000000000000"))
-					Eventually(stdout).Should(gbytes.Say("CapEff:\\W+0000000000000000"))
-					Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
-					Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
+				itHasReducedCapabilities(noImage)
+
+				Context("when running a pea", func() {
+					itHasReducedCapabilities(peaImage)
 				})
-			}
+			})
 
-			itHasCorrectCapabilities(noImage)
+			Describe("a process running as a non-root user", func() {
+				itHasCorrectCapabilities := func(image garden.ImageRef) {
+					It("it has no effective caps and a reduced set of bounding capabilities, not including CAP_SYS_ADMIN", func() {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							User:  "1000:1000",
+							Path:  "cat",
+							Args:  []string{"/proc/self/status"},
+							Image: image,
+						})
 
-			Context("when running a pea", func() {
-				itHasCorrectCapabilities(peaImage)
+						Eventually(stdout).Should(gbytes.Say("CapInh:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapPrm:\\W+0000000000000000"))
+						Eventually(stdout).Should(gbytes.Say("CapEff:\\W+0000000000000000"))
+						Eventually(stdout).Should(gbytes.Say("CapBnd:\\W+00000000a80425fb"))
+						Eventually(stdout).Should(gbytes.Say("CapAmb:\\W+0000000000000000"))
+					})
+				}
+
+				itHasCorrectCapabilities(noImage)
+
+				Context("when running a pea", func() {
+					itHasCorrectCapabilities(peaImage)
+				})
 			})
 		})
 
