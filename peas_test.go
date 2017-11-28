@@ -228,6 +228,23 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			})
 		})
 	})
+
+	Context("when the process executable doesn't exist", func() {
+		It("returns an error from Run", func() {
+			_, err := container.Run(
+				garden.ProcessSpec{
+					Path:  "does-not-exist",
+					Args:  []string{},
+					Image: peaImage,
+				},
+				garden.ProcessIO{
+					Stdout: GinkgoWriter,
+					Stderr: GinkgoWriter,
+				},
+			)
+			Expect(err).To(MatchError(ContainSubstring("executable file not found in $PATH")))
+		})
+	})
 })
 
 func getNS(nsName string, container garden.Container, image garden.ImageRef) string {
