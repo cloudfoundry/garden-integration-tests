@@ -14,16 +14,37 @@ var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
 var noImage = garden.ImageRef{}
 
 var _ = Describe("Partially shared containers (peas)", func() {
-	It("runs a process that shares all of the namespaces besides the mount one", func() {
-		sandboxContainerMntNs := getNS("mnt", container, noImage)
-		peaContainerMntNs := getNS("mnt", container, peaImage)
-		Expect(sandboxContainerMntNs).NotTo(Equal(peaContainerMntNs))
+	Describe("sharing of namespaces", func() {
+		It("runs a process that shares all of the namespaces besides the mount one", func() {
 
-		for _, ns := range []string{"net", "ipc", "pid", "user", "uts"} {
-			sandboxContainerNs := getNS(ns, container, noImage)
-			peaContainerNs := getNS(ns, container, peaImage)
-			Expect(sandboxContainerNs).To(Equal(peaContainerNs))
-		}
+			sandboxContainerMntNs := getNS("mnt", container, noImage)
+			peaContainerMntNs := getNS("mnt", container, peaImage)
+			Expect(sandboxContainerMntNs).NotTo(Equal(peaContainerMntNs))
+
+			for _, ns := range []string{"net", "ipc", "pid", "user", "uts"} {
+				sandboxContainerNs := getNS(ns, container, noImage)
+				peaContainerNs := getNS(ns, container, peaImage)
+				Expect(sandboxContainerNs).To(Equal(peaContainerNs))
+			}
+		})
+
+		Context("when the sandbox container is privileged", func() {
+			BeforeEach(func() {
+				privilegedContainer = true
+			})
+
+			It("runs a process that shares all of the namespaces besides the mount one", func() {
+				sandboxContainerMntNs := getNS("mnt", container, noImage)
+				peaContainerMntNs := getNS("mnt", container, peaImage)
+				Expect(sandboxContainerMntNs).NotTo(Equal(peaContainerMntNs))
+
+				for _, ns := range []string{"net", "ipc", "pid", "user", "uts"} {
+					sandboxContainerNs := getNS(ns, container, noImage)
+					peaContainerNs := getNS(ns, container, peaImage)
+					Expect(sandboxContainerNs).To(Equal(peaContainerNs))
+				}
+			})
+		})
 	})
 
 	It("runs a process in its own rootfs", func() {
