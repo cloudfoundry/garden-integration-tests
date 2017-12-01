@@ -30,7 +30,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when the sandbox container is privileged", func() {
 			BeforeEach(func() {
-				privilegedContainer = true
+				setPrivileged()
 			})
 
 			It("runs a process that shares all of the namespaces besides the mount one", func() {
