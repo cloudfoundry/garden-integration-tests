@@ -250,20 +250,20 @@ var _ = Describe("Partially shared containers (peas)", func() {
 		})
 	})
 
-	Context("when the process executable doesn't exist", func() {
+	Context("when trying to use nonexistent image", func() {
 		It("returns an error from Run", func() {
 			_, err := container.Run(
 				garden.ProcessSpec{
-					Path:  "does-not-exist",
+					Path:  "echo",
 					Args:  []string{},
-					Image: peaImage,
+					Image: garden.ImageRef{URI: "does-not-exist"},
 				},
 				garden.ProcessIO{
 					Stdout: GinkgoWriter,
 					Stderr: GinkgoWriter,
 				},
 			)
-			Expect(err).To(MatchError(ContainSubstring("executable file not found in $PATH")))
+			Expect(err).To(MatchError("creating-volume: repository_fetcher: stat file: lstat does-not-exist: no such file or directory"))
 		})
 	})
 })
