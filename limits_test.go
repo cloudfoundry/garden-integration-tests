@@ -60,10 +60,6 @@ var _ = Describe("Limits", func() {
 
 	Describe("disk limits", func() {
 		BeforeEach(func() {
-			if os.Getenv("EXTERNAL_IMAGE_PLUGIN_PROVIDED") == "true" {
-				Skip("Disk limits are not enforced by garden when there is an external image plugin provided")
-			}
-
 			privilegedContainer = false
 
 			limits.Disk.ByteSoft = 100 * 1024 * 1024
@@ -140,7 +136,7 @@ var _ = Describe("Limits", func() {
 					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // assume busybox itself accounts for > 1 MB
+						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=10"},
 					})
 					Expect(exitCode).ToNot(Equal(0))
 				})
