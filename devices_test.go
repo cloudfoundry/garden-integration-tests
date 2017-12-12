@@ -48,7 +48,7 @@ var _ = Describe("Devices", func() {
 
 		It("allows permitting all devices", func() {
 			if os.Getenv("NESTED") != "true" {
-				Skip("Supported on nested environments")
+				Skip("Not supported on nested environments")
 			}
 
 			stdout := runForStdout(container, garden.ProcessSpec{

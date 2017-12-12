@@ -20,8 +20,6 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
-const KNOWN_NESTED_UMOUNT_ERR = "unmounting the loop device: unmounting file: exit status 1"
-
 var (
 	gardenHost            string
 	gardenPort            string
@@ -194,12 +192,7 @@ func getKernelVersion() (int, int) {
 }
 
 func destroyContainer(client garden.Client, handle string) {
-	err := client.Destroy(handle)
-	if err != nil && os.Getenv("NESTED") == "true" && err.Error() == KNOWN_NESTED_UMOUNT_ERR {
-		fmt.Printf("Ignoring known nested umount error: %s\n", err)
-		return
-	}
-	Expect(err).NotTo(HaveOccurred())
+	Expect(client.Destroy(handle))
 }
 
 func skipIfRootless() {

@@ -1,8 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"os"
-
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
