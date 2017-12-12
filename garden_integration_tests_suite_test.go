@@ -129,7 +129,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 			theContainer, _ := gardenClient.Lookup(container.Handle())
 
 			if theContainer != nil {
-				destroyContainer(gardenClient, container.Handle())
+				Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
 			}
 		}
 	})
@@ -189,10 +189,6 @@ func getKernelVersion() (int, int) {
 	Expect(err).NotTo(HaveOccurred())
 
 	return major, minor
-}
-
-func destroyContainer(client garden.Client, handle string) {
-	Expect(client.Destroy(handle))
 }
 
 func skipIfRootless() {

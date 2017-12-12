@@ -101,7 +101,7 @@ var _ = Describe("Container information", func() {
 
 			AfterEach(func() {
 				for _, handle := range undesiredHandles {
-					destroyContainer(gardenClient, handle)
+					Expect(gardenClient.Destroy(handle)).To(Succeed())
 				}
 			})
 
@@ -131,7 +131,7 @@ var _ = Describe("Container information", func() {
 
 		AfterEach(func() {
 			if extraContainer != nil {
-				destroyContainer(gardenClient, extraContainer.Handle())
+				Expect(gardenClient.Destroy(extraContainer.Handle())).To(Succeed())
 			}
 		})
 

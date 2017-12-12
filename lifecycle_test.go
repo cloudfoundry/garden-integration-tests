@@ -67,8 +67,8 @@ var _ = Describe("Lifecycle", func() {
 			container2, err := gardenClient.Create(garden.ContainerSpec{Limits: garden.Limits{Disk: diskLimits}})
 			Expect(err).NotTo(HaveOccurred())
 
-			destroyContainer(gardenClient, container1.Handle())
-			destroyContainer(gardenClient, container2.Handle())
+			Expect(gardenClient.Destroy(container1.Handle())).To(Succeed())
+			Expect(gardenClient.Destroy(container2.Handle())).To(Succeed())
 		})
 	})
 

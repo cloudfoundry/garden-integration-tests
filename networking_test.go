@@ -188,7 +188,7 @@ var _ = Describe("Networking", func() {
 					})
 					Expect(err).NotTo(HaveOccurred())
 
-					destroyContainer(gardenClient, otherContainer.Handle())
+					Expect(gardenClient.Destroy(otherContainer.Handle())).To(Succeed())
 					err := checkConnection(container, googleDNSIP, 53)
 					if err != nil {
 						checkPing(container, googleDNSIP)
@@ -204,15 +204,16 @@ var _ = Describe("Networking", func() {
 			JustBeforeEach(func() {
 				var err error
 
-				destroyContainer(gardenClient, container.Handle())
+				Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
 
 				newContainer, err = gardenClient.Create(garden.ContainerSpec{
 					Network: networkSpec,
 				})
 				Expect(err).NotTo(HaveOccurred())
 			})
+
 			AfterEach(func() {
-				destroyContainer(gardenClient, newContainer.Handle())
+				Expect(gardenClient.Destroy(newContainer.Handle())).To(Succeed())
 			})
 
 			It("should continue to route traffic successfully", func() {
