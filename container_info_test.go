@@ -34,6 +34,7 @@ var _ = Describe("Container information", func() {
 
 		Describe("getting container metrics without getting info", func() {
 			It("can list metrics", func() {
+				skipIfWoot("Groot does not support metrics yet")
 				metrics, err := container.Metrics()
 				Expect(err).ToNot(HaveOccurred())
 
@@ -106,6 +107,7 @@ var _ = Describe("Container information", func() {
 			})
 
 			It("can filter by property", func() {
+				skipIfWoot("Groot does not support deleting containers and this test expects a single container to exist")
 				containers, err := gardenClient.Containers(garden.Properties{"foo": bar})
 				Expect(err).ToNot(HaveOccurred())
 

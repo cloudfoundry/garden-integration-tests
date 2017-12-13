@@ -171,6 +171,7 @@ var _ = Describe("Security", func() {
 		})
 
 		It("maintains setuid permissions in unprivileged containers", func() {
+			skipIfWoot("Woot blindly chmods to Maximus thus screwing the suid flag")
 			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "ls",
@@ -426,6 +427,7 @@ var _ = Describe("Security", func() {
 			})
 
 			It("sees root-owned files in the rootfs as owned by the container's root user", func() {
+				skipIfWoot("Woot blindly chmods to Maximus thus screwing the suid flag")
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
@@ -449,6 +451,7 @@ var _ = Describe("Security", func() {
 			})
 
 			It("sees alice-owned files as owned by alice", func() {
+				skipIfWoot("Woot blindly chmods to Maximus thus screwing the suid flag")
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
@@ -459,6 +462,7 @@ var _ = Describe("Security", func() {
 			})
 
 			It("lets alice write in /home/alice", func() {
+				skipIfWoot("Woot blindly chmods to Maximus thus screwing the suid flag")
 				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "touch",
@@ -558,6 +562,7 @@ var _ = Describe("Security", func() {
 
 		Context("when the process is run as non-root user", func() {
 			BeforeEach(func() {
+				skipIfWoot("Ubuntu docker image layers contain whiteouts and woot does not handle them properly")
 				imageRef.URI = "docker:///ubuntu#14.04"
 			})
 

@@ -201,6 +201,16 @@ func rootless() bool {
 	return os.Getenv("ROOTLESS") != ""
 }
 
+func skipIfWoot(reason string) {
+	if woot() {
+		Skip("Skipping this test because I am WOOT: " + reason)
+	}
+}
+
+func woot() bool {
+	return os.Getenv("WOOT") != ""
+}
+
 func setPrivileged() {
 	privilegedContainer = true
 	skipIfRootless()

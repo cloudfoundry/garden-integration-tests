@@ -16,6 +16,10 @@ var _ = Describe("Rootfses", func() {
 
 	Context("when the rootfs path is a docker image URL", func() {
 		Context("and the image specifies $PATH", func() {
+			BeforeEach(func() {
+				skipIfWoot("Groot does not place environemnt variables in the bundle spec yet")
+			})
+
 			It("$PATH is taken from the docker image", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
@@ -39,6 +43,10 @@ var _ = Describe("Rootfses", func() {
 		})
 
 		Context("and the image specifies a VOLUME", func() {
+			BeforeEach(func() {
+				skipIfWoot("Groot does not place mounts in the bundle spec yet")
+			})
+
 			It("creates the volume directory, if it does not already exist", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",

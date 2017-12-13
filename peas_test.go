@@ -224,6 +224,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when there is no memory limit on the pea", func() {
 			It("should return bulk metrics", func() {
+				skipIfWoot("Groot does not support metrics yet")
 				buffer := gbytes.NewBuffer()
 
 				proc, err := container.Run(

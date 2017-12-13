@@ -9,6 +9,7 @@ import (
 
 var _ = Describe("Metrics", func() {
 	JustBeforeEach(func() {
+		skipIfWoot("Groot does not support metrics yet")
 		_, err := container.Run(garden.ProcessSpec{
 			Path: "sh",
 			Args: []string{

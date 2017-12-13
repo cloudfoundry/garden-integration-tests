@@ -60,6 +60,7 @@ var _ = Describe("Limits", func() {
 
 	Describe("disk limits", func() {
 		BeforeEach(func() {
+			skipIfWoot("Groot does not support disk size limits yet")
 			privilegedContainer = false
 
 			limits.Disk.ByteSoft = 100 * 1024 * 1024

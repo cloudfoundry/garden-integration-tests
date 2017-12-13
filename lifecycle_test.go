@@ -58,6 +58,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("should be able to create and destroy containers sequentially", func() {
+			skipIfWoot("Groot does not support destroy yet")
 			diskLimits := garden.DiskLimits{
 				ByteHard: 2 * 1024 * 1024 * 1024,
 			}
@@ -1074,6 +1075,7 @@ var _ = Describe("Lifecycle", func() {
 		var containerHandle string
 
 		It("should disappear after grace time and before timeout", func() {
+			skipIfWoot("Groot does not support deleting containers yet")
 			Expect(container.SetGraceTime(500 * time.Millisecond)).To(Succeed())
 			containerHandle = container.Handle()
 
