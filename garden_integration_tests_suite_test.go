@@ -7,7 +7,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"os/exec"
 	"strconv"
 	"strings"
 	"testing"
@@ -130,10 +129,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 			theContainer, _ := gardenClient.Lookup(container.Handle())
 
 			if theContainer != nil {
-				processForest, err := exec.Command("ps", "auxf").CombinedOutput()
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(gardenClient.Destroy(container.Handle())).To(Succeed(), string(processForest))
+				Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
 			}
 		}
 	})
