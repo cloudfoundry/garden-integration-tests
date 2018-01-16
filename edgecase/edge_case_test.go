@@ -14,7 +14,7 @@ import (
 var _ = Describe("Edge cases", func() {
 	var (
 		container garden.Container
-		peaImage  = garden.ImageRef{URI: "docker:///alpine:3.7"}
+		peaImage  = garden.ImageRef{URI: "docker:///alpine#3.7"}
 	)
 
 	BeforeEach(func() {
