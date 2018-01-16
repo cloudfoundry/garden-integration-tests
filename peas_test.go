@@ -3,8 +3,6 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"io"
-	"sync"
-	"time"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
@@ -12,7 +10,7 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
-var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+var peaImage = garden.ImageRef{URI: "docker:///alpine:3.7"}
 var noImage = garden.ImageRef{}
 
 var _ = Describe("Partially shared containers (peas)", func() {
@@ -267,69 +265,6 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				},
 			)
 			Expect(err).To(MatchError(ContainSubstring("executable file not found in $PATH")))
-		})
-	})
-
-	Context("when creating a pea and destroying the sandbox at the same time", func() {
-		test := func(wg *sync.WaitGroup, peaCreationDuration time.Duration) {
-			defer wg.Done()
-			ctr, err := gardenClient.Create(garden.ContainerSpec{
-				Image: peaImage,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			go ctr.Run(
-				garden.ProcessSpec{
-					Path:  "sleep",
-					Args:  []string{"30"},
-					Image: peaImage,
-				},
-				garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
-				},
-			)
-
-			doneDeleting := make(chan struct{})
-			go func() {
-				defer GinkgoRecover()
-				defer close(doneDeleting)
-				time.Sleep(peaCreationDuration)
-				Expect(gardenClient.Destroy(ctr.Handle())).To(Succeed())
-			}()
-
-			<-doneDeleting
-		}
-
-		// This test is slow, and prone to false positives if we were to regress on
-		// the functionality under test. Consider moving this to a "slow edge-case
-		// regression suite" if more tests like this are created.
-		//
-		// https://www.pivotaltracker.com/story/show/154242239
-		It("is able to destroy", func() {
-			start := time.Now()
-			_, err := container.Run(
-				garden.ProcessSpec{
-					Path:  "sleep",
-					Args:  []string{"30"},
-					Image: peaImage,
-				},
-				garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
-				},
-			)
-			peaCreationDuration := time.Since(start)
-			Expect(err).NotTo(HaveOccurred())
-
-			for i := 0; i < 5; i++ {
-				wg := &sync.WaitGroup{}
-				for i := 0; i < 50; i++ {
-					wg.Add(1)
-					go test(wg, peaCreationDuration)
-				}
-				wg.Wait()
-			}
 		})
 	})
 })
