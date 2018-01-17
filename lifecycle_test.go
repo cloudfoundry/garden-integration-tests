@@ -1072,12 +1072,11 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	Context("when the container GraceTime is applied", func() {
-		var containerHandle string
+		skipIfWoot("Groot does not support deleting containers yet")
 
 		It("should disappear after grace time and before timeout", func() {
-			skipIfWoot("Groot does not support deleting containers yet")
+			containerHandle := container.Handle()
 			Expect(container.SetGraceTime(500 * time.Millisecond)).To(Succeed())
-			containerHandle = container.Handle()
 
 			_, err := gardenClient.Lookup(containerHandle)
 			Expect(err).NotTo(HaveOccurred())
@@ -1093,6 +1092,31 @@ var _ = Describe("Lifecycle", func() {
 			Eventually(func() error {
 				return gardenClient.Destroy("not-a-real-handle")
 			}).Should(MatchError(fmt.Sprintf("unknown handle: %s", "not-a-real-handle")))
+		})
+
+		Context("when a process is started", func() {
+			Context("and the container GraceTime is reset", func() {
+				It("should account for existing client connections", func() {
+					processSpec := garden.ProcessSpec{
+						Path: "sh",
+						Args: []string{"-c", `sleep 1000`},
+					}
+					stdOut, stdErr := gbytes.NewBuffer(), gbytes.NewBuffer()
+					_, err := container.Run(
+						processSpec,
+						garden.ProcessIO{
+							Stdout: io.MultiWriter(stdOut, GinkgoWriter),
+							Stderr: io.MultiWriter(stdErr, GinkgoWriter),
+						})
+					Expect(err).NotTo(HaveOccurred())
+
+					Expect(container.SetGraceTime(50 * time.Millisecond)).To(Succeed())
+					Consistently(func() error {
+						_, err := gardenClient.Lookup(container.Handle())
+						return err
+					}, "1s", "1s").ShouldNot(HaveOccurred())
+				})
+			})
 		})
 	})
 })
