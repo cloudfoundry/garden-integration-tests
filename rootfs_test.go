@@ -61,8 +61,8 @@ var _ = Describe("Rootfses", func() {
 		Context("and the image is private", func() {
 			BeforeEach(func() {
 				imageRef.URI = "docker:///cfgarden/private"
-				imageRef.Username = os.Getenv("REGISTRY_USERNAME")
-				imageRef.Password = os.Getenv("REGISTRY_PASSWORD")
+				imageRef.Username = os.Getenv("DOCKER_REGISTRY_USERNAME")
+				imageRef.Password = os.Getenv("DOCKER_REGISTRY_PASSWORD")
 				if imageRef.Username == "" || imageRef.Password == "" {
 					Skip("Registry username or password not provided")
 				}
