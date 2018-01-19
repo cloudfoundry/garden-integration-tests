@@ -10,11 +10,26 @@ import (
 )
 
 var _ = Describe("Rootfses", func() {
-	BeforeEach(func() {
-		imageRef.URI = "docker:///cfgarden/with-volume"
+
+	Context("when the rootfs path is a private azure image URL", func() {
+		BeforeEach(func() {
+			imageRef.URI = "docker://gnome.azurecr.io/alpine#3.7"
+			imageRef.Username = os.Getenv("AZURE_REGISTRY_USERNAME")
+			imageRef.Password = os.Getenv("AZURE_REGISTRY_PASSWORD")
+			if imageRef.Username == "" || imageRef.Password == "" {
+				Skip("Registry username or password not provided")
+			}
+		})
+
+		It("should succeed", func() {
+			Expect(containerCreateErr).NotTo(HaveOccurred())
+		})
 	})
 
 	Context("when the rootfs path is a docker image URL", func() {
+		BeforeEach(func() {
+			imageRef.URI = "docker:///cfgarden/with-volume"
+		})
 		Context("and the image specifies $PATH", func() {
 			BeforeEach(func() {
 				skipIfWoot("Groot does not place environemnt variables in the bundle spec yet")
