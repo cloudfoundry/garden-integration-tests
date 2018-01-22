@@ -128,8 +128,7 @@ var _ = Describe("Lifecycle", func() {
 			Args: []string{"/proc/mounts"},
 		})
 
-		Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs"))
-		Expect(stdout).To(gbytes.Say("rw,nodev,relatime"))
+		Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs rw,nodev,relatime"))
 	})
 
 	It("gives the container a hostname based on its handle", func() {

@@ -62,7 +62,7 @@ var _ = Describe("users", func() {
 				Args: []string{"/proc/self/status"},
 			})
 
-			Expect(stdout).To(gbytes.Say("Groups:\t\n"))
+			Expect(stdout).To(gbytes.Say(`Groups:(\s)*\n`))
 			Expect(stdout).NotTo(gbytes.Say("1010"))
 			Expect(stdout).NotTo(gbytes.Say("1011"))
 		})

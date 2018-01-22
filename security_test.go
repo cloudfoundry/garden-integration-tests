@@ -87,9 +87,27 @@ var _ = Describe("Security", func() {
 					Path: "grep",
 					Args: []string{"cgroup", "/proc/mounts"},
 				})
-				for _, c := range []string{"memory", "cpuset", "blkio", "cpu", "cpuacct", "blkio", "devices", "freezer", "net_cls", "perf_event", "net_prio", "hugetlb", "pids"} {
+				stdoutContents := string(stdout.Contents())
+
+				// TODO: Refactor this once xenial stemcells become the default.
+				// We have to add this logic now as cgroup mounts are slightly different
+				// between trusty and xenial.
+				cpuCgroups := []string{"cpu", "cpuacct"}
+				if strings.Contains(stdoutContents, "cpu,cpuacct") {
+					cpuCgroups = []string{"cpu,cpuacct"}
+				}
+				netCgroups := []string{"net_cls", "net_prio"}
+				if strings.Contains(stdoutContents, "net_cls,net_prio") {
+					netCgroups = []string{"net_cls,net_prio"}
+				}
+
+				cgroups := []string{"memory", "cpuset", "blkio", "blkio", "devices", "freezer", "perf_event", "hugetlb", "pids"}
+				cgroups = append(cgroups, cpuCgroups...)
+				cgroups = append(cgroups, netCgroups...)
+
+				for _, c := range cgroups {
 					line := fmt.Sprintf("cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s", c, c)
-					Expect(string(stdout.Contents())).To(ContainSubstring(line))
+					Expect(stdoutContents).To(ContainSubstring(line))
 				}
 			})
 		})
