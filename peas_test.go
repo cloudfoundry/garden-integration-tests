@@ -10,7 +10,7 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
-var peaImage = garden.ImageRef{URI: "docker:///alpine#3.7"}
+var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
 var noImage = garden.ImageRef{}
 
 var _ = Describe("Partially shared containers (peas)", func() {
