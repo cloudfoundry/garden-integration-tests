@@ -184,12 +184,16 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Describe("Limits", func() {
 		BeforeEach(func() {
-			limits = garden.Limits{Memory: garden.MemoryLimits{
-				LimitInBytes: 64 * 1024 * 1024,
-			}}
+			limits = garden.Limits{
+				Bandwidth: garden.BandwidthLimits{RateInBytesPerSecond: 1024 * 1024, BurstRateInBytesPerSecond: 1024 * 1024},
+				CPU:       garden.CPULimits{LimitInShares: 1024},
+				Disk:      garden.DiskLimits{ByteHard: 1024 * 1024 * 1024},
+				Memory:    garden.MemoryLimits{LimitInBytes: 64 * 1024 * 1024},
+				Pid:       garden.PidLimits{Max: 50},
+			}
 		})
 
-		Context("when there is no memory limit on the pea", func() {
+		Context("when OverrideContainerLimits is not specified on the pea", func() {
 			It("shares that limit with the container", func() {
 				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
@@ -199,9 +203,10 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					})
 				Expect(exitCode).NotTo(Equal(0))
 			})
+
 		})
 
-		Context("when there are any limits on the pea", func() {
+		Context("when an empty OverrideContainerLimits is specified on the pea", func() {
 			It("does not share memory limit with the container", func() {
 				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
@@ -211,6 +216,31 @@ var _ = Describe("Partially shared containers (peas)", func() {
 						OverrideContainerLimits: &garden.ProcessLimits{},
 					})
 				Expect(exitCode).To(Equal(0))
+			})
+
+			It("is not limited in how many processes it can create", func() {
+				stdout := runForStdout(container, garden.ProcessSpec{
+					Path:  "cat",
+					Args:  []string{"/sys/fs/cgroup/pids/pids.max"},
+					Image: peaImage,
+					OverrideContainerLimits: &garden.ProcessLimits{},
+				})
+				Expect(string(stdout.Contents())).To(Equal("max\n"))
+			})
+		})
+
+		Context("when a memory limit is specified on the pea", func() {
+			It("kills processes that exceed that limit", func() {
+				exitCode, _, _ := runProcess(container,
+					garden.ProcessSpec{
+						Path:  "dd",
+						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=33"},
+						Image: peaImage,
+						OverrideContainerLimits: &garden.ProcessLimits{
+							Memory: garden.MemoryLimits{LimitInBytes: 32 * 1024 * 1024},
+						},
+					})
+				Expect(exitCode).NotTo(Equal(0))
 			})
 		})
 	})
