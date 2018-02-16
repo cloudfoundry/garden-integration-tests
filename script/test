@@ -4,4 +4,4 @@ set -e
 
 ARGS=$@
 
-(cd ../../..; ./scripts/remote-fly ci/gats.yml -- $ARGS)
+(cd ../../..; ./scripts/remote-fly ci/gdn-linux.yml -- $ARGS)
