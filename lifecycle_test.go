@@ -672,8 +672,27 @@ var _ = Describe("Lifecycle", func() {
 
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", `sleep 1; for i in $(seq 1 5); do echo $i; echo $i >&2; done`},
-					TTY:  &garden.TTYSpec{},
+					Args: []string{"-c", `
+trap unblock SIGTERM
+
+break=false
+unblock() {
+	break=true
+}
+
+while true; do
+	if [ "$break" = true ]; then
+		break
+	fi
+	sleep 0.01
+done
+
+for i in $(seq 1 5); do
+	echo $i
+	echo $i >&2
+done
+					`},
+					TTY: &garden.TTYSpec{},
 				}, garden.ProcessIO{
 					Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
 					Stderr: GinkgoWriter,
@@ -685,6 +704,9 @@ var _ = Describe("Lifecycle", func() {
 					Stderr: GinkgoWriter,
 				})
 				Expect(err).NotTo(HaveOccurred())
+
+				// Garden only has TERM and KILL
+				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
 
 				exitCode, err := process.Wait()
 				Expect(err).NotTo(HaveOccurred())
