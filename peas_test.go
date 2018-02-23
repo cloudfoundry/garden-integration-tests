@@ -245,6 +245,24 @@ var _ = Describe("Partially shared containers (peas)", func() {
 		})
 	})
 
+	Context("when the sandbox is destroyed", func() {
+		It("kills all associated peas", func() {
+			process, err := container.Run(garden.ProcessSpec{
+				Path:  "sleep",
+				Args:  []string{"10000d"},
+				Image: peaImage,
+			}, garden.ProcessIO{
+				Stdout: GinkgoWriter,
+				Stderr: GinkgoWriter,
+			})
+			Expect(err).ToNot(HaveOccurred())
+			Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
+			exitCode, err := process.Wait()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(exitCode).To(Equal(137)) // 128+9
+		})
+	})
+
 	Describe("Metrics", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{Memory: garden.MemoryLimits{
