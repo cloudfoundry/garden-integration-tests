@@ -81,15 +81,13 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when a username is provided", func() {
 			It("returns an error", func() {
-				_, err := container.Run(garden.ProcessSpec{
-					User:  "root",
-					Path:  "pwd",
+				stdout := runForStdout(container, garden.ProcessSpec{
+					User:  "operator",
+					Path:  "sh",
+					Args:  []string{"-c", "echo -n $(id -u):$(id -g); whoami"},
 					Image: peaImage,
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
 				})
-				Expect(err).To(MatchError(ContainSubstring("'root' is not a valid uid:gid")))
+				Expect(stdout).To(gbytes.Say("11:0operator"))
 			})
 		})
 	})
