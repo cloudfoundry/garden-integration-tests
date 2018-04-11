@@ -57,22 +57,6 @@ var _ = Describe("Rootfses", func() {
 
 		})
 
-		Context("and the image specifies a VOLUME", func() {
-			BeforeEach(func() {
-				skipIfWoot("Groot does not place mounts in the bundle spec yet")
-			})
-
-			It("creates the volume directory, if it does not already exist", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "root",
-					Path: "ls",
-					Args: []string{"-l", "/"},
-				})
-
-				Expect(stdout).To(gbytes.Say("foo"))
-			})
-		})
-
 		Context("and the image is private", func() {
 			BeforeEach(func() {
 				imageRef.URI = "docker:///cfgarden/private"
