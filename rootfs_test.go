@@ -27,11 +27,9 @@ var _ = Describe("Rootfses", func() {
 	})
 
 	Context("when the rootfs path is a docker image URL", func() {
-		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/with-volume-and-process-env"
-		})
 		Context("and the image specifies $PATH", func() {
 			BeforeEach(func() {
+				imageRef.URI = "docker:///cfgarden/with-process-env"
 				skipIfWoot("Groot does not place environemnt variables in the bundle spec yet")
 			})
 
