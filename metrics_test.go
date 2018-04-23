@@ -19,7 +19,7 @@ var _ = Describe("Metrics", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	It("should return the CPU metrics", func() {
+	It("returns the CPU metrics", func() {
 		Eventually(func() uint64 {
 			metrics, err := container.Metrics()
 			Expect(err).NotTo(HaveOccurred())
@@ -28,7 +28,7 @@ var _ = Describe("Metrics", func() {
 		}).ShouldNot(BeZero())
 	})
 
-	It("should return the memory metrics", func() {
+	It("returns the memory metrics", func() {
 		Eventually(func() uint64 {
 			metrics, err := container.Metrics()
 			Expect(err).NotTo(HaveOccurred())
@@ -37,7 +37,42 @@ var _ = Describe("Metrics", func() {
 		}).ShouldNot(BeZero())
 	})
 
-	It("should return bulk metrics", func() {
+	It("returns the number of currently running pids", func() {
+		Eventually(func() uint64 {
+			metrics, err := container.Metrics()
+			Expect(err).NotTo(HaveOccurred())
+
+			return metrics.PidStat.Current
+		}).ShouldNot(BeZero())
+	})
+
+	It("returns an N/A value for the max mumber of pids", func() {
+		Consistently(func() uint64 {
+			metrics, err := container.Metrics()
+			Expect(err).NotTo(HaveOccurred())
+
+			return metrics.PidStat.Max
+		}).Should(BeZero())
+	})
+
+	Context("when there is a pid limit", func() {
+		BeforeEach(func() {
+			limits = garden.Limits{
+				Pid: garden.PidLimits{Max: 128},
+			}
+		})
+
+		It("returns the max number of pids", func() {
+			Eventually(func() uint64 {
+				metrics, err := container.Metrics()
+				Expect(err).NotTo(HaveOccurred())
+
+				return metrics.PidStat.Max
+			}).Should(BeEquivalentTo(128))
+		})
+	})
+
+	It("returns bulk metrics", func() {
 		metrics, err := gardenClient.BulkMetrics([]string{container.Handle()})
 		Expect(err).NotTo(HaveOccurred())
 
