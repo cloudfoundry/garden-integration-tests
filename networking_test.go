@@ -15,6 +15,8 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
+const googleDNSIP = "8.8.8.8"
+
 var _ = Describe("Networking", func() {
 	BeforeEach(func() {
 		skipIfRootless()
@@ -145,7 +147,7 @@ var _ = Describe("Networking", func() {
 
 		Context("when the rootFS contains /etc/resolv.conf", func() {
 			BeforeEach(func() {
-				imageRef.URI = "docker:///debian#jessie"
+				imageRef.URI = "docker:///debian#jessie-20180312"
 			})
 
 			It("can resolve domain names", func() {
@@ -177,11 +179,9 @@ var _ = Describe("Networking", func() {
 			It("should continue to route traffic successfully", func() {
 				var (
 					err            error
-					googleDNSIP    string
 					otherContainer garden.Container
 				)
 
-				googleDNSIP = "8.8.8.8"
 				for i := 0; i < 5; i++ {
 					otherContainer, err = gardenClient.Create(garden.ContainerSpec{
 						Network: networkSpec,
@@ -217,7 +217,6 @@ var _ = Describe("Networking", func() {
 			})
 
 			It("should continue to route traffic successfully", func() {
-				googleDNSIP := "8.8.8.8"
 				Expect(checkConnection(newContainer, googleDNSIP, 53)).To(Succeed())
 			})
 		})
