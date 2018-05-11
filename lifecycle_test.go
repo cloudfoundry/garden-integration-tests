@@ -13,11 +13,11 @@ import (
 	"sync"
 	"time"
 
+	archiver "code.cloudfoundry.org/archiver/extractor/test_helper"
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
-	archiver "github.com/pivotal-golang/archiver/extractor/test_helper"
 )
 
 var _ = Describe("Lifecycle", func() {
