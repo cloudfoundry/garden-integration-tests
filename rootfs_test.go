@@ -82,4 +82,19 @@ var _ = Describe("Rootfses", func() {
 			})
 		})
 	})
+
+	Context("and the Docker image contains opaque whiteouts", func() {
+		BeforeEach(func() {
+			imageRef.URI = "docker:///cfgarden/opaque-whiteouts-regression-image#0.0.1"
+		})
+
+		It("handles them correctly", func() {
+			exitCode, _, _ := runProcess(container,
+				garden.ProcessSpec{
+					Path: "ls",
+					Args: []string{"/test/foo"},
+				})
+			Expect(exitCode).To(Equal(0))
+		})
+	})
 })
