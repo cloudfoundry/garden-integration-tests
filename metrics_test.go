@@ -21,37 +21,25 @@ var _ = Describe("Metrics", func() {
 
 	It("returns the CPU metrics", func() {
 		Eventually(func() uint64 {
-			metrics, err := container.Metrics()
-			Expect(err).NotTo(HaveOccurred())
-
-			return metrics.CPUStat.Usage
+			return metrics(container).CPUStat.Usage
 		}).ShouldNot(BeZero())
 	})
 
 	It("returns the memory metrics", func() {
 		Eventually(func() uint64 {
-			metrics, err := container.Metrics()
-			Expect(err).NotTo(HaveOccurred())
-
-			return metrics.MemoryStat.TotalUsageTowardLimit
+			return metrics(container).MemoryStat.TotalUsageTowardLimit
 		}).ShouldNot(BeZero())
 	})
 
 	It("returns the number of currently running pids", func() {
 		Eventually(func() uint64 {
-			metrics, err := container.Metrics()
-			Expect(err).NotTo(HaveOccurred())
-
-			return metrics.PidStat.Current
+			return metrics(container).PidStat.Current
 		}).ShouldNot(BeZero())
 	})
 
 	It("returns an N/A value for the max mumber of pids", func() {
 		Consistently(func() uint64 {
-			metrics, err := container.Metrics()
-			Expect(err).NotTo(HaveOccurred())
-
-			return metrics.PidStat.Max
+			return metrics(container).PidStat.Max
 		}).Should(BeZero())
 	})
 
@@ -64,10 +52,7 @@ var _ = Describe("Metrics", func() {
 
 		It("returns the max number of pids", func() {
 			Eventually(func() uint64 {
-				metrics, err := container.Metrics()
-				Expect(err).NotTo(HaveOccurred())
-
-				return metrics.PidStat.Max
+				return metrics(container).PidStat.Max
 			}).Should(BeEquivalentTo(128))
 		})
 	})
@@ -80,3 +65,9 @@ var _ = Describe("Metrics", func() {
 		Expect(metrics[container.Handle()].Metrics.MemoryStat.TotalUsageTowardLimit).NotTo(BeZero())
 	})
 })
+
+func metrics(container garden.Container) garden.Metrics {
+	metrics, err := container.Metrics()
+	Expect(err).NotTo(HaveOccurred())
+	return metrics
+}
