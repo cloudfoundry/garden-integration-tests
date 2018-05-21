@@ -15,7 +15,6 @@ var _ = Describe("MaskedPaths", func() {
 			files := []string{
 				"/proc/kcore",
 				"/proc/sched_debug",
-				"/proc/timer_stats",
 				"/proc/timer_list",
 			}
 			for _, file := range files {
@@ -25,6 +24,21 @@ var _ = Describe("MaskedPaths", func() {
 				})
 				Expect(stdout).To(gbytes.Say("character special file"))
 				Expect(stdout).To(gbytes.Say("Device type: 1,3"))
+			}
+		})
+
+		It("masks certain /proc/timer_stats with a null character device if exists", func() {
+			exitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
+				Path: "stat",
+				Args: []string{"/proc/timer_stats"},
+			})
+
+			if exitCode == 0 {
+				Expect(stdout).To(gbytes.Say("character special file"))
+				Expect(stdout).To(gbytes.Say("Device type: 1,3"))
+			} else {
+				// /proc/timer_stats is not available on later (4.11+) kernel versions
+				Expect(stderr).To(gbytes.Say("No such file or directory"))
 			}
 		})
 
