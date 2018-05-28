@@ -668,24 +668,18 @@ var _ = Describe("Lifecycle", func() {
 			})
 
 			It("all attached clients should get stdout and stderr", func() {
+
 				var runStdout, attachStdout bytes.Buffer
+				stdinR, stdinW := io.Pipe()
+				defer func() {
+					stdinR.Close()
+					stdinW.Close()
+				}()
 
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
 					Args: []string{"-c", `
-trap unblock SIGTERM
-
-break=false
-unblock() {
-	break=true
-}
-
-while true; do
-	if [ "$break" = true ]; then
-		break
-	fi
-	sleep 0.01
-done
+read -s
 
 for i in $(seq 1 5); do
 	echo $i
@@ -694,6 +688,7 @@ done
 					`},
 					TTY: &garden.TTYSpec{},
 				}, garden.ProcessIO{
+					Stdin:  stdinR,
 					Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
 					Stderr: GinkgoWriter,
 				})
@@ -705,8 +700,8 @@ done
 				})
 				Expect(err).NotTo(HaveOccurred())
 
-				// Garden only has TERM and KILL
-				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+				_, err = fmt.Fprintf(stdinW, "ok\n")
+				Expect(err).ToNot(HaveOccurred())
 
 				exitCode, err := process.Wait()
 				Expect(err).NotTo(HaveOccurred())
