@@ -16,6 +16,7 @@ var _ = Describe("MaskedPaths", func() {
 				"/proc/kcore",
 				"/proc/sched_debug",
 				"/proc/timer_list",
+				"/proc/keys",
 			}
 			for _, file := range files {
 				stdout := runForStdout(container, garden.ProcessSpec{
@@ -62,9 +63,10 @@ var _ = Describe("MaskedPaths", func() {
 			}
 		})
 
-		It("masks certain dirs in /proc", func() {
+		It("masks certain dirs", func() {
 			dirs := []string{
 				"/proc/scsi",
+				"/sys/firmware",
 			}
 			for _, dir := range dirs {
 				stdout := runForStdout(container, garden.ProcessSpec{
