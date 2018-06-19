@@ -67,4 +67,30 @@ var _ = Describe("users", func() {
 			Expect(stdout).NotTo(gbytes.Say("1011"))
 		})
 	})
+
+	Context("when rootfs does not have an /etc/passwd", func() {
+		BeforeEach(func() {
+			imageRef.URI = "docker:///cfgarden/hello"
+		})
+
+		It("can still run as root", func() {
+			stdout := runForStdout(container, garden.ProcessSpec{
+				User: "root",
+				Path: "/hello",
+			})
+
+			Expect(stdout).To(gbytes.Say(`hello`))
+		})
+
+		It("fails when run as non-root", func() {
+			_, err := container.Run(
+				garden.ProcessSpec{
+					User: "alice",
+					Path: "/hello",
+				},
+				garden.ProcessIO{},
+			)
+			Expect(err).To(MatchError(ContainSubstring("unable to find user alice: no matching entries in passwd file")))
+		})
+	})
 })
