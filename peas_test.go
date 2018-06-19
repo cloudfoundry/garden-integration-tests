@@ -10,13 +10,19 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
-var peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
-var noImage = garden.ImageRef{}
-
 var _ = Describe("Partially shared containers (peas)", func() {
+	var (
+		peaImage garden.ImageRef
+		noImage  garden.ImageRef
+	)
+
+	BeforeEach(func() {
+		peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+		noImage = garden.ImageRef{}
+	})
+
 	Describe("sharing of namespaces", func() {
 		It("runs a process that shares all of the namespaces besides the mount one", func() {
-
 			sandboxContainerMntNs := getNS("mnt", container, noImage)
 			peaContainerMntNs := getNS("mnt", container, peaImage)
 			Expect(sandboxContainerMntNs).NotTo(Equal(peaContainerMntNs))
@@ -88,6 +94,33 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					Image: peaImage,
 				})
 				Expect(stdout).To(gbytes.Say("11:0operator"))
+			})
+
+			Context("but /etc/passwd is empty", func() {
+				BeforeEach(func() {
+					peaImage = garden.ImageRef{URI: "docker:///cfgarden/hello"}
+				})
+
+				It("can run when the user is root", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User:  "root",
+						Path:  "/hello",
+						Image: peaImage,
+					})
+					Expect(stdout).To(gbytes.Say("hello"))
+				})
+
+				It("cannot run when the user is non-root", func() {
+					_, err := container.Run(
+						garden.ProcessSpec{
+							User:  "alice",
+							Path:  "/hello",
+							Image: peaImage,
+						},
+						garden.ProcessIO{},
+					)
+					Expect(err).To(MatchError(ContainSubstring("unable to find user alice: no matching entries in passwd file")))
+				})
 			})
 		})
 	})

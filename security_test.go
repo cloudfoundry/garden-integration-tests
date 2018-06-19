@@ -11,6 +11,16 @@ import (
 )
 
 var _ = Describe("Security", func() {
+	var (
+		peaImage garden.ImageRef
+		noImage  garden.ImageRef
+	)
+
+	BeforeEach(func() {
+		peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+		noImage = garden.ImageRef{}
+	})
+
 	Describe("PID namespace", func() {
 		It("isolates processes so that only processes from inside the container are visible", func() {
 			createUser(container, "alice")
