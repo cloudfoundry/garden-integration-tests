@@ -17,6 +17,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	)
 
 	BeforeEach(func() {
+		skipIfShed()
 		peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
 		noImage = garden.ImageRef{}
 	})

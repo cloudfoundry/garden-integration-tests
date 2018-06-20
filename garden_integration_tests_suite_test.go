@@ -211,6 +211,16 @@ func woot() bool {
 	return os.Getenv("WOOT") != ""
 }
 
+func skipIfShed() {
+	if shed() {
+		Skip("Skipping this test - not applicable to shed")
+	}
+}
+
+func shed() bool {
+	return os.Getenv("SHED") != ""
+}
+
 func setPrivileged() {
 	privilegedContainer = true
 	skipIfRootless()
