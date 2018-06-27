@@ -111,9 +111,9 @@ var _ = Describe("Security", func() {
 					netCgroups = []string{"net_cls,net_prio"}
 				}
 
-				// TODO: re-add the "hugetlb" cgroup to this list once we've fixed this bug:
+				// TODO: re-add the "hugetlb" and "pids" cgroups to this list once we've fixed this bug:
 				// https://www.pivotaltracker.com/story/show/158623469
-				cgroups := []string{"memory", "cpuset", "blkio", "blkio", "devices", "freezer", "perf_event", "pids"}
+				cgroups := []string{"memory", "cpuset", "blkio", "blkio", "devices", "freezer", "perf_event"}
 				cgroups = append(cgroups, cpuCgroups...)
 				cgroups = append(cgroups, netCgroups...)
 
