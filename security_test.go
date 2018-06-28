@@ -92,34 +92,37 @@ var _ = Describe("Security", func() {
 			})
 
 			It("cgroup filesystems are mounted as read-only", func() {
+				containsCgroupMount := func(mounts, mountpoint, subsystem string) bool {
+					return strings.Contains(mounts, fmt.Sprintf(`cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s`, mountpoint, subsystem))
+				}
+
+				hasCorrectCgroups := func(mounts, first, second string) bool {
+					combined := fmt.Sprintf("%s,%s", first, second)
+					if strings.Contains(mounts, combined) {
+						return containsCgroupMount(mounts, combined, combined) || (containsCgroupMount(mounts, first, combined) && containsCgroupMount(mounts, second, combined))
+					}
+					return containsCgroupMount(mounts, first, first) && containsCgroupMount(mounts, second, second)
+				}
+
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "grep",
 					Args: []string{"cgroup", "/proc/mounts"},
 				})
+
 				stdoutContents := string(stdout.Contents())
 
-				// TODO: Refactor this once xenial stemcells become the default.
 				// We have to add this logic now as cgroup mounts are slightly different
 				// between trusty and xenial.
-				cpuCgroups := []string{"cpu", "cpuacct"}
-				if strings.Contains(stdoutContents, "cpu,cpuacct") {
-					cpuCgroups = []string{"cpu,cpuacct"}
-				}
-				netCgroups := []string{"net_cls", "net_prio"}
-				if strings.Contains(stdoutContents, "net_cls,net_prio") {
-					netCgroups = []string{"net_cls,net_prio"}
-				}
+				Expect(hasCorrectCgroups(stdoutContents, "cpu", "cpuacct")).To(BeTrue(), stdoutContents)
+				Expect(hasCorrectCgroups(stdoutContents, "net_cls", "net_prio")).To(BeTrue(), stdoutContents)
 
 				// TODO: re-add the "hugetlb" and "pids" cgroups to this list once we've fixed this bug:
 				// https://www.pivotaltracker.com/story/show/158623469
-				cgroups := []string{"memory", "cpuset", "blkio", "blkio", "devices", "freezer", "perf_event"}
-				cgroups = append(cgroups, cpuCgroups...)
-				cgroups = append(cgroups, netCgroups...)
+				cgroups := []string{"memory", "cpuset", "blkio", "devices", "freezer", "perf_event"}
 
 				for _, c := range cgroups {
-					line := fmt.Sprintf("cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s", c, c)
-					Expect(stdoutContents).To(ContainSubstring(line))
+					Expect(containsCgroupMount(stdoutContents, c, c)).To(BeTrue(), stdoutContents)
 				}
 			})
 		})

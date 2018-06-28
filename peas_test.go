@@ -221,7 +221,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				CPU:       garden.CPULimits{LimitInShares: 1024},
 				Disk:      garden.DiskLimits{ByteHard: 1024 * 1024 * 1024},
 				Memory:    garden.MemoryLimits{LimitInBytes: 64 * 1024 * 1024},
-				Pid:       garden.PidLimits{Max: 50},
+				Pid:       garden.PidLimits{Max: 10},
 			}
 		})
 
@@ -251,13 +251,17 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			})
 
 			It("is not limited in how many processes it can create", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					Path:  "cat",
-					Args:  []string{"/sys/fs/cgroup/pids/pids.max"},
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					Path: "/bin/sh",
+					Args: []string{"-c", `
+					for i in $(seq 15); do (sleep 360 &); done;
+					until [ $(ps aux | wc -l) -gt 15 ]; do sleep .5; done
+					killall sleep
+					`},
 					Image: peaImage,
 					OverrideContainerLimits: &garden.ProcessLimits{},
 				})
-				Expect(string(stdout.Contents())).To(Equal("max\n"))
+				Expect(exitCode).To(Equal(0))
 			})
 		})
 
