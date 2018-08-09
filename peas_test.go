@@ -10,6 +10,11 @@ import (
 	"github.com/onsi/gomega/gbytes"
 )
 
+const (
+	mb = 1024 * 1024
+	gb = mb * 1024
+)
+
 var _ = Describe("Partially shared containers (peas)", func() {
 	var (
 		peaImage garden.ImageRef
@@ -217,10 +222,10 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	Describe("Limits", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{
-				Bandwidth: garden.BandwidthLimits{RateInBytesPerSecond: 1024 * 1024, BurstRateInBytesPerSecond: 1024 * 1024},
+				Bandwidth: garden.BandwidthLimits{RateInBytesPerSecond: mb, BurstRateInBytesPerSecond: mb},
 				CPU:       garden.CPULimits{LimitInShares: 1024},
-				Disk:      garden.DiskLimits{ByteHard: 1024 * 1024 * 1024},
-				Memory:    garden.MemoryLimits{LimitInBytes: 64 * 1024 * 1024},
+				Disk:      garden.DiskLimits{ByteHard: gb},
+				Memory:    garden.MemoryLimits{LimitInBytes: 64 * mb},
 				Pid:       garden.PidLimits{Max: 10},
 			}
 		})
@@ -229,8 +234,15 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			It("shares that limit with the container", func() {
 				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
+						Path: "dd",
+						Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=5"},
+					})
+				Expect(exitCode).To(Equal(0))
+
+				exitCode, _, _ = runProcess(container,
+					garden.ProcessSpec{
 						Path:  "dd",
-						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=60"},
 						Image: peaImage,
 					})
 				Expect(exitCode).NotTo(Equal(0))
