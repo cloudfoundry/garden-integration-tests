@@ -553,7 +553,7 @@ var _ = Describe("Lifecycle", func() {
 						done
 					`,
 					},
-					TTY: &garden.TTYSpec{},
+					TTY: new(garden.TTYSpec),
 				}, garden.ProcessIO{
 					Stdout: stdout,
 				})
