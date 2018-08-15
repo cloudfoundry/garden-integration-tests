@@ -675,7 +675,7 @@ var _ = Describe("Lifecycle", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
 					Args: []string{"-c", `
-read -s > /dev/null  # -s only silences reads from a terminal
+read -s
 
 for i in $(seq 1 5); do
 	echo $i
@@ -708,9 +708,9 @@ done
 				Expect(err).NotTo(HaveOccurred())
 				Expect(exitCode).To(Equal(0))
 
-				expected := "1\r\n1\r\n2\r\n2\r\n3\r\n3\r\n4\r\n4\r\n5\r\n5\r\n"
-				Expect(runStdout.String()).To(Equal(expected), "run buffer:")
-				Expect(attachStdout.String()).To(Equal(expected), "attach buffer:")
+				expected := `(ok\r\n)?1\r\n1\r\n2\r\n2\r\n3\r\n3\r\n4\r\n4\r\n5\r\n5\r\n`
+				Expect(runStdout.String()).To(MatchRegexp(expected), "run buffer:")
+				Expect(attachStdout.String()).To(MatchRegexp(expected), "attach buffer:")
 			})
 		})
 
