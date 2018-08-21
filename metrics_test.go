@@ -1,6 +1,8 @@
 package garden_integration_tests_test
 
 import (
+	"time"
+
 	"code.cloudfoundry.org/garden"
 
 	. "github.com/onsi/ginkgo"
@@ -55,6 +57,12 @@ var _ = Describe("Metrics", func() {
 				return metrics(container).PidStat.Max
 			}).Should(BeEquivalentTo(128))
 		})
+	})
+
+	It("returns container age", func() {
+		Eventually(func() time.Duration {
+			return metrics(container).Age
+		}).Should(Not(BeZero()))
 	})
 
 	It("returns bulk metrics", func() {
