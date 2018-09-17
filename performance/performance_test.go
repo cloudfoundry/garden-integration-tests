@@ -41,7 +41,7 @@ var _ = Describe("performance", func() {
 
 			for i := 0; i < concurrencyLevel; i++ {
 				wg.Add(1)
-				h := fmt.Sprintf("%s-%d", containerPrefix, i)
+				h := fmt.Sprintf("%s-%d-%d", containerPrefix, GinkgoParallelNode(), i)
 				handles = append(handles, h)
 
 				go func(index int, handle string) {
