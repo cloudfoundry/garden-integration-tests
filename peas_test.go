@@ -226,7 +226,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				CPU:       garden.CPULimits{LimitInShares: 1024},
 				Disk:      garden.DiskLimits{ByteHard: gb},
 				Memory:    garden.MemoryLimits{LimitInBytes: 64 * mb},
-				Pid:       garden.PidLimits{Max: 10},
+				Pid:       garden.PidLimits{Max: 50},
 			}
 		})
 
@@ -254,9 +254,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			It("does not share memory limit with the container", func() {
 				exitCode, _, _ := runProcess(container,
 					garden.ProcessSpec{
-						Path:  "dd",
-						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
-						Image: peaImage,
+						Path:                    "dd",
+						Args:                    []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+						Image:                   peaImage,
 						OverrideContainerLimits: &garden.ProcessLimits{},
 					})
 				Expect(exitCode).To(Equal(0))
@@ -270,7 +270,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					until [ $(ps aux | wc -l) -gt 15 ]; do sleep .5; done
 					killall sleep
 					`},
-					Image: peaImage,
+					Image:                   peaImage,
 					OverrideContainerLimits: &garden.ProcessLimits{},
 				})
 				Expect(exitCode).To(Equal(0))

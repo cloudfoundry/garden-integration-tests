@@ -327,14 +327,14 @@ var _ = Describe("Limits", func() {
 					Skip("kernel version should be at 4.4 or later")
 				}
 
-				limits.Pid = garden.PidLimits{Max: 20}
+				limits.Pid = garden.PidLimits{Max: 50}
 			})
 
 			It("prevents forking of processes", func() {
 				exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
-					Args: []string{"-c", "for i in `seq 1 20`; do sleep 2 & done"},
+					Args: []string{"-c", "for i in `seq 1 50`; do sleep 2 & done"},
 				})
 
 				Expect(exitCode).To(Equal(2))
