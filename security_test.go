@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"code.cloudfoundry.org/garden"
@@ -92,38 +93,37 @@ var _ = Describe("Security", func() {
 			})
 
 			It("cgroup filesystems are mounted as read-only", func() {
-				containsCgroupMount := func(mounts, mountpoint, subsystem string) bool {
-					return strings.Contains(mounts, fmt.Sprintf(`cgroup /sys/fs/cgroup/%s cgroup ro,nosuid,nodev,noexec,relatime,%s`, mountpoint, subsystem))
-				}
+				containsCgroupReadOnlyMount := func(mounts, subsystem, cgroupMountOptions string) error {
+					cgroupMountRegex := regexp.MustCompile(fmt.Sprintf(`.*\s/sys/fs/cgroup/%s\s([^\s]*) - cgroup cgroup *\s([^\s]*)`, subsystem))
+					matcherGroups := cgroupMountRegex.FindStringSubmatch(mounts)
 
-				hasCorrectCgroups := func(mounts, first, second string) bool {
-					combined := fmt.Sprintf("%s,%s", first, second)
-					if strings.Contains(mounts, combined) {
-						return containsCgroupMount(mounts, combined, combined) || (containsCgroupMount(mounts, first, combined) && containsCgroupMount(mounts, second, combined))
+					if len(matcherGroups) == 3 && strings.Contains(matcherGroups[1], "ro") && strings.Contains(matcherGroups[2], cgroupMountOptions) {
+						return nil
 					}
-					return containsCgroupMount(mounts, first, first) && containsCgroupMount(mounts, second, second)
+
+					return fmt.Errorf("Could not find a readonly cgroup mount for subsystem %s and cgroup mountoption %s in \n%s", subsystem, cgroupMountOptions, mounts)
 				}
 
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "grep",
-					Args: []string{"cgroup", "/proc/mounts"},
+					Args: []string{"cgroup", "/proc/self/mountinfo"},
 				})
 
-				stdoutContents := string(stdout.Contents())
-
-				// We have to add this logic now as cgroup mounts are slightly different
-				// between trusty and xenial.
-				Expect(hasCorrectCgroups(stdoutContents, "cpu", "cpuacct")).To(BeTrue(), stdoutContents)
-				Expect(hasCorrectCgroups(stdoutContents, "net_cls", "net_prio")).To(BeTrue(), stdoutContents)
+				mountsTable := string(stdout.Contents())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "cpu", "cpu,cpuacct")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "net_cls", "net_cls,net_prio")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "memory", "memory")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "cpuset", "cpuset")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "blkio", "blkio")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "devices", "devices")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "freezer", "freezer")).To(Succeed())
+				Expect(containsCgroupReadOnlyMount(mountsTable, "perf_event", "perf_event")).To(Succeed())
 
 				// TODO: re-add the "hugetlb" and "pids" cgroups to this list once we've fixed this bug:
 				// https://www.pivotaltracker.com/story/show/158623469
-				cgroups := []string{"memory", "cpuset", "blkio", "devices", "freezer", "perf_event"}
-
-				for _, c := range cgroups {
-					Expect(containsCgroupMount(stdoutContents, c, c)).To(BeTrue(), stdoutContents)
-				}
+				//Expect(containsCgroupReadOnlyMount(mountsTable, "pids", "pids")).To(Succeed())
+				//Expect(containsCgroupReadOnlyMount(mountsTable, "hugetlb", "hugetlb")).To(Succeed())
 			})
 		})
 
