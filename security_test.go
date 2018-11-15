@@ -1,7 +1,6 @@
 package garden_integration_tests_test
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -93,15 +92,18 @@ var _ = Describe("Security", func() {
 			})
 
 			It("cgroup filesystems are mounted as read-only", func() {
-				containsCgroupReadOnlyMount := func(mounts, subsystem, cgroupMountOptions string) error {
-					cgroupMountRegex := regexp.MustCompile(fmt.Sprintf(`.*\s/sys/fs/cgroup/%s\s([^\s]*) - cgroup cgroup *\s([^\s]*)`, subsystem))
-					matcherGroups := cgroupMountRegex.FindStringSubmatch(mounts)
-
-					if len(matcherGroups) == 3 && strings.Contains(matcherGroups[1], "ro") && strings.Contains(matcherGroups[2], cgroupMountOptions) {
-						return nil
+				getCGroupMountOptions := func(mounts string) map[string]bool {
+					cgroupMountRegex := regexp.MustCompile(`.*\s/sys/fs/cgroup/[^\s]*\s([^\s]*) - cgroup cgroup *\s([^\s]*)`)
+					matches := cgroupMountRegex.FindAllStringSubmatch(mounts, -1)
+					cgroupMountOptions := make(map[string]bool)
+					for _, m := range matches {
+						if len(m) == 3 && strings.Contains(m[1], "ro") {
+							for _, option := range strings.Split(m[2], ",") {
+								cgroupMountOptions[option] = true
+							}
+						}
 					}
-
-					return fmt.Errorf("Could not find a readonly cgroup mount for subsystem %s and cgroup mountoption %s in \n%s", subsystem, cgroupMountOptions, mounts)
+					return cgroupMountOptions
 				}
 
 				stdout := runForStdout(container, garden.ProcessSpec{
@@ -110,20 +112,22 @@ var _ = Describe("Security", func() {
 					Args: []string{"cgroup", "/proc/self/mountinfo"},
 				})
 
-				mountsTable := string(stdout.Contents())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "cpu", "cpu,cpuacct")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "net_cls", "net_cls,net_prio")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "memory", "memory")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "cpuset", "cpuset")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "blkio", "blkio")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "devices", "devices")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "freezer", "freezer")).To(Succeed())
-				Expect(containsCgroupReadOnlyMount(mountsTable, "perf_event", "perf_event")).To(Succeed())
+				cgroupMountOptions := getCGroupMountOptions(string(stdout.Contents()))
+				Expect(cgroupMountOptions).To(HaveKey("cpu"))
+				Expect(cgroupMountOptions).To(HaveKey("cpuacct"))
+				Expect(cgroupMountOptions).To(HaveKey("net_cls"))
+				Expect(cgroupMountOptions).To(HaveKey("net_prio"))
+				Expect(cgroupMountOptions).To(HaveKey("memory"))
+				Expect(cgroupMountOptions).To(HaveKey("cpuset"))
+				Expect(cgroupMountOptions).To(HaveKey("blkio"))
+				Expect(cgroupMountOptions).To(HaveKey("devices"))
+				Expect(cgroupMountOptions).To(HaveKey("freezer"))
+				Expect(cgroupMountOptions).To(HaveKey("perf_event"))
 
 				// TODO: re-add the "hugetlb" and "pids" cgroups to this list once we've fixed this bug:
 				// https://www.pivotaltracker.com/story/show/158623469
-				//Expect(containsCgroupReadOnlyMount(mountsTable, "pids", "pids")).To(Succeed())
-				//Expect(containsCgroupReadOnlyMount(mountsTable, "hugetlb", "hugetlb")).To(Succeed())
+				// Expect(cgroupMountOptions).To(HaveKey("pids"))
+				// Expect(cgroupMountOptions).To(HaveKey("hugetlb"))
 			})
 		})
 
