@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/garden"
+	"code.cloudfoundry.org/garden-integration-tests/testhelpers"
 	"code.cloudfoundry.org/garden/client"
 	"code.cloudfoundry.org/garden/client/connection"
 	. "github.com/onsi/ginkgo"
@@ -100,7 +101,8 @@ func TestGardenIntegrationTests(t *testing.T) {
 		if gardenDebugPort == "" {
 			gardenDebugPort = "17013"
 		}
-		gardenClient = client.New(connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort)))
+		retryingConnection := testhelpers.RetryingConnection{Connection: connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort))}
+		gardenClient = client.New(&retryingConnection)
 	})
 
 	JustBeforeEach(func() {
