@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -246,4 +248,16 @@ func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (s
 	exitCode, stdout, _ := runProcess(container, processSpec)
 	Expect(exitCode).To(Equal(0))
 	return stdout
+}
+
+func readAll(r io.Reader) []byte {
+	b, err := ioutil.ReadAll(r)
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
+	return b
+}
+
+func httpGet(url string) *http.Response {
+	r, err := http.Get(url)
+	ExpectWithOffset(1, err).NotTo(HaveOccurred())
+	return r
 }

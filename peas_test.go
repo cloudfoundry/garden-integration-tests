@@ -285,7 +285,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=33"},
 						Image: peaImage,
 						OverrideContainerLimits: &garden.ProcessLimits{
-							Memory: garden.MemoryLimits{LimitInBytes: 32 * 1024 * 1024},
+							Memory: garden.MemoryLimits{LimitInBytes: 32 * mb},
 						},
 					})
 				Expect(exitCode).NotTo(Equal(0))
@@ -314,7 +314,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	Describe("Metrics", func() {
 		BeforeEach(func() {
 			limits = garden.Limits{Memory: garden.MemoryLimits{
-				LimitInBytes: 64 * 1024 * 1024,
+				LimitInBytes: 64 * mb,
 			}}
 		})
 

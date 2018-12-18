@@ -45,7 +45,7 @@ var _ = Describe("Container information", func() {
 
 		Describe("getting container properties without getting info", func() {
 			It("can list properties", func() {
-				err := container.SetProperty("bar", "baz")
+				Expect(container.SetProperty("bar", "baz")).To(Succeed())
 
 				value, err := container.Properties()
 				Expect(err).ToNot(HaveOccurred())

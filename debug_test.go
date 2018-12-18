@@ -3,8 +3,6 @@ package garden_integration_tests_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"runtime"
 
 	. "github.com/onsi/ginkgo"
@@ -16,17 +14,13 @@ type Debug struct {
 }
 
 func loadDebug() Debug {
-	response, err := http.Get(fmt.Sprintf("http://%s:%s/debug/vars", gardenHost, gardenDebugPort))
-	Expect(err).NotTo(HaveOccurred())
+	response := httpGet(fmt.Sprintf("http://%s:%s/debug/vars", gardenHost, gardenDebugPort))
 	defer response.Body.Close()
 
-	Expect(err).NotTo(HaveOccurred())
-	debug := &Debug{}
-	body, err := ioutil.ReadAll(response.Body)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(json.Unmarshal(body, debug)).To(Succeed())
+	debug := Debug{}
+	Expect(json.Unmarshal(readAll(response.Body), &debug)).To(Succeed())
 
-	return *debug
+	return debug
 }
 
 var _ = Describe("Debug", func() {
