@@ -279,16 +279,18 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when a memory limit is specified on the pea", func() {
 			It("kills processes that exceed that limit", func() {
-				exitCode, _, _ := runProcess(container,
+				//Temporarily checking the memory limit of the process as part of #161555465
+				exitCode, stdout, _ := runProcess(container,
 					garden.ProcessSpec{
-						Path:  "dd",
-						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=33"},
+						Path:  "sh",
+						Args:  []string{"-c", "cat /sys/fs/cgroup/memory/memory.limit_in_bytes; dd if=/dev/urandom of=/dev/shm/too-big bs=1M count=33"},
 						Image: peaImage,
 						OverrideContainerLimits: &garden.ProcessLimits{
 							Memory: garden.MemoryLimits{LimitInBytes: 32 * mb},
 						},
 					})
-				Expect(exitCode).NotTo(Equal(0))
+				Expect(string(stdout.Contents())).To(Equal("33554432\n"))
+				Expect(exitCode).To(Equal(1))
 			})
 		})
 	})
