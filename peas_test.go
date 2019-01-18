@@ -290,7 +290,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 						},
 					})
 				Expect(string(stdout.Contents())).To(Equal("33554432\n"))
-				Expect(exitCode).To(Equal(1))
+				Expect(exitCode).NotTo(Equal(0))
 			})
 		})
 	})
