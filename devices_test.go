@@ -63,11 +63,6 @@ var _ = Describe("Devices", func() {
 					devices_subsytems=$(echo $devices_mount_info | cut -d: -f2)
 					devices_subdir=$(echo $devices_mount_info | cut -d: -f3)
 
-					if [ "$devices_subdir" = "/" ]; then
-						# we're in the root devices cgroup; must not be in a container
-						return
-					fi
-
 					if [ ! -e /tmp/devices-cgroup ]; then
 						# mount our container's devices subsystem somewhere
 						mkdir /tmp/devices-cgroup
