@@ -924,6 +924,16 @@ done
 				})
 			})
 
+			Context("when the destination is '/'", func() {
+				It("does not fail", func() {
+					err := container.StreamIn(garden.StreamInSpec{
+						Path:      "/",
+						TarStream: tarStream,
+					})
+					Expect(err).ToNot(HaveOccurred())
+				})
+			})
+
 			Context("when a non-existent user specified", func() {
 				It("returns error", func() {
 					err := container.StreamIn(garden.StreamInSpec{
