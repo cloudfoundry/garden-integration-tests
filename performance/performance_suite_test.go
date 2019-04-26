@@ -19,7 +19,6 @@ import (
 
 var (
 	gardenHost   string
-	gardenPort   string
 	gardenClient garden.Client
 	container    garden.Container
 
@@ -57,9 +56,22 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	if host == "" {
 		host = "10.244.16.6"
 	}
-	return []byte(resolveHost(host))
+	resolved := resolveHost(host)
+
+	port := os.Getenv("GARDEN_PORT")
+	if port == "" {
+		port = "7777"
+	}
+
+	return []byte(fmt.Sprintf("%s:%s", resolved, port))
 }, func(data []byte) {
 	gardenHost = string(data)
+})
+
+var _ = SynchronizedAfterSuite(func() {}, func() {
+	for _, container := range getContainers() {
+		gardenClient.Destroy(container.Handle())
+	}
 })
 
 func TestPerformance(t *testing.T) {
@@ -67,16 +79,11 @@ func TestPerformance(t *testing.T) {
 	SetDefaultEventuallyTimeout(5 * time.Second)
 
 	BeforeEach(func() {
-		gardenPort = os.Getenv("GARDEN_PORT")
-		if gardenPort == "" {
-			gardenPort = "7777"
-		}
+		gardenClient = client.New(connection.New("tcp", gardenHost))
 		rootfs = "docker:///cfgarden/garden-busybox"
 	})
 
 	JustBeforeEach(func() {
-		gardenClient = client.New(connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort)))
-
 		var err error
 		container, err = gardenClient.Create(garden.ContainerSpec{
 			RootFSPath: rootfs,
@@ -102,4 +109,11 @@ func TestPerformance(t *testing.T) {
 	})
 
 	RunSpecs(t, "Performance Suite")
+}
+
+func getContainers() []garden.Container {
+	containers, err := gardenClient.Containers(nil)
+	Expect(err).ToNot(HaveOccurred())
+
+	return containers
 }
