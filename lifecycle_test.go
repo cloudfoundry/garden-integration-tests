@@ -214,6 +214,7 @@ var _ = Describe("Lifecycle", func() {
 
 		Context("when multiple clients attach to the same process", func() {
 			It("all clients attached should get the exit code", func() {
+				skipIfContainerdForProcesses()
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
 					Args: []string{"-c", `sleep 2; exit 12`},
@@ -252,6 +253,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("all attached clients should get stdout and stderr", func() {
+			skipIfContainerdForProcesses()
 			var runStdout, attachStdout, runStderr, attachStderr bytes.Buffer
 
 			process, err := container.Run(garden.ProcessSpec{
@@ -616,6 +618,7 @@ var _ = Describe("Lifecycle", func() {
 			})
 
 			It("can have its terminal resized", func() {
+				skipIfContainerdForProcesses()
 				stdout := gbytes.NewBuffer()
 
 				inR, inW := io.Pipe()
@@ -668,6 +671,7 @@ var _ = Describe("Lifecycle", func() {
 			})
 
 			It("all attached clients should get stdout and stderr", func() {
+				skipIfContainerdForProcesses()
 				var runStdout, attachStdout bytes.Buffer
 				stdinR, stdinW := io.Pipe()
 				defer stdinW.Close()

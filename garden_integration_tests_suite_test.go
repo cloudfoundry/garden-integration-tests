@@ -225,6 +225,12 @@ func shed() bool {
 	return os.Getenv("SHED") != ""
 }
 
+func skipIfContainerdForProcesses() {
+	if os.Getenv("CONTAINERD_FOR_PROCESSES_ENABLED") != "" {
+		Skip("Skipping because containerd support for processes is enabled")
+	}
+}
+
 func setPrivileged() {
 	privilegedContainer = true
 	skipIfRootless()
