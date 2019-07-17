@@ -239,15 +239,12 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					})
 				Expect(exitCode).To(Equal(0))
 
-				//Temporarily checking the memory limit of the process as part of #161555465
-				var stdout *gbytes.Buffer
-				exitCode, stdout, _ = runProcess(container,
+				exitCode, _, _ = runProcess(container,
 					garden.ProcessSpec{
-						Path:  "sh",
-						Args:  []string{"-c", "cat /sys/fs/cgroup/memory/memory.limit_in_bytes; dd if=/dev/urandom of=/dev/shm/too-big bs=1M count=60"},
+						Path:  "dd",
+						Args:  []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=60"},
 						Image: peaImage,
 					})
-				Expect(string(stdout.Contents())).To(Equal("67108864\n"))
 				Expect(exitCode).NotTo(Equal(0))
 			})
 
