@@ -85,7 +85,7 @@ var _ = Describe("Process", func() {
 					ID:   processID,
 					Path: "/bin/true",
 				}, garden.ProcessIO{})
-				Expect(err).To(MatchError(ContainSubstring(fmt.Sprintf("process ID '%s' already in use", processID))))
+				Expect(err).To(MatchError(MatchRegexp(`already (in use|exists)`)))
 			})
 		})
 	})
