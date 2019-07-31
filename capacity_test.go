@@ -24,6 +24,12 @@ var _ = Describe("Capacity", func() {
 		}).Should(BeNumerically(">", 0))
 	})
 
+	It("returns the schedulable disk capacity in bytes", func() {
+		Eventually(func() uint64 {
+			return capacity().SchedulableDiskInBytes
+		}).Should(BeNumerically(">", 0))
+	})
+
 	It("returns the maximum number of containers", func() {
 		Eventually(func() uint64 {
 			return capacity().MaxContainers
