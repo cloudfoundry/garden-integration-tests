@@ -84,7 +84,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 func TestGardenIntegrationTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(15 * time.Second)
 
 	BeforeEach(func() {
 		assertContainerCreate = true
