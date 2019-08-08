@@ -214,7 +214,6 @@ var _ = Describe("Lifecycle", func() {
 
 		Context("when multiple clients attach to the same process", func() {
 			It("all clients attached should get the exit code", func() {
-				skipIfContainerdForProcesses()
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
 					Args: []string{"-c", `sleep 2; exit 12`},
