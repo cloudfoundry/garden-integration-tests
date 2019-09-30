@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -18,6 +19,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
+	"github.com/onsi/gomega/gexec"
 )
 
 var _ = Describe("Lifecycle", func() {
@@ -532,7 +534,13 @@ var _ = Describe("Lifecycle", func() {
 				})
 				Expect(err).ToNot(HaveOccurred())
 
-				Expect(process.Wait()).To(Equal(0))
+				Expect(process.Wait()).To(Equal(0), func() string {
+					cmd := exec.Command("sh", "-c", "netstat -tna | grep 7777")
+					session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
+					Expect(err).NotTo(HaveOccurred())
+					Eventually(session).Should(gexec.Exit())
+					return string(session.Out.Contents())
+				}())
 			}
 		})
 
