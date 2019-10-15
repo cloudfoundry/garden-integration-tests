@@ -189,6 +189,23 @@ var _ = Describe("Process", func() {
 			})
 		})
 
+		FContext("when the user is specified ins the form username:groupname", func() {
+			BeforeEach(func() {
+				imageRef = garden.ImageRef{
+					URI: "docker:///cfgarden/run-as-user-group:0.0.1",
+				}
+			})
+
+			It("runs the process as that user", func() {
+				stdout := runForStdout(container, garden.ProcessSpec{
+					User: "vcap:staff",
+					Path: "sh",
+					Args: []string{"-c", "echo $(id -u):$(id -g)"},
+				})
+				Expect(stdout).To(gbytes.Say("1000:50\n"))
+			})
+		})
+
 		Context("when the user is not specified", func() {
 			It("runs the process as root", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
