@@ -1,0 +1,83 @@
+package cputhrottling_test
+
+import (
+	"errors"
+	"fmt"
+	"net"
+	"os"
+	"testing"
+	"time"
+
+	"code.cloudfoundry.org/garden"
+	"code.cloudfoundry.org/garden-integration-tests/testhelpers"
+	"code.cloudfoundry.org/garden/client"
+	"code.cloudfoundry.org/garden/client/connection"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+var (
+	gardenHost   string
+	gardenPort   string
+	gardenClient garden.Client
+)
+
+// We suspect that bosh powerdns lookups have a low success rate (less than
+// 99%) and when it fails, we get an empty string IP address instead of an
+// actual error.
+// Therefore, we explicity look up the IP once at the start of the suite with
+// retries to minimise flakes.
+func resolveHost(host string) string {
+	if net.ParseIP(host) != nil {
+		return host
+	}
+
+	var ip net.IP
+	Eventually(func() error {
+		ips, err := net.LookupIP(host)
+		if err != nil {
+			return err
+		}
+		if len(ips) == 0 {
+			return errors.New("0 IPs returned from DNS")
+		}
+		ip = ips[0]
+		return nil
+	}, time.Minute, time.Second*5).Should(Succeed())
+
+	return ip.String()
+}
+
+var _ = SynchronizedBeforeSuite(func() []byte {
+	host := os.Getenv("GARDEN_ADDRESS")
+	if host == "" {
+		host = "10.244.0.2"
+	}
+	return []byte(resolveHost(host))
+}, func(data []byte) {
+	gardenHost = string(data)
+})
+
+func TestCPUThrottlingIntegrationTest(t *testing.T) {
+	RegisterFailHandler(Fail)
+
+	SetDefaultEventuallyTimeout(15 * time.Second)
+
+	BeforeEach(func() {
+		skipIfNotCPUThrottling()
+
+		gardenPort = os.Getenv("GARDEN_PORT")
+		if gardenPort == "" {
+			gardenPort = "7777"
+		}
+		retryingConnection := testhelpers.RetryingConnection{Connection: connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort))}
+		gardenClient = client.New(&retryingConnection)
+	})
+
+	RunSpecs(t, "GardenIntegrationTests Suite")
+}
+func skipIfNotCPUThrottling() {
+	if os.Getenv("CPU_THROTTLING_ENABLED") != "true" {
+		Skip("skipping as CPU throttling is not enabled")
+	}
+}
