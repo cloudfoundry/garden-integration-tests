@@ -14,11 +14,11 @@ type Debug struct {
 }
 
 func loadDebug() Debug {
-	response := httpGet(fmt.Sprintf("http://%s:%s/debug/vars", gardenHost, gardenDebugPort))
-	defer response.Body.Close()
+	response, err := httpGet(fmt.Sprintf("http://%s:%s/debug/vars", gardenHost, gardenDebugPort))
+	Expect(err).NotTo(HaveOccurred())
 
 	debug := Debug{}
-	Expect(json.Unmarshal(readAll(response.Body), &debug)).To(Succeed())
+	Expect(json.Unmarshal([]byte(response), &debug)).To(Succeed())
 
 	return debug
 }

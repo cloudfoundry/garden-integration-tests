@@ -1,21 +1,44 @@
 # code.cloudfoundry.org/archiver v0.0.0-20180525162158-e135af3d5a2a
 code.cloudfoundry.org/archiver/extractor/test_helper
+# code.cloudfoundry.org/commandrunner v0.0.0-20180212143422-501fd662150b
+code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000 => ../garden
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
+# code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000 => ../guardian
+code.cloudfoundry.org/guardian/gardener
+code.cloudfoundry.org/guardian/gardener/container-spec
 # code.cloudfoundry.org/lager v2.0.0+incompatible
 code.cloudfoundry.org/lager
 # github.com/bmizerany/pat v0.0.0-20170815010413-6226ea591a40
 github.com/bmizerany/pat
+# github.com/cloudfoundry/dropsonde v1.0.0
+github.com/cloudfoundry/dropsonde/metric_sender
+github.com/cloudfoundry/dropsonde/metrics
+# github.com/cloudfoundry/sonde-go v0.0.0-20171206171820-b33733203bb4
+github.com/cloudfoundry/sonde-go/events
+# github.com/gogo/protobuf v1.3.1
+github.com/gogo/protobuf/gogoproto
+github.com/gogo/protobuf/proto
+github.com/gogo/protobuf/protoc-gen-gogo/descriptor
+# github.com/hashicorp/errwrap v1.0.0
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-multierror v1.0.0
+github.com/hashicorp/go-multierror
 # github.com/hpcloud/tail v1.0.0
 github.com/hpcloud/tail
 github.com/hpcloud/tail/ratelimiter
 github.com/hpcloud/tail/util
 github.com/hpcloud/tail/watch
 github.com/hpcloud/tail/winfile
+# github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983
+github.com/mailru/easyjson
+github.com/mailru/easyjson/buffer
+github.com/mailru/easyjson/jlexer
+github.com/mailru/easyjson/jwriter
 # github.com/onsi/ginkgo v1.11.0
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
@@ -51,6 +74,8 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
+# github.com/opencontainers/runtime-spec v1.0.1
+github.com/opencontainers/runtime-spec/specs-go
 # github.com/tedsuo/rata v1.0.0
 github.com/tedsuo/rata
 # golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553

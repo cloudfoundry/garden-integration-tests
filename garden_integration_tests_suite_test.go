@@ -129,16 +129,22 @@ func TestGardenIntegrationTests(t *testing.T) {
 
 	AfterEach(func() {
 		if container != nil {
-			// ignoring the error since it can return unknown handle error
-			theContainer, _ := gardenClient.Lookup(container.Handle())
-
-			if theContainer != nil {
-				Expect(gardenClient.Destroy(container.Handle())).To(Succeed())
-			}
+			Expect(destroyContainer(container)).To(Succeed())
 		}
 	})
 
 	RunSpecs(t, "GardenIntegrationTests Suite")
+}
+
+func destroyContainer(c garden.Container) error {
+	// ignoring the error since it can return unknown handle error
+	theContainer, _ := gardenClient.Lookup(c.Handle())
+
+	if theContainer != nil {
+		return gardenClient.Destroy(theContainer.Handle())
+	}
+
+	return nil
 }
 
 func getContainerHandles() []string {
@@ -262,8 +268,23 @@ func readAll(r io.Reader) []byte {
 	return b
 }
 
-func httpGet(url string) *http.Response {
-	r, err := http.Get(url)
-	ExpectWithOffset(1, err).NotTo(HaveOccurred())
-	return r
+func httpGet(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
+	}
+
+	return string(body), nil
 }
+
+// func httpGet(url string) *http.Response {
+// 	r, err := http.Get(url)
+// 	ExpectWithOffset(1, err).NotTo(HaveOccurred())
+// 	return r
+// }
