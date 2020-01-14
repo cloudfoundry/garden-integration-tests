@@ -65,7 +65,7 @@ var _ = Describe("CPU Throttling", func() {
 			})
 
 			It("allows the previously idle application to spike", func() {
-				Eventually(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "1m", "1s").Should(BeNumerically("<", 0.5))
+				Eventually(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "2m").Should(BeNumerically("<", 0.5))
 				Consistently(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer))).Should(BeNumerically("<", 0.5, 0.1))
 			})
 		})
@@ -112,8 +112,8 @@ func startSpinnerApp(container garden.Container, containerPort uint32) {
 func ensureInitialSpikeIsOver(container garden.Container, port uint32) {
 	// Wait for the usage to drop below 0.01 (i.e. the container is done initialisizing and is idle)
 	// and eventually get into the good cgroup
-	Eventually(currentUsage(container), "1m", "1s").Should(BeNumerically("<", 0.01))
-	Eventually(punished(container, port), "1m", "1s").Should(BeFalse())
+	Eventually(currentUsage(container), "1m", "10s").Should(BeNumerically("<", 0.01))
+	Eventually(punished(container, port), "1m", "10s").Should(BeFalse())
 }
 
 func getCPUUsageAndEntitlement(container garden.Container) (uint64, uint64, error) {
@@ -132,7 +132,7 @@ func currentUsage(container garden.Container) func() (float64, error) {
 			return 0, nil
 		}
 
-		time.Sleep(time.Second)
+		time.Sleep(5 * time.Second)
 
 		secondUsage, secondEntitlement, err := getCPUUsageAndEntitlement(container)
 		if err != nil {
