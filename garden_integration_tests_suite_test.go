@@ -256,6 +256,27 @@ func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exi
 	return processExitCode, stdOut, stdErr
 }
 
+func runProcessWithFiles(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr *os.File) {
+	stdOut, err := ioutil.TempFile("", "")
+	Expect(err).NotTo(HaveOccurred())
+	Expect(os.Remove(stdOut.Name())).To(Succeed())
+
+	stdErr, err := ioutil.TempFile("", "")
+	Expect(err).NotTo(HaveOccurred())
+	Expect(os.Remove(stdErr.Name())).To(Succeed())
+
+	proc, err := container.Run(
+		processSpec,
+		garden.ProcessIO{
+			Stdout: stdOut,
+			Stderr: stdErr,
+		})
+	Expect(err).NotTo(HaveOccurred())
+	processExitCode, err := proc.Wait()
+	Expect(err).NotTo(HaveOccurred())
+	return processExitCode, stdOut, stdErr
+}
+
 func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {
 	exitCode, stdout, _ := runProcess(container, processSpec)
 	Expect(exitCode).To(Equal(0))

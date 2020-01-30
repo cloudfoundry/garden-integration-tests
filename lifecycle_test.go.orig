@@ -468,24 +468,23 @@ var _ = Describe("Lifecycle", func() {
 		}, 480.0)
 
 		FIt("collects the process's full output when tty is requested", func() {
-			size := 1_000_000_000
-			iterations := 10
+			size := 100_000_000
+			iterations := 100
 
 			for i := 0; i < iterations; i++ {
-				exitCode, stdoutFile, stderrFile := runProcessWithFiles(container, garden.ProcessSpec{
+				exitCode, stdoutFile, _ := runProcessWithFiles(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
 					Args: []string{"-c", fmt.Sprintf(`printf "%%0%dd" 42`, size)},
 					TTY:  new(garden.TTYSpec),
 				})
+				os.Remove(stdoutFile.Name())
 				Expect(exitCode).To(BeZero())
 
 				stdoutFileInfo, err := stdoutFile.Stat()
 				Expect(err).NotTo(HaveOccurred())
-				stdoutFile.Close()
-				stderrFile.Close()
 
-				Expect(stdoutFileInfo.Size()).To(Equal(int64(size)), "output truncated on iteration %d", i)
+				Expect(stdoutFileInfo.Size()).To(Equal(int64(size)))
 			}
 		})
 
