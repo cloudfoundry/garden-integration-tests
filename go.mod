@@ -7,7 +7,7 @@ require (
 	code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000
 	code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry/gosigar v1.1.0
-	github.com/onsi/ginkgo v1.11.0
+	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.8.1
 )
 
