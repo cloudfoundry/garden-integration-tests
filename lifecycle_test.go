@@ -255,7 +255,7 @@ var _ = Describe("Lifecycle", func() {
 
 		It("all attached clients should get stdout and stderr", func() {
 			skipIfContainerdForProcesses()
-			outputLength := 10_000_000
+			outputLength := 10000000
 			iterations := 100
 
 			for i := 0; i < iterations; i++ {
@@ -286,10 +286,10 @@ var _ = Describe("Lifecycle", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(exitCode).To(Equal(0))
 
-				Expect(runStdout.Len()).To(Equal(outputLength), fmt.Sprintf("run stdout truncated in iteration %d of %d", i+1, iterations))
-				Expect(attachStdout.Len()).To(Equal(outputLength), fmt.Sprintf("attach stdout truncated in iteration %d of %d", i+1, iterations))
-				Expect(runStderr.Len()).To(Equal(outputLength), fmt.Sprintf("run stderr truncated in iteration %d of %d", i+1, iterations))
-				Expect(attachStderr.Len()).To(Equal(outputLength), fmt.Sprintf("attach stderr truncated in iteration %d of %d", i+1, iterations))
+				Expect(runStdout.Len()).To(Equal(outputLength), fmt.Sprintf("run stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStdout)))
+				Expect(attachStdout.Len()).To(Equal(outputLength), fmt.Sprintf("attach stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStdout)))
+				Expect(runStderr.Len()).To(Equal(outputLength), fmt.Sprintf("run stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStderr)))
+				Expect(attachStderr.Len()).To(Equal(outputLength), fmt.Sprintf("attach stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStderr)))
 			}
 		})
 
@@ -473,7 +473,7 @@ var _ = Describe("Lifecycle", func() {
 		}, 480.0)
 
 		It("consistently collects the process's full output when tty is requested", func() {
-			outputLength := 10_000_000
+			outputLength := 10000000
 			iterations := 100
 
 			for i := 0; i < iterations; i++ {
@@ -495,7 +495,7 @@ var _ = Describe("Lifecycle", func() {
 				_, err = proc.Wait()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d", i+1, iterations))
+				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(stdOut)))
 			}
 		})
 
@@ -698,7 +698,7 @@ var _ = Describe("Lifecycle", func() {
 
 			It("all attached clients should get stdout", func() {
 				skipIfContainerdForProcesses()
-				outputLength := 10_000_000
+				outputLength := 10000000
 				attempts := 100
 				for i := 0; i < attempts; i++ {
 					var runStdout, attachStdout bytes.Buffer
@@ -734,8 +734,8 @@ var _ = Describe("Lifecycle", func() {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(exitCode).To(Equal(0))
 
-					Expect((&runStdout).Len()).To(Equal(outputLength), fmt.Sprintf("run buffer failed on iteration %d of %d", i+1, attempts))
-					Expect((&attachStdout).Len()).To(Equal(outputLength), fmt.Sprintf("attach buffer failed on iteration %d of %d", i+1, attempts))
+					Expect((&runStdout).Len()).To(Equal(outputLength), fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
+					Expect((&attachStdout).Len()).To(Equal(outputLength), fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
 				}
 			})
 		})
@@ -1169,3 +1169,7 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 })
+
+func startAndEnd(buffer bytes.Buffer) string {
+	return fmt.Sprintf("[%q..%q]", buffer.String()[0:10], buffer.String()[buffer.Len()-10:])
+}
