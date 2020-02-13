@@ -311,8 +311,8 @@ var _ = Describe("Lifecycle", func() {
 
 			Eventually(stdout).Should(gbytes.Say("waiting"))
 			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
-			Eventually(stdout, "2s").Should(gbytes.Say("termed"))
 			Expect(process.Wait()).To(Equal(42))
+			Expect(stdout).To(gbytes.Say("termed"))
 		})
 
 		It("sends a TERM signal to the process run by root if requested", func() {
