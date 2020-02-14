@@ -116,21 +116,23 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	It("provides /dev/shm as tmpfs in the container", func() {
-		exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+		exitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
 			User: "alice",
 			Path: "dd",
 			Args: []string{"if=/dev/urandom", "of=/dev/shm/some-data", "count=64", "bs=1k"},
 		})
 
+		fmt.Println(string(stdout.Contents()))
+		fmt.Println(string(stderr.Contents()))
 		Expect(exitCode).To(Equal(0))
 
-		stdout := runForStdout(container, garden.ProcessSpec{
+		stdout = runForStdout(container, garden.ProcessSpec{
 			User: "alice",
 			Path: "cat",
 			Args: []string{"/proc/mounts"},
 		})
 
-		Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs rw,nodev,relatime"))
+		Expect(stdout).To(gbytes.Say("tmpfs /dev/shm tmpfs rw,nosuid,nodev,noexec,relatime"))
 	})
 
 	It("gives the container a hostname based on its handle", func() {
