@@ -1171,5 +1171,8 @@ var _ = Describe("Lifecycle", func() {
 })
 
 func startAndEnd(buffer bytes.Buffer) string {
+	if buffer.Len() < 20 {
+		return buffer.String()
+	}
 	return fmt.Sprintf("[%q..%q]", buffer.String()[0:10], buffer.String()[buffer.Len()-10:])
 }
