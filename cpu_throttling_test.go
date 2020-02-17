@@ -95,8 +95,8 @@ func spin(container garden.Container, containerPort uint32) error {
 }
 
 func spinToPunish(container garden.Container, port uint32) {
-	Expect(spin(container, port)).To(Succeed())
-	Eventually(punished(container, port), "1m").Should(BeTrue())
+	ExpectWithOffset(1, spin(container, port)).To(Succeed())
+	EventuallyWithOffset(1, punished(container, port), "60s").Should(BeTrue())
 }
 
 func startSpinnerApp(container garden.Container, containerPort uint32) {
@@ -112,8 +112,8 @@ func startSpinnerApp(container garden.Container, containerPort uint32) {
 func ensureInitialSpikeIsOver(container garden.Container, port uint32) {
 	// Wait for the usage to drop below 0.01 (i.e. the container is done initialisizing and is idle)
 	// and eventually get into the good cgroup
-	Eventually(currentUsage(container), "1m", "10s").Should(BeNumerically("<", 0.01))
-	Eventually(punished(container, port), "1m", "10s").Should(BeFalse())
+	Eventually(currentUsage(container), "1m", "1s").Should(BeNumerically("<", 0.01))
+	Eventually(punished(container, port), "1m", "1s").Should(BeFalse())
 }
 
 func getCPUUsageAndEntitlement(container garden.Container) (uint64, uint64, error) {
@@ -132,7 +132,7 @@ func currentUsage(container garden.Container) func() (float64, error) {
 			return 0, nil
 		}
 
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 
 		secondUsage, secondEntitlement, err := getCPUUsageAndEntitlement(container)
 		if err != nil {
