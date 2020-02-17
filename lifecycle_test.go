@@ -262,10 +262,14 @@ var _ = Describe("Lifecycle", func() {
 
 				var runStdout, attachStdout, runStderr, attachStderr bytes.Buffer
 
+				stdinR, stdinW := io.Pipe()
+				defer stdinW.Close()
+
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`sleep 1; printf "%%0%dd" 1; printf "%%0%[1]dd" 1 >&2`, outputLength)},
+					Args: []string{"-c", fmt.Sprintf(`read -s; printf "%%0%dd" 1; printf "%%0%[1]dd" 1 >&2`, outputLength)},
 				}, garden.ProcessIO{
+					Stdin:  stdinR,
 					Stdout: &runStdout,
 					Stderr: &runStderr,
 				})
@@ -276,6 +280,9 @@ var _ = Describe("Lifecycle", func() {
 					Stderr: &attachStderr,
 				})
 				Expect(err).NotTo(HaveOccurred())
+
+				_, err = fmt.Fprintf(stdinW, "ok\n")
+				Expect(err).ToNot(HaveOccurred())
 
 				exitCode, err := process.Wait()
 				Expect(err).NotTo(HaveOccurred())
