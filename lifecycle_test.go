@@ -260,7 +260,10 @@ var _ = Describe("Lifecycle", func() {
 
 			for i := 0; i < iterations; i++ {
 
-				var runStdout, attachStdout, runStderr, attachStderr bytes.Buffer
+				runStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
+				attachStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
+				runStderr := bytes.NewBuffer(make([]byte, 0, outputLength))
+				attachStderr := bytes.NewBuffer(make([]byte, 0, outputLength))
 
 				stdinR, stdinW := io.Pipe()
 				defer stdinW.Close()
@@ -270,14 +273,14 @@ var _ = Describe("Lifecycle", func() {
 					Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
 				}, garden.ProcessIO{
 					Stdin:  stdinR,
-					Stdout: &runStdout,
-					Stderr: &runStderr,
+					Stdout: runStdout,
+					Stderr: runStderr,
 				})
 				Expect(err).ToNot(HaveOccurred())
 
 				attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
-					Stdout: &attachStdout,
-					Stderr: &attachStderr,
+					Stdout: attachStdout,
+					Stderr: attachStderr,
 				})
 				Expect(err).NotTo(HaveOccurred())
 
@@ -503,7 +506,7 @@ var _ = Describe("Lifecycle", func() {
 				_, err = proc.Wait()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(*stdOut)))
+				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(stdOut)))
 			}
 		})
 
@@ -709,7 +712,8 @@ var _ = Describe("Lifecycle", func() {
 				outputLength := 10000000
 				attempts := 100
 				for i := 0; i < attempts; i++ {
-					var runStdout, attachStdout bytes.Buffer
+					runStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
+					attachStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
 					stdinR, stdinW := io.Pipe()
 					defer stdinW.Close()
 
@@ -1178,7 +1182,7 @@ var _ = Describe("Lifecycle", func() {
 	})
 })
 
-func startAndEnd(buffer bytes.Buffer) string {
+func startAndEnd(buffer *bytes.Buffer) string {
 	if buffer.Len() < 20 {
 		return buffer.String()
 	}
