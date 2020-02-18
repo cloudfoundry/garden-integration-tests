@@ -723,13 +723,13 @@ var _ = Describe("Lifecycle", func() {
 						TTY:  new(garden.TTYSpec),
 					}, garden.ProcessIO{
 						Stdin:  stdinR,
-						Stdout: &runStdout,
+						Stdout: runStdout,
 						Stderr: GinkgoWriter,
 					})
 					Expect(err).ToNot(HaveOccurred())
 
 					attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
-						Stdout: &attachStdout,
+						Stdout: attachStdout,
 						Stderr: GinkgoWriter,
 					})
 					Expect(err).NotTo(HaveOccurred())
@@ -746,8 +746,8 @@ var _ = Describe("Lifecycle", func() {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(exitCode).To(Equal(0))
 
-					Expect((&runStdout).Len()).To(Equal(outputLength), fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
-					Expect((&attachStdout).Len()).To(Equal(outputLength), fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
+					Expect((runStdout).Len()).To(Equal(outputLength), fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
+					Expect((attachStdout).Len()).To(Equal(outputLength), fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
 				}
 			})
 		})
