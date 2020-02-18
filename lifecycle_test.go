@@ -484,7 +484,8 @@ var _ = Describe("Lifecycle", func() {
 			iterations := 100
 
 			for i := 0; i < iterations; i++ {
-				var stdOut bytes.Buffer
+				buf := make([]byte, 0, outputLength)
+				stdOut := bytes.NewBuffer(buf)
 
 				proc, err := container.Run(
 					garden.ProcessSpec{
@@ -494,7 +495,7 @@ var _ = Describe("Lifecycle", func() {
 						TTY:  new(garden.TTYSpec),
 					},
 					garden.ProcessIO{
-						Stdout: &stdOut,
+						Stdout: stdOut,
 						Stderr: GinkgoWriter,
 					})
 				Expect(err).NotTo(HaveOccurred())
@@ -502,7 +503,7 @@ var _ = Describe("Lifecycle", func() {
 				_, err = proc.Wait()
 				Expect(err).NotTo(HaveOccurred())
 
-				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(stdOut)))
+				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(*stdOut)))
 			}
 		})
 
