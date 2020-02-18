@@ -18,6 +18,7 @@ import (
 	"code.cloudfoundry.org/garden-integration-tests/testhelpers"
 	"code.cloudfoundry.org/garden/client"
 	"code.cloudfoundry.org/garden/client/connection"
+	"code.cloudfoundry.org/lager/lagertest"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -43,6 +44,7 @@ var (
 		Stdout: GinkgoWriter,
 		Stderr: GinkgoWriter,
 	}
+	logger *lagertest.TestLogger
 )
 
 // We suspect that bosh powerdns lookups have a low success rate (less than
@@ -103,7 +105,8 @@ func TestGardenIntegrationTests(t *testing.T) {
 		if gardenDebugPort == "" {
 			gardenDebugPort = "17013"
 		}
-		retryingConnection := testhelpers.RetryingConnection{Connection: connection.New("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort))}
+		logger = lagertest.NewTestLogger("garden.connection")
+		retryingConnection := testhelpers.RetryingConnection{Connection: connection.NewWithLogger("tcp", fmt.Sprintf("%s:%s", gardenHost, gardenPort), logger)}
 		gardenClient = client.New(&retryingConnection)
 	})
 

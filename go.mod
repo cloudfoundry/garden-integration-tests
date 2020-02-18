@@ -6,6 +6,7 @@ require (
 	code.cloudfoundry.org/archiver v0.0.0-20180525162158-e135af3d5a2a
 	code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000
 	code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000
+	code.cloudfoundry.org/lager v2.0.0+incompatible
 	github.com/cloudfoundry/gosigar v1.1.0
 	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.9.0
