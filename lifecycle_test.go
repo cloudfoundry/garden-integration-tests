@@ -272,7 +272,7 @@ var _ = Describe("Lifecycle", func() {
 
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
+					Args: []string{"-c", fmt.Sprintf(`read -s >/dev/null; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
 				}, garden.ProcessIO{
 					Stdin:  stdinR,
 					Stdout: runStdout,
@@ -721,7 +721,7 @@ var _ = Describe("Lifecycle", func() {
 
 					process, err := container.Run(garden.ProcessSpec{
 						Path: "sh",
-						Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1`, outputLength-1)},
+						Args: []string{"-c", fmt.Sprintf(`read -s >/dev/null; printf "A%%0%dd" 1`, outputLength-1)},
 						TTY:  new(garden.TTYSpec),
 					}, garden.ProcessIO{
 						Stdin:  stdinR,
