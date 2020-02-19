@@ -272,7 +272,7 @@ var _ = Describe("Lifecycle", func() {
 
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`read -s >/dev/null; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
+					Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
 				}, garden.ProcessIO{
 					Stdin:  stdinR,
 					Stdout: runStdout,
@@ -298,10 +298,14 @@ var _ = Describe("Lifecycle", func() {
 				Expect(err).NotTo(HaveOccurred())
 				Expect(exitCode).To(Equal(0))
 
-				Expect(runStdout.Len()).To(Equal(outputLength), fmt.Sprintf("run stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStdout)))
-				Expect(attachStdout.Len()).To(Equal(outputLength), fmt.Sprintf("attach stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStdout)))
-				Expect(runStderr.Len()).To(Equal(outputLength), fmt.Sprintf("run stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStderr)))
-				Expect(attachStderr.Len()).To(Equal(outputLength), fmt.Sprintf("attach stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStderr)))
+				Expect(runStdout.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+					fmt.Sprintf("run stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStdout)))
+				Expect(attachStdout.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+					fmt.Sprintf("attach stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStdout)))
+				Expect(runStderr.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+					fmt.Sprintf("run stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStderr)))
+				Expect(attachStderr.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+					fmt.Sprintf("attach stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStderr)))
 			}
 		})
 
@@ -721,7 +725,7 @@ var _ = Describe("Lifecycle", func() {
 
 					process, err := container.Run(garden.ProcessSpec{
 						Path: "sh",
-						Args: []string{"-c", fmt.Sprintf(`read -s >/dev/null; printf "A%%0%dd" 1`, outputLength-1)},
+						Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1`, outputLength-1)},
 						TTY:  new(garden.TTYSpec),
 					}, garden.ProcessIO{
 						Stdin:  stdinR,
@@ -748,8 +752,10 @@ var _ = Describe("Lifecycle", func() {
 					Expect(err).NotTo(HaveOccurred())
 					Expect(exitCode).To(Equal(0))
 
-					Expect((runStdout).Len()).To(Equal(outputLength), fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
-					Expect((attachStdout).Len()).To(Equal(outputLength), fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
+					Expect((runStdout).Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+						fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
+					Expect((attachStdout).Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
+						fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
 				}
 			})
 		})
