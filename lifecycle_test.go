@@ -257,56 +257,37 @@ var _ = Describe("Lifecycle", func() {
 
 		It("all attached clients should get stdout and stderr", func() {
 			skipIfContainerdForProcesses()
-			outputLength := 10000000
-			iterations := 100
+			var runStdout, attachStdout, runStderr, attachStderr bytes.Buffer
 
-			for i := 0; i < iterations; i++ {
+			process, err := container.Run(garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{"-c", `sleep 1; for i in $(seq 1 10); do echo $i; echo $i >&2; done`},
+			}, garden.ProcessIO{
+				Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
+				Stderr: io.MultiWriter(&runStderr, GinkgoWriter),
+			})
+			Expect(err).ToNot(HaveOccurred())
 
-				runStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
-				attachStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
-				runStderr := bytes.NewBuffer(make([]byte, 0, outputLength))
-				attachStderr := bytes.NewBuffer(make([]byte, 0, outputLength))
+			attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
+				Stdout: io.MultiWriter(&attachStdout, GinkgoWriter),
+				Stderr: io.MultiWriter(&attachStderr, GinkgoWriter),
+			})
+			Expect(err).NotTo(HaveOccurred())
 
-				stdinR, stdinW := io.Pipe()
-				defer stdinW.Close()
+			exitCode, err := process.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
 
-				process, err := container.Run(garden.ProcessSpec{
-					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1; printf "A%%0%[1]dd" 1 >&2`, outputLength-1)},
-				}, garden.ProcessIO{
-					Stdin:  stdinR,
-					Stdout: runStdout,
-					Stderr: runStderr,
-				})
-				Expect(err).ToNot(HaveOccurred())
+			// Looks redundant, but avoids race as we have 2 representations of the process
+			exitCode, err = attachedProcess.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
 
-				attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
-					Stdout: attachStdout,
-					Stderr: attachStderr,
-				})
-				Expect(err).NotTo(HaveOccurred())
+			Expect(runStdout.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "1st buffer:")
+			Expect(attachStdout.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "2nd buffer:")
 
-				_, err = fmt.Fprintf(stdinW, "ok\n")
-				Expect(err).ToNot(HaveOccurred())
-
-				exitCode, err := process.Wait()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(exitCode).To(Equal(0))
-
-				// Looks redundant, but avoids race as we have 2 representations of the process
-				exitCode, err = attachedProcess.Wait()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(exitCode).To(Equal(0))
-
-				Expect(runStdout.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-					fmt.Sprintf("run stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStdout)))
-				Expect(attachStdout.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-					fmt.Sprintf("attach stdout truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStdout)))
-				Expect(runStderr.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-					fmt.Sprintf("run stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(runStderr)))
-				Expect(attachStderr.Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-					fmt.Sprintf("attach stderr truncated in iteration %d of %d: %s", i+1, iterations, startAndEnd(attachStderr)))
-			}
+			Expect(runStderr.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "1st buffer:")
+			Expect(attachStderr.String()).To(Equal("1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n"), "2nd buffer:")
 		})
 
 		It("sends a TERM signal to the process if requested", func() {
@@ -488,31 +469,16 @@ var _ = Describe("Lifecycle", func() {
 			close(done)
 		}, 480.0)
 
-		It("consistently collects the process's full output when tty is requested", func() {
-			outputLength := 10000000
-			iterations := 100
+		It("collects the process's full output when tty is requested", func() {
+			for i := 0; i < 100; i++ {
+				stdout := runForStdout(container, garden.ProcessSpec{
+					User: "alice",
+					Path: "sh",
+					Args: []string{"-c", `seq -s " " 10000`},
+					TTY:  new(garden.TTYSpec),
+				})
 
-			for i := 0; i < iterations; i++ {
-				buf := make([]byte, 0, outputLength)
-				stdOut := bytes.NewBuffer(buf)
-
-				proc, err := container.Run(
-					garden.ProcessSpec{
-						User: "alice",
-						Path: "sh",
-						Args: []string{"-c", fmt.Sprintf(`printf "A%%0%dd" 1`, outputLength-1)},
-						TTY:  new(garden.TTYSpec),
-					},
-					garden.ProcessIO{
-						Stdout: stdOut,
-						Stderr: GinkgoWriter,
-					})
-				Expect(err).NotTo(HaveOccurred())
-
-				_, err = proc.Wait()
-				Expect(err).NotTo(HaveOccurred())
-
-				Expect(stdOut.Len()).To(Equal(outputLength), fmt.Sprintf("stdout truncated on iteration %d of %d: %s", i+1, iterations, startAndEnd(stdOut)))
+				Expect(stdout).To(gbytes.Say("9999 10000"))
 			}
 		})
 
@@ -713,50 +679,52 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Wait()).To(Equal(0))
 			})
 
-			It("all attached clients should get stdout", func() {
+			It("all attached clients should get stdout and stderr", func() {
 				skipIfContainerdForProcesses()
-				outputLength := 10000000
-				attempts := 100
-				for i := 0; i < attempts; i++ {
-					runStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
-					attachStdout := bytes.NewBuffer(make([]byte, 0, outputLength))
-					stdinR, stdinW := io.Pipe()
-					defer stdinW.Close()
 
-					process, err := container.Run(garden.ProcessSpec{
-						Path: "sh",
-						Args: []string{"-c", fmt.Sprintf(`read -s; printf "A%%0%dd" 1`, outputLength-1)},
-						TTY:  new(garden.TTYSpec),
-					}, garden.ProcessIO{
-						Stdin:  stdinR,
-						Stdout: runStdout,
-						Stderr: GinkgoWriter,
-					})
-					Expect(err).ToNot(HaveOccurred())
+				var runStdout, attachStdout bytes.Buffer
+				stdinR, stdinW := io.Pipe()
+				defer stdinW.Close()
 
-					attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
-						Stdout: attachStdout,
-						Stderr: GinkgoWriter,
-					})
-					Expect(err).NotTo(HaveOccurred())
+				process, err := container.Run(garden.ProcessSpec{
+					Path: "sh",
+					Args: []string{"-c", `
+read -s
 
-					_, err = fmt.Fprintf(stdinW, "ok\n")
-					Expect(err).ToNot(HaveOccurred())
+for i in $(seq 1 5); do
+	echo $i
+	echo $i >&2
+done
+					`},
+					TTY: new(garden.TTYSpec),
+				}, garden.ProcessIO{
+					Stdin:  stdinR,
+					Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).ToNot(HaveOccurred())
 
-					exitCode, err := process.Wait()
-					Expect(err).NotTo(HaveOccurred())
-					Expect(exitCode).To(Equal(0))
+				attachedProcess, err := container.Attach(process.ID(), garden.ProcessIO{
+					Stdout: io.MultiWriter(&attachStdout, GinkgoWriter),
+					Stderr: GinkgoWriter,
+				})
+				Expect(err).NotTo(HaveOccurred())
 
-					// Looks redundant, but avoids race as we have 2 representations of the process
-					exitCode, err = attachedProcess.Wait()
-					Expect(err).NotTo(HaveOccurred())
-					Expect(exitCode).To(Equal(0))
+				_, err = fmt.Fprintf(stdinW, "ok\n")
+				Expect(err).ToNot(HaveOccurred())
 
-					Expect((runStdout).Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-						fmt.Sprintf("run buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(runStdout)))
-					Expect((attachStdout).Len()).To(Or(Equal(outputLength), Equal(outputLength+len("ok\r\n"))),
-						fmt.Sprintf("attach buffer failed on iteration %d of %d: %s", i+1, attempts, startAndEnd(attachStdout)))
-				}
+				exitCode, err := process.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exitCode).To(Equal(0))
+
+				// Looks redundant, but avoids race as we have 2 representations of the process
+				exitCode, err = attachedProcess.Wait()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(exitCode).To(Equal(0))
+
+				expected := `(ok\r\n)?1\r\n1\r\n2\r\n2\r\n3\r\n3\r\n4\r\n4\r\n5\r\n5\r\n`
+				Expect(runStdout.String()).To(MatchRegexp(expected), "run buffer:")
+				Expect(attachStdout.String()).To(MatchRegexp(expected), "attach buffer:")
 			})
 		})
 
@@ -1189,10 +1157,3 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 })
-
-func startAndEnd(buffer *bytes.Buffer) string {
-	if buffer.Len() < 20 {
-		return buffer.String()
-	}
-	return fmt.Sprintf("[%q..%q]", buffer.String()[0:10], buffer.String()[buffer.Len()-10:])
-}
