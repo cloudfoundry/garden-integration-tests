@@ -16,6 +16,7 @@ import (
 
 	archiver "code.cloudfoundry.org/archiver/extractor/test_helper"
 	"code.cloudfoundry.org/garden"
+	uuid "github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -368,17 +369,21 @@ var _ = Describe("Lifecycle", func() {
 
 			It("sends a KILL signal to the process if requested", func(done Done) {
 				stdout := gbytes.NewBuffer()
+				id, err := uuid.NewV4()
+				Expect(err).ToNot(HaveOccurred())
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", `
+					Args: []string{"-c", fmt.Sprintf(`
+							echo %s
 							trap wait SIGTERM
 
 							while true; do
 							  echo waiting
 								sleep 1
 							done
-						`},
+						`, id.String()),
+					},
 				}, garden.ProcessIO{
 					Stdout: io.MultiWriter(GinkgoWriter, stdout),
 					Stderr: GinkgoWriter,
@@ -389,23 +394,26 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Signal(garden.SignalKill)).To(Succeed())
 				Expect(process.Wait()).To(Equal(137))
 
-				checkProcessIsGone(container, "sh -c")
+				checkProcessIsGone(container, id.String())
 
 				close(done)
 			}, 10.0)
 
 			It("sends a TERMINATE signal to the process if requested", func(done Done) {
+				id, err := uuid.NewV4()
+				Expect(err).NotTo(HaveOccurred())
 				stdout := gbytes.NewBuffer()
 
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", `
+					Args: []string{"-c", fmt.Sprintf(`
+							echo %s
 							while true; do
 							  echo waiting
 								sleep 1
 							done
-						`},
+						`, id.String())},
 				}, garden.ProcessIO{
 					Stdout: io.MultiWriter(GinkgoWriter, stdout),
 					Stderr: GinkgoWriter,
@@ -416,7 +424,7 @@ var _ = Describe("Lifecycle", func() {
 				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
 				Expect(process.Wait()).NotTo(BeZero())
 
-				checkProcessIsGone(container, "sh -c while")
+				checkProcessIsGone(container, id.String())
 
 				close(done)
 			}, 10.0)
