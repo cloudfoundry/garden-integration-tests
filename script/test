@@ -3,7 +3,7 @@
 set -e
 
 # to run gats98 suite set
-# WINDOWS_TEST_ROOTFS=docker:///microsoft/nanoserver:1709
+# export WINDOWS_TEST_ROOTFS=docker://mcr.microsoft.com/windows/nanoserver:1809
 
 ARGS=$@
 
