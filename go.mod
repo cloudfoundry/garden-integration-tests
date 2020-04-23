@@ -10,6 +10,7 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.12.0
 	github.com/onsi/gomega v1.9.0
+	github.com/wavefronthq/wavefront-sdk-go v0.9.5
 )
 
 replace code.cloudfoundry.org/garden => ../garden

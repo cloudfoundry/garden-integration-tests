@@ -1,14 +1,10 @@
 package performance_test
 
 import (
-	"bytes"
 	"compress/gzip"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net"
-	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -21,13 +17,80 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
+	wavefront "github.com/wavefronthq/wavefront-sdk-go/senders"
 )
 
 const containerPrefix = "concurrent-create-handle"
 
-var dogURL = "https://app.datadoghq.com/api/v1/series?api_key=" + os.Getenv("DATADOG_API_KEY")
+func mustGetEnv(key string) string {
+	val, ok := os.LookupEnv(key)
+	Expect(ok).To(BeTrue(), fmt.Sprintf("%q env var not set", key))
+	return val
+}
 
 var _ = Describe("performance", func() {
+	var (
+		wfSender wavefront.Sender
+	)
+
+	BeforeEach(func() {
+		wfURL := mustGetEnv("WAVEFRONT_URL")
+		wfToken := mustGetEnv("WAVEFRONT_TOKEN")
+
+		directCfg := &wavefront.DirectConfiguration{
+			Server: wfURL,
+			Token:  wfToken,
+		}
+
+		var err error
+		wfSender, err = wavefront.NewDirectSender(directCfg)
+		Expect(err).NotTo(HaveOccurred())
+	})
+
+	emitMetric := func(metricName string, metricVal float64, timestamp int64, source string) {
+		Expect(wfSender.SendMetric(metricName, metricVal, timestamp, source, nil)).To(Succeed())
+		Expect(wfSender.Flush()).To(Succeed())
+	}
+
+	createAndStream := func(index int, b Benchmarker, archive string) {
+		var handle string
+		var ctr garden.Container
+		var err error
+
+		b.Time(fmt.Sprintf("stream-%d", index), func() {
+			creationTime := b.Time(fmt.Sprintf("create-%d", index), func() {
+				By("creating container " + strconv.Itoa(index))
+				ctr, err = gardenClient.Create(garden.ContainerSpec{
+					Limits: garden.Limits{
+						Disk: garden.DiskLimits{ByteHard: 2 * 1024 * 1024 * 1024},
+					},
+					Privileged: true,
+				})
+				Expect(err).ToNot(HaveOccurred())
+				handle = ctr.Handle()
+				By("done creating container " + strconv.Itoa(index))
+			})
+			now := time.Now()
+			emitMetric("garden.container-creation-time", float64(creationTime), now.Unix(), os.Getenv("WAVEFRONT_METRIC_PREFIX"))
+		})
+
+		By("starting stream in to container " + handle)
+
+		streamin(ctr, archive)
+
+		By("succefully streamed in to container " + handle)
+
+		b.Time(fmt.Sprintf("delete-%d", index), func() {
+			By("destroying container " + handle)
+			Expect(gardenClient.Destroy(handle)).To(Succeed())
+			By("successfully destroyed container " + handle)
+		})
+	}
+
+	AfterEach(func() {
+		wfSender.Close()
+	})
+
 	JustBeforeEach(func() {
 		warmUp(gardenClient)
 	})
@@ -70,7 +133,7 @@ var _ = Describe("performance", func() {
 				for _, handle := range handles {
 					_, err := gardenClient.Lookup(handle)
 					if err == nil {
-						return errors.New(fmt.Sprintf("container '%s' exists but it should've been destroyed", handle))
+						return fmt.Errorf("container %q exists but it should've been destroyed", handle)
 					}
 				}
 				return nil
@@ -277,34 +340,6 @@ var _ = Describe("performance", func() {
 	}, 5)
 })
 
-func emitMetric(req interface{}) {
-	if os.Getenv("DATADOG_API_KEY") == "" {
-		Fail("DATADOG_API_KEY not set!")
-	}
-	buf, err := json.Marshal(req)
-	if err != nil {
-		Fail("cannot-marshal-metric: " + err.Error())
-		return
-	}
-
-	Eventually(func() error {
-		response, err := http.Post(dogURL, "application/json", bytes.NewReader(buf))
-		if err != nil {
-			err = errors.New("cannot-emit-metric: " + err.Error())
-			fmt.Fprintf(GinkgoWriter, err.Error())
-			return err
-		}
-
-		if response.StatusCode != http.StatusAccepted {
-			err := fmt.Errorf("cannot-emit-metric: error code not 202: %d %s", response.StatusCode, response.Status)
-			fmt.Fprintf(GinkgoWriter, err.Error())
-			return err
-		}
-
-		return nil
-	}, 15*time.Second).Should(Succeed())
-}
-
 func warmUp(gardenClient garden.Client) {
 	ctr, err := gardenClient.Create(garden.ContainerSpec{})
 	Expect(err).ToNot(HaveOccurred())
@@ -335,49 +370,4 @@ func streamin(ctr garden.Container, archive string) {
 
 		tgz.Close()
 	}
-}
-
-func createAndStream(index int, b Benchmarker, archive string) {
-	var handle string
-	var ctr garden.Container
-	var err error
-
-	b.Time(fmt.Sprintf("stream-%d", index), func() {
-		creationTime := b.Time(fmt.Sprintf("create-%d", index), func() {
-			By("creating container " + strconv.Itoa(index))
-			ctr, err = gardenClient.Create(garden.ContainerSpec{
-				Limits: garden.Limits{
-					Disk: garden.DiskLimits{ByteHard: 2 * 1024 * 1024 * 1024},
-				},
-				Privileged: true,
-			})
-			Expect(err).ToNot(HaveOccurred())
-			handle = ctr.Handle()
-			By("done creating container " + strconv.Itoa(index))
-		})
-		now := time.Now()
-		emitMetric(map[string]interface{}{
-			"series": []map[string]interface{}{
-				{
-					"metric": "garden.container-creation-time",
-					"points": [][]int64{
-						{now.Unix(), int64(creationTime)},
-					},
-					"tags": []string{"deployment:" + os.Getenv("ENVIRONMENT") + "-garden"},
-				},
-			},
-		})
-
-		By("starting stream in to container " + handle)
-
-		streamin(ctr, archive)
-
-		By("succefully streamed in to container " + handle)
-
-		b.Time(fmt.Sprintf("delete-%d", index), func() {
-			By("destroying container " + handle)
-			Expect(gardenClient.Destroy(handle)).To(Succeed())
-			By("successfully destroyed container " + handle)
-		})
-	})
 }
