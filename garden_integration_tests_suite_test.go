@@ -242,11 +242,12 @@ func setPrivileged() {
 	skipIfRootless()
 }
 
-func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr *gbytes.Buffer) {
-	stdOut, stdErr := gbytes.NewBuffer(), gbytes.NewBuffer()
+func runForStdin(container garden.Container, processSpec garden.ProcessSpec, stdinContent []byte) (exitCode int, stdout, stderr *gbytes.Buffer) {
+	stdIn, stdOut, stdErr := gbytes.BufferWithBytes(stdinContent), gbytes.NewBuffer(), gbytes.NewBuffer()
 	proc, err := container.Run(
 		processSpec,
 		garden.ProcessIO{
+			Stdin:  stdIn,
 			Stdout: io.MultiWriter(stdOut, GinkgoWriter),
 			Stderr: io.MultiWriter(stdErr, GinkgoWriter),
 		})
@@ -254,6 +255,10 @@ func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exi
 	processExitCode, err := proc.Wait()
 	Expect(err).NotTo(HaveOccurred())
 	return processExitCode, stdOut, stdErr
+}
+
+func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr *gbytes.Buffer) {
+	return runForStdin(container, processSpec, []byte{})
 }
 
 func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {

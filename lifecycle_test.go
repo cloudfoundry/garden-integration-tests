@@ -217,6 +217,41 @@ var _ = Describe("Lifecycle", func() {
 			Expect(stderr).To(gbytes.Say("goodbye\n"))
 		})
 
+		It("can use /dev/stdin", func() {
+			exitCode, stdout, _ := runForStdin(container, garden.ProcessSpec{
+				User: "alice",
+				Path: "sh",
+				Args: []string{"-c", "read x </dev/stdin; echo $x"},
+			},
+				[]byte("potato"),
+			)
+
+			Expect(exitCode).To(Equal(0))
+			Expect(stdout).To(gbytes.Say("potato\n"))
+		})
+
+		It("can use /dev/stdout", func() {
+			exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+				User: "alice",
+				Path: "sh",
+				Args: []string{"-c", "echo -n potato >/dev/stdout"},
+			})
+
+			Expect(exitCode).To(Equal(0))
+			Expect(stdout).To(gbytes.Say("potato"))
+		})
+
+		It("can use /dev/stderr", func() {
+			exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
+				User: "alice",
+				Path: "sh",
+				Args: []string{"-c", "echo -n cake >/dev/stderr"},
+			})
+
+			Expect(exitCode).To(Equal(0))
+			Expect(stderr).To(gbytes.Say("cake"))
+		})
+
 		Context("when multiple clients attach to the same process", func() {
 			It("all clients attached should get the exit code", func() {
 				process, err := container.Run(garden.ProcessSpec{
