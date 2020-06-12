@@ -242,23 +242,34 @@ func setPrivileged() {
 	skipIfRootless()
 }
 
-func runForStdin(container garden.Container, processSpec garden.ProcessSpec, stdinContent []byte) (exitCode int, stdout, stderr *gbytes.Buffer) {
-	stdIn, stdOut, stdErr := gbytes.BufferWithBytes(stdinContent), gbytes.NewBuffer(), gbytes.NewBuffer()
-	proc, err := container.Run(
-		processSpec,
-		garden.ProcessIO{
-			Stdin:  stdIn,
-			Stdout: io.MultiWriter(stdOut, GinkgoWriter),
-			Stderr: io.MultiWriter(stdErr, GinkgoWriter),
-		})
+func runProcessWithIO(container garden.Container, processSpec garden.ProcessSpec, pio garden.ProcessIO) int {
+	proc, err := container.Run(processSpec, pio)
 	Expect(err).NotTo(HaveOccurred())
 	processExitCode, err := proc.Wait()
 	Expect(err).NotTo(HaveOccurred())
-	return processExitCode, stdOut, stdErr
+	return processExitCode
 }
 
 func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exitCode int, stdout, stderr *gbytes.Buffer) {
-	return runForStdin(container, processSpec, []byte{})
+	stdout, stderr = gbytes.NewBuffer(), gbytes.NewBuffer()
+	pio := garden.ProcessIO{
+		Stdout: io.MultiWriter(stdout, GinkgoWriter),
+		Stderr: io.MultiWriter(stderr, GinkgoWriter),
+	}
+	exitCode = runProcessWithIO(container, processSpec, pio)
+	return
+}
+
+func runForStdin(container garden.Container, processSpec garden.ProcessSpec, stdinContent []byte) (exitCode int, stdout, stderr *gbytes.Buffer) {
+	stdin := gbytes.BufferWithBytes(stdinContent)
+	stdout, stderr = gbytes.NewBuffer(), gbytes.NewBuffer()
+	pio := garden.ProcessIO{
+		Stdin:  stdin,
+		Stdout: io.MultiWriter(stdout, GinkgoWriter),
+		Stderr: io.MultiWriter(stderr, GinkgoWriter),
+	}
+	exitCode = runProcessWithIO(container, processSpec, pio)
+	return
 }
 
 func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {
