@@ -307,13 +307,13 @@ var _ = Describe("Security", func() {
 		})
 
 		Context("when running a command as root", func() {
-			It("executes with uid 0, gid 0, and supplementary gid 0", func() {
+			It("executes with uid 0, gid 0, and supplementary gids from /etc/group", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "root",
 					Path: "/bin/sh",
 					Args: []string{"-c", "id -u; id -g; id -G"},
 				})
-				Expect(stdout).To(gbytes.Say("0\n0\n0\n"))
+				Expect(stdout).To(gbytes.Say("0\n0\n0 10\n"))
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
