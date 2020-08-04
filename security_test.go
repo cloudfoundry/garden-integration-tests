@@ -568,15 +568,6 @@ var _ = Describe("Security", func() {
 			})
 		})
 
-		It("does not inherit additional groups", func() {
-			stdout := runForStdout(container, garden.ProcessSpec{
-				User: "root",
-				Path: "cat",
-				Args: []string{"/proc/self/status"},
-			})
-			Expect(stdout).NotTo(gbytes.Say("Groups:\\s*0"))
-		})
-
 		It("can write to files in the /root directory", func() {
 			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
