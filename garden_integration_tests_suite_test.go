@@ -207,6 +207,12 @@ func skipIfRootless() {
 	}
 }
 
+func skipIfNotRootless() {
+	if !rootless() {
+		Skip("behaviour being tested is specific to rootless")
+	}
+}
+
 func rootless() bool {
 	return os.Getenv("ROOTLESS") != ""
 }

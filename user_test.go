@@ -55,14 +55,37 @@ var _ = Describe("users", func() {
 			imageRef.URI = "docker:///cfgarden/with-user-with-groups"
 		})
 
-		It("ignores additional groups", func() {
-			stdout := runForStdout(container, garden.ProcessSpec{
-				User: "alice",
-				Path: "cat",
-				Args: []string{"/proc/self/status"},
+		When("not rootless", func() {
+			BeforeEach(func() {
+				skipIfRootless()
 			})
 
-			Expect(stdout).To(gbytes.Say(`Groups:(\s)*1010(\s)*1011(\s)*\n`))
+			It("ignores inherited groups from gdn but includes supplementary groups", func() {
+				stdout := runForStdout(container, garden.ProcessSpec{
+					User: "alice",
+					Path: "cat",
+					Args: []string{"/proc/self/status"},
+				})
+
+				Expect(stdout).To(gbytes.Say(`Groups:(\s)*1010(\s)*1011(\s)*\n`))
+			})
+		})
+
+		When("running as rootless", func() {
+			BeforeEach(func() {
+				skipIfNotRootless()
+			})
+
+			It("ignores inherited groups from gdn and supplementary groups", func() {
+				stdout := runForStdout(container, garden.ProcessSpec{
+					User: "alice",
+					Path: "cat",
+					Args: []string{"/proc/self/status"},
+				})
+
+				Expect(stdout).To(gbytes.Say(`Groups:\s*\n`))
+			})
+
 		})
 	})
 
