@@ -307,13 +307,34 @@ var _ = Describe("Security", func() {
 		})
 
 		Context("when running a command as root", func() {
-			It("executes with uid 0, gid 0, and supplementary gids from /etc/group", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "root",
-					Path: "/bin/sh",
-					Args: []string{"-c", "id -u; id -g; id -G"},
+			When("not rootless", func() {
+				BeforeEach(func() {
+					skipIfRootless()
 				})
-				Expect(stdout).To(gbytes.Say("0\n0\n0 10\n"))
+
+				It("executes with uid 0, gid 0, and supplementary gids from /etc/group", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User: "root",
+						Path: "/bin/sh",
+						Args: []string{"-c", "id -u; id -g; id -G"},
+					})
+					Expect(stdout).To(gbytes.Say("0\n0\n0 10\n"))
+				})
+			})
+
+			When("rootless", func() {
+				BeforeEach(func() {
+					skipIfNotRootless()
+				})
+
+				It("executes with uid 0, gid 0, and no supplementary gids", func() {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User: "root",
+						Path: "/bin/sh",
+						Args: []string{"-c", "id -u; id -g; id -G"},
+					})
+					Expect(stdout).To(gbytes.Say("0\n0\n0\n"))
+				})
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
