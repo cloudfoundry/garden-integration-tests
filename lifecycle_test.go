@@ -218,16 +218,30 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("can use /dev/stdin", func() {
-			exitCode, stdout, _ := runForStdin(container, garden.ProcessSpec{
-				User: "alice",
-				Path: "sh",
-				Args: []string{"-c", "read x </dev/stdin; echo $x"},
-			},
-				[]byte("potato"),
-			)
+			stdinR, stdinW, err := os.Pipe()
+			Expect(err).NotTo(HaveOccurred())
+			defer stdinR.Close()
 
+			stdout := gbytes.NewBuffer()
+			pio := garden.ProcessIO{
+				Stdin:  stdinR,
+				Stdout: stdout,
+			}
+			proc, err := container.Run(garden.ProcessSpec{
+				User: "alice",
+				Path: "cat",
+				Args: []string{"/dev/stdin"},
+			}, pio)
+			Expect(err).NotTo(HaveOccurred())
+
+			fmt.Fprintln(stdinW, "potato")
+			Eventually(stdout).Should(gbytes.Say("potato"))
+
+			stdinW.Close()
+
+			exitCode, err := proc.Wait()
+			Expect(err).NotTo(HaveOccurred())
 			Expect(exitCode).To(Equal(0))
-			Expect(stdout).To(gbytes.Say("potato\n"))
 		})
 
 		It("can use /dev/stdout", func() {

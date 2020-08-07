@@ -266,18 +266,6 @@ func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exi
 	return
 }
 
-func runForStdin(container garden.Container, processSpec garden.ProcessSpec, stdinContent []byte) (exitCode int, stdout, stderr *gbytes.Buffer) {
-	stdin := gbytes.BufferWithBytes(stdinContent)
-	stdout, stderr = gbytes.NewBuffer(), gbytes.NewBuffer()
-	pio := garden.ProcessIO{
-		Stdin:  stdin,
-		Stdout: io.MultiWriter(stdout, GinkgoWriter),
-		Stderr: io.MultiWriter(stderr, GinkgoWriter),
-	}
-	exitCode = runProcessWithIO(container, processSpec, pio)
-	return
-}
-
 func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {
 	exitCode, stdout, _ := runProcess(container, processSpec)
 	Expect(exitCode).To(Equal(0))
