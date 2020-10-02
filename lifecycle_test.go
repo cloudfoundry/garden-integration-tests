@@ -545,11 +545,9 @@ var _ = Describe("Lifecycle", func() {
 
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
-					Path: "sh",
-					Args: []string{"-c", "cat <&0"},
+					Path: "echo",
+					Args: []string{"hi stdout"},
 				}, garden.ProcessIO{
-					Stdin:  bytes.NewBuffer([]byte("hi stdout")),
-					Stderr: os.Stderr,
 					Stdout: stdout,
 				})
 				Expect(err).ToNot(HaveOccurred())
@@ -560,20 +558,31 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("streams input to the process's stdin", func() {
+			stdinR, stdinW, err := os.Pipe()
+			Expect(err).NotTo(HaveOccurred())
+			defer stdinR.Close()
+
 			stdout := gbytes.NewBuffer()
+			pio := garden.ProcessIO{
+				Stdin:  stdinR,
+				Stdout: stdout,
+			}
 
 			process, err := container.Run(garden.ProcessSpec{
 				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", "cat <&0"},
-			}, garden.ProcessIO{
-				Stdin:  bytes.NewBufferString("hello\nworld"),
-				Stdout: stdout,
-			})
+			}, pio)
 			Expect(err).ToNot(HaveOccurred())
 
+			fmt.Fprintln(stdinW, "hello\nworld")
 			Eventually(stdout).Should(gbytes.Say("hello\nworld"))
-			Expect(process.Wait()).To(Equal(0))
+
+			stdinW.Close()
+
+			exitCode, err := process.Wait()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(exitCode).To(Equal(0))
 		})
 
 		It("forwards the exit status even if stdin is still being written", func() {
