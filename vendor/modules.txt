@@ -48,8 +48,6 @@ github.com/gogo/protobuf/protoc-gen-gogo/descriptor
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-multierror v1.1.0
 github.com/hashicorp/go-multierror
-# github.com/konsorten/go-windows-terminal-sequences v1.0.3
-github.com/konsorten/go-windows-terminal-sequences
 # github.com/mailru/easyjson v0.0.0-20190403194419-1ea4449da983
 github.com/mailru/easyjson
 github.com/mailru/easyjson/buffer
@@ -114,7 +112,7 @@ github.com/opencontainers/runc/libcontainer/utils
 github.com/opencontainers/runtime-spec/specs-go
 # github.com/pkg/errors v0.9.1
 github.com/pkg/errors
-# github.com/sirupsen/logrus v1.6.0
+# github.com/sirupsen/logrus v1.7.0
 github.com/sirupsen/logrus
 # github.com/tedsuo/rata v1.0.0
 github.com/tedsuo/rata
@@ -124,11 +122,11 @@ github.com/wavefronthq/wavefront-sdk-go/event
 github.com/wavefronthq/wavefront-sdk-go/histogram
 github.com/wavefronthq/wavefront-sdk-go/internal
 github.com/wavefronthq/wavefront-sdk-go/senders
-# golang.org/x/net v0.0.0-20200707034311-ab3426394381
+# golang.org/x/net v0.0.0-20200930145003-4acb6c075d10
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d
+# golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
