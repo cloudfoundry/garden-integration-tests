@@ -15,7 +15,7 @@ var _ = Describe("Metrics", func() {
 		_, err := container.Run(garden.ProcessSpec{
 			Path: "sh",
 			Args: []string{
-				"-c", `while true; do; ls -la; done`,
+				"-c", `while true; do ls -la; done`,
 			},
 		}, garden.ProcessIO{})
 		Expect(err).NotTo(HaveOccurred())
@@ -65,12 +65,21 @@ var _ = Describe("Metrics", func() {
 		}).Should(Not(BeZero()))
 	})
 
-	It("returns bulk metrics", func() {
+	It("has the container handle in bulk metrics", func() {
 		metrics, err := gardenClient.BulkMetrics([]string{container.Handle()})
 		Expect(err).NotTo(HaveOccurred())
-
 		Expect(metrics).To(HaveKey(container.Handle()))
-		Expect(metrics[container.Handle()].Metrics.MemoryStat.TotalUsageTowardLimit).NotTo(BeZero())
+	})
+
+	It("returns total memory usage for the container in bulk metrics", func() {
+		Eventually(func() (uint64, error) {
+			metrics, err := gardenClient.BulkMetrics([]string{container.Handle()})
+			if err != nil {
+				return 0, err
+			}
+
+			return metrics[container.Handle()].Metrics.MemoryStat.TotalUsageTowardLimit, nil
+		}).ShouldNot(BeZero())
 	})
 })
 

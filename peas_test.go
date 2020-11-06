@@ -247,7 +247,6 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					})
 				Expect(exitCode).NotTo(Equal(0))
 			})
-
 		})
 
 		Context("when an empty OverrideContainerLimits is specified on the pea", func() {
@@ -279,7 +278,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when a memory limit is specified on the pea", func() {
 			It("kills processes that exceed that limit", func() {
-				//Temporarily checking the memory limit of the process as part of #161555465
+				// Temporarily checking the memory limit of the process as part of #161555465
 				exitCode, stdout, _ := runProcess(container,
 					garden.ProcessSpec{
 						Path:  "sh",
@@ -328,7 +327,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				proc, err := container.Run(
 					garden.ProcessSpec{
 						Path:  "sh",
-						Args:  []string{"-c", `echo hi && sleep 600`},
+						Args:  []string{"-c", `while true; do ls -la; done`},
 						Image: peaImage,
 					},
 					garden.ProcessIO{
@@ -337,14 +336,19 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					},
 				)
 				Expect(err).NotTo(HaveOccurred())
-				Eventually(buffer).Should(gbytes.Say("hi"))
+				Eventually(buffer).Should(gbytes.Say("total"))
 
 				handle := proc.ID()
-				metrics, err := gardenClient.BulkMetrics([]string{handle})
-				Expect(err).NotTo(HaveOccurred())
-				Expect(metrics).To(HaveKey(handle))
-				Expect(metrics[handle].Err).NotTo(HaveOccurred())
-				Expect(metrics[handle].Metrics.MemoryStat.TotalUsageTowardLimit).NotTo(BeZero())
+				Eventually(func() (uint64, error) {
+					metrics, err := gardenClient.BulkMetrics([]string{handle})
+					if err != nil {
+						return 0, err
+					}
+					if metrics[handle].Err != nil {
+						return 0, metrics[handle].Err
+					}
+					return metrics[handle].Metrics.MemoryStat.TotalUsageTowardLimit, nil
+				}).ShouldNot(BeZero())
 			})
 		})
 	})
