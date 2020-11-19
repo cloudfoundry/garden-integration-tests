@@ -341,14 +341,13 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		It("sends a TERM signal to the process if requested", func() {
-
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
 				User: "alice",
 				Path: "sh",
 				Args: []string{"-c", `
-				trap 'echo termed; exit 42' SIGTERM
+				trap 'echo termed; sleep 1; exit 42' SIGTERM
 
 				while true; do
 					echo waiting
@@ -363,19 +362,18 @@ var _ = Describe("Lifecycle", func() {
 
 			Eventually(stdout).Should(gbytes.Say("waiting"))
 			Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+			Eventually(stdout, "2s").Should(gbytes.Say("termed"))
 			Expect(process.Wait()).To(Equal(42))
-			Expect(stdout).To(gbytes.Say("termed"))
 		})
 
 		It("sends a TERM signal to the process run by root if requested", func() {
-
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
 				User: "root",
 				Path: "sh",
 				Args: []string{"-c", `
-				trap 'echo termed; exit 42' SIGTERM
+				trap 'echo termed; sleep 1; exit 42' SIGTERM
 
 				while true; do
 					echo waiting
@@ -423,7 +421,8 @@ var _ = Describe("Lifecycle", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`
+					Args: []string{
+						"-c", fmt.Sprintf(`
 							echo %s
 							trap wait SIGTERM
 
@@ -1133,7 +1132,6 @@ done
 						Expect(err).ToNot(HaveOccurred())
 						Expect(header.Name).To(Equal("some-inner-dir/some-file"))
 					})
-
 				}
 
 				itStreamsTheDirectory("alice")
