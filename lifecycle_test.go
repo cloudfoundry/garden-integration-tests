@@ -526,11 +526,17 @@ var _ = Describe("Lifecycle", func() {
 		}, 480.0)
 
 		It("collects the process's full output when tty is requested", func() {
+			command := `seq -s " " 10000`
+			if isContainerdForProcesses() {
+				// getting process output when using containerd for processes is a bit flaky, therefore delay the process a bit so that its output can be collected
+				// see https://github.com/containerd/containerd/issues/4107
+				command = `seq -s " " 10000 && sleep 1`
+			}
 			for i := 0; i < 100; i++ {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "sh",
-					Args: []string{"-c", `seq -s " " 10000`},
+					Args: []string{"-c", command},
 					TTY:  new(garden.TTYSpec),
 				})
 
