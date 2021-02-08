@@ -7,9 +7,10 @@ require (
 	code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000
 	code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000
 	github.com/cloudfoundry/gosigar v1.1.0
+	github.com/cyphar/filepath-securejoin v0.2.2 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo v1.14.0
-	github.com/onsi/gomega v1.10.1
+	github.com/onsi/ginkgo v1.15.0
+	github.com/onsi/gomega v1.10.5
 	github.com/wavefronthq/wavefront-sdk-go v0.9.7
 )
 

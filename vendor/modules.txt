@@ -35,6 +35,7 @@ github.com/cloudfoundry/gosigar/sys/windows
 # github.com/cloudfoundry/sonde-go v0.0.0-20171206171820-b33733203bb4
 github.com/cloudfoundry/sonde-go/events
 # github.com/cyphar/filepath-securejoin v0.2.2
+## explicit
 github.com/cyphar/filepath-securejoin
 # github.com/docker/go-units v0.4.0
 github.com/docker/go-units
@@ -56,13 +57,13 @@ github.com/mailru/easyjson/jwriter
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/nxadm/tail v1.4.4
+# github.com/nxadm/tail v1.4.8
 github.com/nxadm/tail
 github.com/nxadm/tail/ratelimiter
 github.com/nxadm/tail/util
 github.com/nxadm/tail/watch
 github.com/nxadm/tail/winfile
-# github.com/onsi/ginkgo v1.14.0
+# github.com/onsi/ginkgo v1.15.0
 ## explicit
 github.com/onsi/ginkgo
 github.com/onsi/ginkgo/config
@@ -84,7 +85,7 @@ github.com/onsi/ginkgo/reporters/stenographer
 github.com/onsi/ginkgo/reporters/stenographer/support/go-colorable
 github.com/onsi/ginkgo/reporters/stenographer/support/go-isatty
 github.com/onsi/ginkgo/types
-# github.com/onsi/gomega v1.10.1
+# github.com/onsi/gomega v1.10.5
 ## explicit
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -122,15 +123,15 @@ github.com/wavefronthq/wavefront-sdk-go/event
 github.com/wavefronthq/wavefront-sdk-go/histogram
 github.com/wavefronthq/wavefront-sdk-go/internal
 github.com/wavefronthq/wavefront-sdk-go/senders
-# golang.org/x/net v0.0.0-20200707034311-ab3426394381
+# golang.org/x/net v0.0.0-20210119194325-5f4716e94777
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3
+# golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.4
+# golang.org/x/text v0.3.5
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
@@ -148,12 +149,9 @@ golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
-# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-golang.org/x/xerrors
-golang.org/x/xerrors/internal
 # gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7
 gopkg.in/tomb.v1
-# gopkg.in/yaml.v2 v2.3.0
+# gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2
 # code.cloudfoundry.org/garden => ../garden
 # code.cloudfoundry.org/grootfs => ../grootfs
