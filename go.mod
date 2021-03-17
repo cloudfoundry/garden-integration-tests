@@ -11,7 +11,7 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.15.0
 	github.com/onsi/gomega v1.10.5
-	github.com/wavefronthq/wavefront-sdk-go v0.9.7
+	github.com/wavefronthq/wavefront-sdk-go v0.9.8
 )
 
 replace (
