@@ -10,9 +10,7 @@ import (
 )
 
 var _ = Describe("Windows", func() {
-	var (
-		container garden.Container
-	)
+	var container garden.Container
 
 	AfterEach(func() {
 		if container != nil {
@@ -33,8 +31,12 @@ var _ = Describe("Windows", func() {
 			Privileged: false,
 			Properties: garden.Properties{},
 			Env:        []string{},
-			Limits:     garden.Limits{},
-			Network:    "",
+			Limits: garden.Limits{
+				CPU: garden.CPULimits{
+					Weight: 1234,
+				},
+			},
+			Network: "",
 		})
 		Expect(err).NotTo(HaveOccurred())
 	})
