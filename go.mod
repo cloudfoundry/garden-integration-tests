@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/archiver v0.0.0-20180525162158-e135af3d5a2a
 	code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000
 	code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000
-	github.com/cloudfoundry/gosigar v1.1.0
+	github.com/cloudfoundry/gosigar v1.2.0
 	github.com/cyphar/filepath-securejoin v0.2.2 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.15.0
