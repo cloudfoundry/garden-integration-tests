@@ -1,16 +1,16 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.14
+go 1.16
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20180525162158-e135af3d5a2a
-	code.cloudfoundry.org/garden v0.0.0-00010101000000-000000000000
-	code.cloudfoundry.org/guardian v0.0.0-00010101000000-000000000000
-	github.com/cloudfoundry/gosigar v1.1.0
+	code.cloudfoundry.org/archiver v0.0.0-20210513174825-6979f8d756e2
+	code.cloudfoundry.org/garden v0.0.0-20210208153517-580cadd489d2
+	code.cloudfoundry.org/guardian v0.0.0-20210527102652-2f945c09a983
+	github.com/cloudfoundry/gosigar v1.2.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo v1.15.0
-	github.com/onsi/gomega v1.10.5
-	github.com/wavefronthq/wavefront-sdk-go v0.9.7
+	github.com/onsi/ginkgo v1.16.4
+	github.com/onsi/gomega v1.13.0
+	github.com/wavefronthq/wavefront-sdk-go v0.9.8
 )
 
 replace (
