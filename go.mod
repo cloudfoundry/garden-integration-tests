@@ -3,9 +3,9 @@ module code.cloudfoundry.org/garden-integration-tests
 go 1.16
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20210513174825-6979f8d756e2
-	code.cloudfoundry.org/garden v0.0.0-20210208153517-580cadd489d2
-	code.cloudfoundry.org/guardian v0.0.0-20210527102652-2f945c09a983
+	code.cloudfoundry.org/archiver v0.0.0-20210609160716-67523bd33dbf
+	code.cloudfoundry.org/garden v0.0.0-20210608104724-fa3a10d59c82
+	code.cloudfoundry.org/guardian v0.0.0-20210610141740-b107e1b27360
 	github.com/cloudfoundry/gosigar v1.2.0
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.16.4
