@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/archiver v0.0.0-20210609160716-67523bd33dbf
 	code.cloudfoundry.org/garden v0.0.0-20210608104724-fa3a10d59c82
 	code.cloudfoundry.org/guardian v0.0.0-20210813144446-9d3aeb65f163
-	github.com/cloudfoundry/gosigar v1.3.2
+	github.com/cloudfoundry/gosigar v1.3.3
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0
