@@ -43,7 +43,7 @@ var _ = Describe("Security", func() {
 				})
 
 				return strings.Split(string(stdout.Contents()), "\n")
-			}).Should(HaveLen(6)) // header, wshd, sleep, sh, ps, \n
+			}).Should(HaveLen(5)) // header, garden-init, sleep, ps, \n
 		})
 
 		It("does not leak fds in to spawned processes", func() {
@@ -194,7 +194,7 @@ var _ = Describe("Security", func() {
 					Nproc: &limit,
 				},
 			})
-			Expect(stdout).To(gbytes.Say("processes\\W+4567"))
+			Expect(stdout).To(gbytes.Say("processes\\W+(-u)\\W+4567"))
 		})
 	})
 
