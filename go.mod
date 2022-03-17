@@ -18,4 +18,5 @@ replace (
 	code.cloudfoundry.org/grootfs => ../grootfs
 	code.cloudfoundry.org/guardian => ../guardian
 	code.cloudfoundry.org/idmapper => ../idmapper
+	golang.org/x/text => golang.org/x/text v0.3.7
 )
