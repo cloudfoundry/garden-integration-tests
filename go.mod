@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/gosigar v1.3.3
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.17.0
+	github.com/onsi/gomega v1.18.1
 	github.com/wavefronthq/wavefront-sdk-go v0.9.10
 )
 
