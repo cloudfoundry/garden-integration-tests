@@ -7,6 +7,8 @@ require (
 	code.cloudfoundry.org/garden v0.0.0-20210608104724-fa3a10d59c82
 	code.cloudfoundry.org/guardian v0.0.0-20210813144446-9d3aeb65f163
 	github.com/cloudfoundry/gosigar v1.3.3
+	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/moby/sys/mountinfo v0.6.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.18.1
