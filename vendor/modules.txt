@@ -107,7 +107,7 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
-# github.com/opencontainers/runc v1.1.0
+# github.com/opencontainers/runc v1.1.0 => github.com/opencontainers/runc v1.1.0
 github.com/opencontainers/runc/libcontainer/cgroups
 github.com/opencontainers/runc/libcontainer/cgroups/devices
 github.com/opencontainers/runc/libcontainer/cgroups/fs
@@ -166,4 +166,6 @@ gopkg.in/yaml.v2
 # code.cloudfoundry.org/grootfs => ../grootfs
 # code.cloudfoundry.org/guardian => ../guardian
 # code.cloudfoundry.org/idmapper => ../idmapper
+# github.com/docker/docker => github.com/docker/docker v20.10.13+incompatible
+# github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.0
 # golang.org/x/text => golang.org/x/text v0.3.7
