@@ -18,14 +18,24 @@ var _ = Describe("MaskedPaths", func() {
 				"/proc/timer_list",
 				"/proc/keys",
 			}
+
 			for _, file := range files {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					Path: "stat",
-					Args: []string{file},
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					Path: "test",
+					Args: []string{"-f", file},
 				})
-				Expect(stdout).To(gbytes.Say("character special file"))
-				Expect(stdout).To(gbytes.Say("Device type: 1,3"))
+				// some Linux distros don't have all the /proc/* files we are looking for
+				// so we test for the existence of the file before stat'ing it.
+				if exitCode == 0 {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						Path: "stat",
+						Args: []string{file},
+					})
+					Expect(stdout).To(gbytes.Say("character special file"))
+					Expect(stdout).To(gbytes.Say("Device type: 1,3"))
+				}
 			}
+
 		})
 
 		It("masks certain /proc/timer_stats with a null character device if exists", func() {
