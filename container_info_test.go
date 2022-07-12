@@ -15,7 +15,7 @@ var _ = Describe("Container information", func() {
 
 	Describe("for a single container", func() {
 		BeforeEach(func() {
-			bar = fmt.Sprintf("bar%d", GinkgoParallelNode())
+			bar = fmt.Sprintf("bar%d", GinkgoParallelProcess())
 			properties = garden.Properties{
 				"foo": bar,
 				"a":   "b",
