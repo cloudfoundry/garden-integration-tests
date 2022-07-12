@@ -172,7 +172,7 @@ var _ = Describe("Networking", func() {
 
 	Describe("subnet support", func() {
 		BeforeEach(func() {
-			networkSpec = fmt.Sprintf("192.168.%d.0/24", 12+GinkgoParallelNode())
+			networkSpec = fmt.Sprintf("192.168.%d.0/24", 12+GinkgoParallelProcess())
 		})
 
 		Context("when destroying other containers on the same subnet", func() {
