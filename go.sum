@@ -20,6 +20,8 @@ github.com/cloudfoundry/dropsonde v1.0.0 h1:9MT6WFmhU96fQjhTiglx4b1X3ObNjk/Sze7K
 github.com/cloudfoundry/dropsonde v1.0.0/go.mod h1:6zwvrWK5TpxBVYi1cdkE5WDsIO8E0n7qAJg3wR9B67c=
 github.com/cloudfoundry/gosigar v1.3.3 h1:aR9qIZ/Njb4GYPUGnoJMfXdhz+AOy80r4r3LUQC5A0g=
 github.com/cloudfoundry/gosigar v1.3.3/go.mod h1:4TGthjsfIxe6Svlzn48EUw9xTTjT/2NnWyeRrferFP0=
+github.com/cloudfoundry/gosigar v1.3.4 h1:T3MoGdugg1vdHn8Az7wDn7cZ4+QCjZph+eXf2CjSjo4=
+github.com/cloudfoundry/gosigar v1.3.4/go.mod h1:g9r7ETZ1tpvJCT9TpqxO53+5BUZiM2FDSFSENzjK5Z8=
 github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b h1:cb7pGf4j2ZzRfnQMqVeTtMLv0l2Y81V5biZGF7zVokg=
 github.com/cloudfoundry/sonde-go v0.0.0-20200416163440-a42463ba266b/go.mod h1:GS0pCHd7onIsewbw8Ue9qa9pZPv2V88cUZDttK6KzgI=
 github.com/containerd/console v1.0.3/go.mod h1:7LqA/THxQ86k76b8c/EMSiaJ3h1eZkMkXar0TQ1gf3U=
