@@ -8,10 +8,9 @@ require (
 	code.cloudfoundry.org/guardian v0.0.0-20220607160814-bbdc1696f4d2
 	github.com/cloudfoundry/gosigar v1.3.3
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/moby/sys/mountinfo v0.6.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.19.0
+	github.com/onsi/gomega v1.24.1
 	github.com/wavefronthq/wavefront-sdk-go v0.9.10
 )
 
