@@ -214,7 +214,7 @@ func skipIfNotRootless() {
 }
 
 func rootless() bool {
-	return os.Getenv("ROOTLESS") != ""
+	return os.Getenv("ROOTLESS") != "false"
 }
 
 func skipIfWoot(reason string) {
@@ -244,7 +244,7 @@ func skipIfContainerdForProcesses() {
 }
 
 func isContainerdForProcesses() bool {
-	return os.Getenv("CONTAINERD_FOR_PROCESSES_ENABLED") != ""
+	return os.Getenv("CONTAINERD_FOR_PROCESSES_ENABLED") != "false"
 }
 
 func setPrivileged() {
