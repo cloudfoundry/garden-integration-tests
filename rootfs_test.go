@@ -57,7 +57,7 @@ var _ = Describe("Rootfses", func() {
 
 		Context("and the image is private", func() {
 			BeforeEach(func() {
-				imageRef.URI = "docker:///cfgarden/private"
+				imageRef.URI = "docker:///cloudfoundry/garden-private-image-test"
 				imageRef.Username = os.Getenv("DOCKER_REGISTRY_USERNAME")
 				imageRef.Password = os.Getenv("DOCKER_REGISTRY_PASSWORD")
 				if imageRef.Username == "" || imageRef.Password == "" {
