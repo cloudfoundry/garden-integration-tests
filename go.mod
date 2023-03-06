@@ -55,6 +55,5 @@ replace (
 	code.cloudfoundry.org/grootfs => ../grootfs
 	code.cloudfoundry.org/guardian => ../guardian
 	code.cloudfoundry.org/idmapper => ../idmapper
-	github.com/docker/docker => github.com/docker/docker v20.10.13+incompatible
 	golang.org/x/text => golang.org/x/text v0.3.7
 )
