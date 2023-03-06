@@ -5,7 +5,7 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 ## explicit
 code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-20230109170928-83a99bb745e3 => ../garden
-## explicit; go 1.16
+## explicit; go 1.20
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
