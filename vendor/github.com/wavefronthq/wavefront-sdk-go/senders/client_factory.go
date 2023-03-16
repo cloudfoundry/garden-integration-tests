@@ -1,17 +1,25 @@
 package senders
 
 import (
+	"crypto/tls"
 	"fmt"
-	"github.com/wavefronthq/wavefront-sdk-go/internal"
 	"net/url"
 	"os"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/wavefronthq/wavefront-sdk-go/internal"
+	"github.com/wavefronthq/wavefront-sdk-go/version"
 )
 
 const (
-	defaultTracesPort  = 30001
-	defaultMetricsPort = 2878
+	defaultTracesPort    = 30001
+	defaultMetricsPort   = 2878
+	defaultBatchSize     = 10000
+	defaultBufferSize    = 50000
+	defaultFlushInterval = 1
+	defaultTimeout       = 10 * time.Second
 )
 
 // Option Wavefront client configuration options
@@ -42,6 +50,28 @@ type configuration struct {
 	// together with batch size controls the max theoretical throughput of the sender.
 	FlushIntervalSeconds int
 	SDKMetricsTags       map[string]string
+	Path                 string
+
+	Timeout time.Duration
+
+	TLSConfig *tls.Config
+}
+
+func (c *configuration) Direct() bool {
+	return c.Token != ""
+}
+
+func (c *configuration) MetricPrefix() string {
+	result := "~sdk.go.core.sender.proxy"
+	if c.Direct() {
+		result = "~sdk.go.core.sender.direct"
+	}
+	return result
+}
+
+func (c *configuration) setDefaultPort(port int) {
+	c.MetricsPort = port
+	c.TracesPort = port
 }
 
 // NewSender creates Wavefront client
@@ -53,6 +83,7 @@ func NewSender(wfURL string, setters ...Option) (Sender, error) {
 	return newWavefrontClient(cfg)
 }
 
+// CreateConfig is for internal use only.
 func CreateConfig(wfURL string, setters ...Option) (*configuration, error) {
 	cfg := &configuration{
 		MetricsPort:          defaultMetricsPort,
@@ -60,6 +91,8 @@ func CreateConfig(wfURL string, setters ...Option) (*configuration, error) {
 		BatchSize:            defaultBatchSize,
 		MaxBufferSize:        defaultBufferSize,
 		FlushIntervalSeconds: defaultFlushInterval,
+		SDKMetricsTags:       map[string]string{},
+		Timeout:              defaultTimeout,
 	}
 
 	u, err := url.Parse(wfURL)
@@ -67,13 +100,27 @@ func CreateConfig(wfURL string, setters ...Option) (*configuration, error) {
 		return nil, err
 	}
 
-	if !strings.HasPrefix(strings.ToLower(u.Scheme), "http") {
-		return nil, fmt.Errorf("invalid scheme '%s' in '%s', only 'http' is supported", u.Scheme, u)
-	}
-
 	if len(u.User.String()) > 0 {
 		cfg.Token = u.User.String()
 		u.User = nil
+	}
+
+	switch strings.ToLower(u.Scheme) {
+	case "http":
+		if cfg.Direct() {
+			cfg.setDefaultPort(80)
+		}
+	case "https":
+		if cfg.Direct() {
+			cfg.setDefaultPort(443)
+		}
+	default:
+		return nil, fmt.Errorf("invalid scheme '%s' in '%s', only 'http' is supported", u.Scheme, u)
+	}
+
+	if u.Path != "" {
+		cfg.Path = u.Path
+		u.Path = ""
 	}
 
 	if u.Port() != "" {
@@ -81,8 +128,7 @@ func CreateConfig(wfURL string, setters ...Option) (*configuration, error) {
 		if err != nil {
 			return nil, fmt.Errorf("unable to convert port to integer: %s", err)
 		}
-		cfg.MetricsPort = port
-		cfg.TracesPort = port
+		cfg.setDefaultPort(port)
 		u.Host = u.Hostname()
 	}
 	cfg.Server = u.String()
@@ -95,12 +141,13 @@ func CreateConfig(wfURL string, setters ...Option) (*configuration, error) {
 
 // newWavefrontClient creates a Wavefront sender
 func newWavefrontClient(cfg *configuration) (Sender, error) {
-	metricsReporter := internal.NewReporter(fmt.Sprintf("%s:%d", cfg.Server, cfg.MetricsPort), cfg.Token)
-	tracesReporter := internal.NewReporter(fmt.Sprintf("%s:%d", cfg.Server, cfg.TracesPort), cfg.Token)
+	client := internal.NewClient(cfg.Timeout, cfg.TLSConfig)
+	metricsReporter := internal.NewReporter(fmt.Sprintf("%s:%d", cfg.Server, cfg.MetricsPort), cfg.Token, client)
+	tracesReporter := internal.NewReporter(fmt.Sprintf("%s:%d", cfg.Server, cfg.TracesPort), cfg.Token, client)
 
 	sender := &wavefrontSender{
 		defaultSource: internal.GetHostname("wavefront_direct_sender"),
-		proxy:         len(cfg.Token) == 0,
+		proxy:         !cfg.Direct(),
 	}
 	sender.initializeInternalMetrics(cfg)
 	sender.pointHandler = newLineHandler(metricsReporter, cfg, internal.MetricFormat, "points", sender.internalRegistry)
@@ -113,11 +160,20 @@ func newWavefrontClient(cfg *configuration) (Sender, error) {
 	return sender, nil
 }
 
+func (cfg *configuration) TracesURL() string {
+	return fmt.Sprintf("%s:%d%s", cfg.Server, cfg.TracesPort, cfg.Path)
+}
+
+func (cfg *configuration) MetricsURL() string {
+	return fmt.Sprintf("%s:%d%s", cfg.Server, cfg.MetricsPort, cfg.Path)
+}
+
 func (sender *wavefrontSender) initializeInternalMetrics(cfg *configuration) {
 
 	var setters []internal.RegistryOption
-	setters = append(setters, internal.SetPrefix("~sdk.go.core.sender.direct"))
+	setters = append(setters, internal.SetPrefix(cfg.MetricPrefix()))
 	setters = append(setters, internal.SetTag("pid", strconv.Itoa(os.Getpid())))
+	setters = append(setters, internal.SetTag("version", version.Version))
 
 	for key, value := range cfg.SDKMetricsTags {
 		setters = append(setters, internal.SetTag(key, value))
@@ -183,16 +239,40 @@ func TracesPort(port int) Option {
 	}
 }
 
-// SDKMetricsTags sets internal SDK metrics.
-func SDKMetricsTags(tags map[string]string) Option {
+// Timeout sets the HTTP timeout (in seconds). Defaults to 10 seconds.
+func Timeout(timeout time.Duration) Option {
 	return func(cfg *configuration) {
-		if cfg.SDKMetricsTags != nil {
-			for key, value := range tags {
-				cfg.SDKMetricsTags[key] = value
-			}
-		} else {
-			cfg.SDKMetricsTags = tags
-		}
-
+		cfg.Timeout = timeout
 	}
+}
+
+func TLSConfigOptions(tlsCfg *tls.Config) Option {
+	tlsCfgCopy := tlsCfg.Clone()
+	return func(cfg *configuration) {
+		cfg.TLSConfig = tlsCfgCopy
+	}
+}
+
+// SDKMetricsTags adds the additional tags provided in tags to all internal
+// metrics this library reports. Clients can use multiple SDKMetricsTags
+// calls when creating a sender. In that case, the sender sends all the
+// tags from each of the SDKMetricsTags calls in addition to the standard
+// "pid" and "version" tags to all internal metrics. The "pid" tag is the
+// process ID; the "version" tag is the version of this SDK.
+func SDKMetricsTags(tags map[string]string) Option {
+	// prevent caller from accidentally mutating this option.
+	copiedTags := copyTags(tags)
+	return func(cfg *configuration) {
+		for key, value := range copiedTags {
+			cfg.SDKMetricsTags[key] = value
+		}
+	}
+}
+
+func copyTags(orig map[string]string) map[string]string {
+	result := make(map[string]string, len(orig))
+	for key, value := range orig {
+		result[key] = value
+	}
+	return result
 }
