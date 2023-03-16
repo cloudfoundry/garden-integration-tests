@@ -17,6 +17,8 @@ github.com/cloudfoundry/dropsonde v1.0.0 h1:9MT6WFmhU96fQjhTiglx4b1X3ObNjk/Sze7K
 github.com/cloudfoundry/dropsonde v1.0.0/go.mod h1:6zwvrWK5TpxBVYi1cdkE5WDsIO8E0n7qAJg3wR9B67c=
 github.com/cloudfoundry/gosigar v1.3.8 h1:aHKcgnu9fN6Nkof5cSPBA1VSlgPldO1e4jfFlNfKf7g=
 github.com/cloudfoundry/gosigar v1.3.8/go.mod h1:fC3dw7I9If3YunF19RWX9xCGxZbCL5AWhqWbuep9LWE=
+github.com/cloudfoundry/gosigar v1.3.9 h1:zpkxwm3EN+MWwqMTrW1ItFar35fS6uVUOw0jzkzW8MQ=
+github.com/cloudfoundry/gosigar v1.3.9/go.mod h1:Rk3ggwwM8/wtIHMX8bwU0QWf36Pt5XdxhUhh9+lK8dE=
 github.com/cloudfoundry/sonde-go v0.0.0-20220627221915-ff36de9c3435 h1:xDsJBppu1bIny3d5CqbOZuCzezFbKhnrmrNucWLpNOk=
 github.com/cloudfoundry/sonde-go v0.0.0-20220627221915-ff36de9c3435/go.mod h1:DX2nqnCgs66F/YWnEtB8EtKWewkiKDu2SRn4y6Ln5NI=
 github.com/containerd/console v1.0.3/go.mod h1:7LqA/THxQ86k76b8c/EMSiaJ3h1eZkMkXar0TQ1gf3U=
@@ -201,6 +203,8 @@ golang.org/x/tools v0.0.0-20201224043029-2b0845dc783e/go.mod h1:emZCQorbCU4vsT4f
 golang.org/x/tools v0.0.0-20210106214847-113979e3529a/go.mod h1:emZCQorbCU4vsT4fOWvOPXz4eW1wZW4PmDk9uLelYpA=
 golang.org/x/tools v0.6.0 h1:BOw41kyTf3PuCW1pVQf8+Cyg8pMlkYB1oo9iJ6D/lKM=
 golang.org/x/tools v0.6.0/go.mod h1:Xwgl3UAJ/d3gWutnCtw505GrjyAbvKui8lOU390QaIU=
+golang.org/x/tools v0.7.0 h1:W4OVu8VVOaIO0yzWMNdepAulS7YfoS3Zabrm8DOXXU4=
+golang.org/x/tools v0.7.0/go.mod h1:4pg6aUX35JBAogB10C9AtvVL+qowtN4pT3CGSQex14s=
 golang.org/x/xerrors v0.0.0-20190717185122-a985d3407aa7/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
