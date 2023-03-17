@@ -34,16 +34,12 @@ var _ = Describe("performance", func() {
 	)
 
 	BeforeEach(func() {
+		//https://github.com/wavefrontHQ/wavefront-sdk-go/blob/master/senders/client_factory_test.go#L88
+		//URL should have token embeded
 		wfURL := mustGetEnv("WAVEFRONT_URL")
-		wfToken := mustGetEnv("WAVEFRONT_TOKEN")
-
-		directCfg := &wavefront.DirectConfiguration{
-			Server: wfURL,
-			Token:  wfToken,
-		}
 
 		var err error
-		wfSender, err = wavefront.NewDirectSender(directCfg)
+		wfSender, err = wavefront.NewSender(wfURL)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
