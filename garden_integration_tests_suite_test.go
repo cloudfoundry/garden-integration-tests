@@ -18,7 +18,7 @@ import (
 	"code.cloudfoundry.org/garden-integration-tests/testhelpers"
 	"code.cloudfoundry.org/garden/client"
 	"code.cloudfoundry.org/garden/client/connection"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 )
