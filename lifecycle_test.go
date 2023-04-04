@@ -506,24 +506,28 @@ var _ = Describe("Lifecycle", func() {
 			})
 		})
 
-		It("avoids a race condition when sending a kill signal", func(done Done) {
-			for i := 0; i < 20; i++ {
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
-				}, garden.ProcessIO{
-					Stdout: GinkgoWriter,
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
+		It("avoids a race condition when sending a kill signal", func() {
+			done := make(chan interface{})
+			go func() {
+				for i := 0; i < 20; i++ {
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "sh",
+						Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
+					}, garden.ProcessIO{
+						Stdout: GinkgoWriter,
+						Stderr: GinkgoWriter,
+					})
+					Expect(err).ToNot(HaveOccurred())
 
-				Expect(process.Signal(garden.SignalKill)).To(Succeed())
-				Expect(process.Wait()).NotTo(Equal(0))
-			}
+					Expect(process.Signal(garden.SignalKill)).To(Succeed())
+					Expect(process.Wait()).NotTo(Equal(0))
+				}
 
-			close(done)
-		}, 480.0)
+				close(done)
+			}()
+			Eventually(done, 480).Should(BeClosed())
+		})
 
 		It("collects the process's full output when tty is requested", func() {
 			command := `seq -s " " 10000`
