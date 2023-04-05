@@ -414,15 +414,17 @@ var _ = Describe("Lifecycle", func() {
 				}).ShouldNot(gbytes.Say(argsPrefix))
 			}
 
-			It("sends a KILL signal to the process if requested", func(done Done) {
-				stdout := gbytes.NewBuffer()
-				id, err := uuid.NewV4()
-				Expect(err).ToNot(HaveOccurred())
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{
-						"-c", fmt.Sprintf(`
+			It("sends a KILL signal to the process if requested", func() {
+				done := make(chan interface{})
+				go func() {
+					stdout := gbytes.NewBuffer()
+					id, err := uuid.NewV4()
+					Expect(err).ToNot(HaveOccurred())
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "sh",
+						Args: []string{
+							"-c", fmt.Sprintf(`
 							echo %s
 							trap wait SIGTERM
 
@@ -431,51 +433,57 @@ var _ = Describe("Lifecycle", func() {
 								sleep 1
 							done
 						`, id.String()),
-					},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Eventually(stdout).Should(gbytes.Say("waiting"))
+						},
+					}, garden.ProcessIO{
+						Stdout: io.MultiWriter(GinkgoWriter, stdout),
+						Stderr: GinkgoWriter,
+					})
+					Expect(err).ToNot(HaveOccurred())
+					Eventually(stdout).Should(gbytes.Say("waiting"))
 
-				Expect(process.Signal(garden.SignalKill)).To(Succeed())
-				Expect(process.Wait()).To(Equal(137))
+					Expect(process.Signal(garden.SignalKill)).To(Succeed())
+					Expect(process.Wait()).To(Equal(137))
 
-				checkProcessIsGone(container, id.String())
+					checkProcessIsGone(container, id.String())
 
-				close(done)
-			}, 10.0)
+					close(done)
+				}()
+				Eventually(done, 10.0).Should(BeClosed())
+			})
 
-			It("sends a TERMINATE signal to the process if requested", func(done Done) {
-				id, err := uuid.NewV4()
-				Expect(err).NotTo(HaveOccurred())
-				stdout := gbytes.NewBuffer()
+			It("sends a TERMINATE signal to the process if requested", func() {
+				done := make(chan interface{})
+				go func() {
+					id, err := uuid.NewV4()
+					Expect(err).NotTo(HaveOccurred())
+					stdout := gbytes.NewBuffer()
 
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{"-c", fmt.Sprintf(`
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "sh",
+						Args: []string{"-c", fmt.Sprintf(`
 							echo %s
 							while true; do
 							  echo waiting
 								sleep 1
 							done
 						`, id.String())},
-				}, garden.ProcessIO{
-					Stdout: io.MultiWriter(GinkgoWriter, stdout),
-					Stderr: GinkgoWriter,
-				})
-				Expect(err).ToNot(HaveOccurred())
-				Eventually(stdout).Should(gbytes.Say("waiting"))
+					}, garden.ProcessIO{
+						Stdout: io.MultiWriter(GinkgoWriter, stdout),
+						Stderr: GinkgoWriter,
+					})
+					Expect(err).ToNot(HaveOccurred())
+					Eventually(stdout).Should(gbytes.Say("waiting"))
 
-				Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
-				Expect(process.Wait()).NotTo(BeZero())
+					Expect(process.Signal(garden.SignalTerminate)).To(Succeed())
+					Expect(process.Wait()).NotTo(BeZero())
 
-				checkProcessIsGone(container, id.String())
+					checkProcessIsGone(container, id.String())
 
-				close(done)
-			}, 10.0)
+					close(done)
+				}()
+				Eventually(done, 10.0).Should(BeClosed())
+			})
 
 			Context("when killing a process that does not use streaming", func() {
 				var process garden.Process
@@ -498,11 +506,15 @@ var _ = Describe("Lifecycle", func() {
 					Expect(process.Signal(garden.SignalKill)).To(Succeed())
 				})
 
-				It("goes away", func(done Done) {
-					Expect(process.Wait()).NotTo(Equal(0))
-					Consistently(buff, "5s").ShouldNot(gbytes.Say("stillhere"))
-					close(done)
-				}, 30)
+				It("goes away", func() {
+					done := make(chan interface{})
+					go func() {
+						Expect(process.Wait()).NotTo(Equal(0))
+						Consistently(buff, "5s").ShouldNot(gbytes.Say("stillhere"))
+						close(done)
+					}()
+					Eventually(done, 30).Should(BeClosed())
+				})
 			})
 		})
 
@@ -848,17 +860,19 @@ done
 				Expect(process.Wait()).To(Equal(42))
 			})
 
-			It("recursively terminates all child processes", func(done Done) {
-				defer close(done)
+			It("recursively terminates all child processes", func() {
+				done := make(chan interface{})
+				go func() {
+					defer close(done)
 
-				stderr := gbytes.NewBuffer()
+					stderr := gbytes.NewBuffer()
 
-				process, err := container.Run(garden.ProcessSpec{
-					User: "alice",
-					Path: "sh",
-					Args: []string{
-						"-c",
-						`
+					process, err := container.Run(garden.ProcessSpec{
+						User: "alice",
+						Path: "sh",
+						Args: []string{
+							"-c",
+							`
 					# don't die until child processes die
 					trap wait SIGTERM
 
@@ -871,24 +885,26 @@ done
 					# wait on children
 					wait
 					`,
-					},
-				}, garden.ProcessIO{
-					Stderr: stderr,
-				})
+						},
+					}, garden.ProcessIO{
+						Stderr: stderr,
+					})
 
-				Expect(err).ToNot(HaveOccurred())
+					Expect(err).ToNot(HaveOccurred())
 
-				Eventually(stderr, 5).Should(gbytes.Say("waiting\n"))
+					Eventually(stderr, 5).Should(gbytes.Say("waiting\n"))
 
-				stoppedAt := time.Now()
+					stoppedAt := time.Now()
 
-				err = container.Stop(false)
-				Expect(err).ToNot(HaveOccurred())
+					err = container.Stop(false)
+					Expect(err).ToNot(HaveOccurred())
 
-				Expect(process.Wait()).To(Equal(143)) // 143 = 128 + SIGTERM
+					Expect(process.Wait()).To(Equal(143)) // 143 = 128 + SIGTERM
 
-				Expect(time.Since(stoppedAt)).To(BeNumerically("<=", 9*time.Second))
-			}, 15)
+					Expect(time.Since(stoppedAt)).To(BeNumerically("<=", 9*time.Second))
+				}()
+				Eventually(done, 15).Should(BeClosed())
+			})
 
 			It("changes the container's state to 'stopped'", func() {
 				err := container.Stop(false)
