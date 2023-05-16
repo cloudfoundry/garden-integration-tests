@@ -4,11 +4,11 @@ go 1.19
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20210609160716-67523bd33dbf
-	code.cloudfoundry.org/garden v0.0.0-20230509175005-ab96b4719f65
+	code.cloudfoundry.org/garden v0.0.0-20230516175132-234178722499
 	code.cloudfoundry.org/guardian v0.0.0-20220607160814-bbdc1696f4d2
-	github.com/cloudfoundry/gosigar v1.3.11
+	github.com/cloudfoundry/gosigar v1.3.12
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.9.4
+	github.com/onsi/ginkgo/v2 v2.9.5
 	github.com/onsi/gomega v1.27.6
 	github.com/wavefronthq/wavefront-sdk-go v0.12.0
 )
@@ -28,7 +28,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230509042627-b1315fad0c5a // indirect
+	github.com/google/pprof v0.0.0-20230510103437-eeec1cb781c3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
