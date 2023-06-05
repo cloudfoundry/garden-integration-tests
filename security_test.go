@@ -27,7 +27,7 @@ var _ = Describe("Security", func() {
 
 			_, err := container.Run(garden.ProcessSpec{
 				User: "alice",
-				Path: "sleep",
+				Path: "/bin/sleep",
 				Args: []string{"989898"},
 			}, garden.ProcessIO{
 				Stdout: GinkgoWriter,

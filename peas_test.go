@@ -202,7 +202,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 				while true; do
 					echo waiting
-					sleep 1
+					/bin/sleep 1
 				done
 			`},
 				Image: peaImage,
@@ -265,8 +265,8 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					Path: "/bin/sh",
 					Args: []string{"-c", `
-					for i in $(seq 15); do (sleep 360 &); done;
-					until [ $(ps aux | wc -l) -gt 15 ]; do sleep .5; done
+					for i in $(seq 15); do (/bin/sleep 360 &); done;
+					until [ $(ps aux | wc -l) -gt 15 ]; do /bin/sleep .5; done
 					killall sleep
 					`},
 					Image:                   peaImage,
@@ -297,7 +297,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	Context("when the sandbox is destroyed", func() {
 		It("kills all associated peas", func() {
 			process, err := container.Run(garden.ProcessSpec{
-				Path:  "sleep",
+				Path:  "/bin/sleep",
 				Args:  []string{"10000d"},
 				Image: peaImage,
 			}, garden.ProcessIO{

@@ -208,7 +208,7 @@ var _ = Describe("Lifecycle", func() {
 			exitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "sh",
-				Args: []string{"-c", "sleep 0.5; echo $FIRST; sleep 0.5; echo $SECOND >&2; sleep 0.5; exit 42"},
+				Args: []string{"-c", "/bin/sleep 0.5; echo $FIRST; /bin/sleep 0.5; echo $SECOND >&2; /bin/sleep 0.5; exit 42"},
 				Env:  []string{"FIRST=hello", "SECOND=goodbye"},
 			})
 
@@ -270,7 +270,7 @@ var _ = Describe("Lifecycle", func() {
 			It("all clients attached should get the exit code", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", `sleep 2; exit 12`},
+					Args: []string{"-c", `/bin/sleep 2; exit 12`},
 				}, garden.ProcessIO{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -293,7 +293,7 @@ var _ = Describe("Lifecycle", func() {
 			It("should be able to get the exitcode multiple times on the same process", func() {
 				process, err := container.Run(garden.ProcessSpec{
 					Path: "sh",
-					Args: []string{"-c", `sleep 2; exit 12`},
+					Args: []string{"-c", `/bin/sleep 2; exit 12`},
 				}, garden.ProcessIO{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -311,7 +311,7 @@ var _ = Describe("Lifecycle", func() {
 
 			process, err := container.Run(garden.ProcessSpec{
 				Path: "sh",
-				Args: []string{"-c", `sleep 1; for i in $(seq 1 10); do echo $i; echo $i >&2; done`},
+				Args: []string{"-c", `/bin/sleep 1; for i in $(seq 1 10); do echo $i; echo $i >&2; done`},
 			}, garden.ProcessIO{
 				Stdout: io.MultiWriter(&runStdout, GinkgoWriter),
 				Stderr: io.MultiWriter(&runStderr, GinkgoWriter),
@@ -351,7 +351,7 @@ var _ = Describe("Lifecycle", func() {
 
 				while true; do
 					echo waiting
-					sleep 1
+					/bin/sleep 1
 				done
 			`},
 			}, garden.ProcessIO{
@@ -373,11 +373,11 @@ var _ = Describe("Lifecycle", func() {
 				User: "root",
 				Path: "sh",
 				Args: []string{"-c", `
-				trap 'echo termed; sleep 1; exit 42' SIGTERM
+				trap 'echo termed; /bin/sleep 1; exit 42' SIGTERM
 
 				while true; do
 					echo waiting
-					sleep 1
+					/bin/sleep 1
 				done
 			`},
 			}, garden.ProcessIO{
@@ -430,7 +430,7 @@ var _ = Describe("Lifecycle", func() {
 
 							while true; do
 							  echo waiting
-								sleep 1
+								/bin/sleep 1
 							done
 						`, id.String()),
 						},
@@ -465,7 +465,7 @@ var _ = Describe("Lifecycle", func() {
 							echo %s
 							while true; do
 							  echo waiting
-								sleep 1
+								/bin/sleep 1
 							done
 						`, id.String())},
 					}, garden.ProcessIO{
@@ -497,7 +497,7 @@ var _ = Describe("Lifecycle", func() {
 						User: "alice",
 						Path: "sh",
 						Args: []string{
-							"-c", "while true; do echo stillhere; sleep 1; done",
+							"-c", "while true; do echo stillhere; /bin/sleep 1; done",
 						},
 					}, garden.ProcessIO{Stdout: buff})
 					Expect(err).ToNot(HaveOccurred())
@@ -525,7 +525,7 @@ var _ = Describe("Lifecycle", func() {
 					process, err := container.Run(garden.ProcessSpec{
 						User: "alice",
 						Path: "sh",
-						Args: []string{"-c", `while true; do echo -n "x"; sleep 1; done`},
+						Args: []string{"-c", `while true; do echo -n "x"; /bin/sleep 1; done`},
 					}, garden.ProcessIO{
 						Stdout: GinkgoWriter,
 						Stderr: GinkgoWriter,
@@ -546,7 +546,7 @@ var _ = Describe("Lifecycle", func() {
 			if isContainerdForProcesses() {
 				// getting process output when using containerd for processes is a bit flaky, therefore delay the process a bit so that its output can be collected
 				// see https://github.com/containerd/containerd/issues/4107
-				command = `seq -s " " 10000 && sleep 1`
+				command = `seq -s " " 10000 && /bin/sleep 1`
 			}
 			for i := 0; i < 100; i++ {
 				stdout := runForStdout(container, garden.ProcessSpec{
@@ -647,7 +647,7 @@ var _ = Describe("Lifecycle", func() {
 						# right after the process is launched.
 						while true; do
 							stty -a
-							sleep 1
+							/bin/sleep 1
 						done
 					`,
 					},
@@ -673,7 +673,7 @@ var _ = Describe("Lifecycle", func() {
 						# right after the process is launched.
 						while true; do
 							stty -a
-							sleep 1
+							/bin/sleep 1
 						done
 					`,
 					},
@@ -700,7 +700,7 @@ var _ = Describe("Lifecycle", func() {
 						`
 						while true; do
 							echo -e "new\nline"
-							sleep 1
+							/bin/sleep 1
 					  done
 					`,
 					},
@@ -842,7 +842,7 @@ done
 					# sync with test, and allow trap to fire when not sleeping
 					while true; do
 						echo waiting
-						sleep 1
+						/bin/sleep 1
 					done
 					`,
 					},
@@ -877,7 +877,7 @@ done
 					trap wait SIGTERM
 
 					# spawn child that exits when it receives TERM
-					sh -c 'trap wait SIGTERM; sleep 100 & wait' &
+					sh -c 'trap wait SIGTERM; /bin/sleep 100 & wait' &
 
 					# sync with test. Use stderr to avoid buffering in the shell.
 					echo waiting >&2
@@ -930,7 +930,7 @@ done
 							echo waiting
 							while true
 							do
-								sleep 1000
+								/bin/sleep 1000
 							done
 						`,
 						},
@@ -1226,7 +1226,7 @@ done
 				It("should account for existing client connections", func() {
 					processSpec := garden.ProcessSpec{
 						Path: "sh",
-						Args: []string{"-c", `sleep 1000`},
+						Args: []string{"-c", `/bin/sleep 1000`},
 					}
 					stdOut, stdErr := gbytes.NewBuffer(), gbytes.NewBuffer()
 					_, err := container.Run(

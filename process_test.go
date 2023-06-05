@@ -22,7 +22,7 @@ var _ = Describe("Process", func() {
 				Args: []string{
 					"-c",
 					`
-                sleep 10
+                /bin/sleep 10
                 exit 12
                 `,
 				},
@@ -74,7 +74,7 @@ var _ = Describe("Process", func() {
 				processID = "same-id"
 				_, err := container.Run(garden.ProcessSpec{
 					ID:   processID,
-					Path: "sleep",
+					Path: "/bin/sleep",
 					Args: []string{"5"},
 				}, garden.ProcessIO{})
 				Expect(err).ToNot(HaveOccurred())
@@ -142,7 +142,7 @@ var _ = Describe("Process", func() {
 
 				  trap cleanup TERM
 				  set -x
-				  sleep 1000 &
+				  /bin/sleep 1000 &
 				  child_pid=$!
 				  # Make sure that sleep process has been forked before trapping
 				  while [ ! $(ps -o comm | grep sleep) ] ;do : ; done

@@ -333,7 +333,7 @@ var _ = Describe("Limits", func() {
 				exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
 					User: "root",
 					Path: "sh",
-					Args: []string{"-c", "for i in `seq 1 50`; do sleep 2 & done"},
+					Args: []string{"-c", "for i in `seq 1 50`; do /bin/sleep 2 & done"},
 				})
 
 				Expect(exitCode).To(Equal(2))
