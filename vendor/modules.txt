@@ -1,10 +1,10 @@
 # code.cloudfoundry.org/archiver v0.0.0-20210609160716-67523bd33dbf
 ## explicit; go 1.16
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.0.0-20230427153105-c662e812fa6f
+# code.cloudfoundry.org/commandrunner v0.0.0-20230612151827-2b11a2b4e9b8
 ## explicit; go 1.20
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20230522165130-8444ff5a31d7 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20230613175711-d9d389553612 => ../garden
 ## explicit; go 1.20
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
@@ -38,7 +38,7 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.20
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20230601214134-20e0b3c2ed5c
+# github.com/cloudfoundry/sonde-go v0.0.0-20230606195250-c7c0fdf1ccc4
 ## explicit; go 1.17
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
@@ -81,7 +81,7 @@ github.com/moby/sys/mountinfo
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/onsi/ginkgo/v2 v2.9.7
+# github.com/onsi/ginkgo/v2 v2.10.0
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -103,7 +103,7 @@ github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.27.7
+# github.com/onsi/gomega v1.27.8
 ## explicit; go 1.18
 github.com/onsi/gomega
 github.com/onsi/gomega/format
@@ -128,7 +128,7 @@ github.com/opencontainers/runc/libcontainer/devices
 github.com/opencontainers/runc/libcontainer/user
 github.com/opencontainers/runc/libcontainer/userns
 github.com/opencontainers/runc/libcontainer/utils
-# github.com/opencontainers/runtime-spec v1.1.0-rc.2
+# github.com/opencontainers/runtime-spec v1.1.0-rc.3
 ## explicit
 github.com/opencontainers/runtime-spec/specs-go
 # github.com/openzipkin/zipkin-go v0.4.1
@@ -155,18 +155,18 @@ github.com/wavefronthq/wavefront-sdk-go/internal/metric
 github.com/wavefronthq/wavefront-sdk-go/internal/span
 github.com/wavefronthq/wavefront-sdk-go/senders
 github.com/wavefronthq/wavefront-sdk-go/version
-# golang.org/x/net v0.10.0
+# golang.org/x/net v0.11.0
 ## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.8.0
+# golang.org/x/sys v0.9.0
 ## explicit; go 1.17
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.9.0
+# golang.org/x/text v0.10.0
 ## explicit; go 1.17
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
