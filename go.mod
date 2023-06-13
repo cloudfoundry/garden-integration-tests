@@ -15,7 +15,7 @@ require (
 
 require (
 	code.cloudfoundry.org/commandrunner v0.0.0-20230612151827-2b11a2b4e9b8 // indirect
-	code.cloudfoundry.org/lager/v3 v3.0.1 // indirect
+	code.cloudfoundry.org/lager/v3 v3.0.2 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest v3.1.0+incompatible // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
