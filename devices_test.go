@@ -3,6 +3,7 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"os"
+	"runtime"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo/v2"
@@ -11,6 +12,13 @@ import (
 )
 
 var _ = Describe("Devices", func() {
+
+	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("skip for windows")
+		}
+	})
+
 	DescribeTable("Devices",
 		func(device string, major, minor int) {
 			stdout := runForStdout(container, garden.ProcessSpec{

@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -9,6 +10,8 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -21,14 +24,17 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
+	"github.com/onsi/gomega/gexec"
 )
 
 var (
 	gardenHost            string
 	gardenPort            string
 	gardenDebugPort       string
+	gardenRootfs          string
 	gardenClient          garden.Client
 	container             garden.Container
+	containerStartUsage   uint64
 	containerCreateErr    error
 	assertContainerCreate bool
 
@@ -43,6 +49,11 @@ var (
 		Stdout: GinkgoWriter,
 		Stderr: GinkgoWriter,
 	}
+
+	consumeBin string
+
+	limitsTestURI                string
+	limitsTestContainerImageSize uint64 // Obtained by summing the values in <groot-image-store>\layers\<layer-id>\size
 )
 
 // We suspect that bosh powerdns lookups have a low success rate (less than
@@ -72,19 +83,50 @@ func resolveHost(host string) string {
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
-	host := os.Getenv("GARDEN_ADDRESS")
+
+	host := os.Getenv("GDN_BIND_IP")
 	if host == "" {
 		host = "10.244.0.2"
 	}
-	return []byte(resolveHost(host))
-}, func(data []byte) {
-	gardenHost = string(data)
+
+	rootfs, exists := os.LookupEnv("TEST_ROOTFS")
+	ExpectWithOffset(1, exists).To(BeTrue(), "Set TEST_ROOTFS Env variable")
+
+	binary, err := gexec.Build("code.cloudfoundry.org/garden-integration-tests/plugins/consume-mem")
+	Expect(err).ToNot(HaveOccurred())
+
+	limitsURI, exists := os.LookupEnv("LIMITS_TEST_URI")
+	ExpectWithOffset(1, exists).To(BeTrue(), "Set LIMITS_TEST_URI Env variable")
+
+	testData := make(map[string]interface{})
+	testData["gardenHost"] = host
+	testData["gardenRootfs"] = rootfs
+	testData["consumeBin"] = binary
+	testData["limitsTestUri"] = limitsURI
+
+	json, err := json.Marshal(testData)
+	Expect(err).NotTo(HaveOccurred())
+
+	return json
+}, func(jsonBytes []byte) {
+	testData := make(map[string]interface{})
+	Expect(json.Unmarshal(jsonBytes, &testData)).To(Succeed())
+
+	gardenHost = testData["gardenHost"].(string)
+	gardenRootfs = testData["gardenRootfs"].(string)
+	consumeBin = testData["consumeBin"].(string)
+	limitsTestURI = testData["limitsTestUri"].(string)
+	limitsTestContainerImageSize = 4562899158 //Used only in windows tests
 })
 
 func TestGardenIntegrationTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	SetDefaultEventuallyTimeout(15 * time.Second)
+
+	AfterSuite(func() {
+		gexec.CleanupBuildArtifacts()
+	})
 
 	BeforeEach(func() {
 		assertContainerCreate = true
@@ -95,11 +137,11 @@ func TestGardenIntegrationTests(t *testing.T) {
 		properties = garden.Properties{}
 		limits = garden.Limits{}
 		env = []string{}
-		gardenPort = os.Getenv("GARDEN_PORT")
+		gardenPort = os.Getenv("GDN_BIND_PORT")
 		if gardenPort == "" {
 			gardenPort = "7777"
 		}
-		gardenDebugPort = os.Getenv("GARDEN_DEBUG_PORT")
+		gardenDebugPort = os.Getenv("GDN_DEBUG_PORT")
 		if gardenDebugPort == "" {
 			gardenDebugPort = "17013"
 		}
@@ -119,6 +161,7 @@ func TestGardenIntegrationTests(t *testing.T) {
 		})
 
 		if container != nil {
+			containerStartUsage = getContainerUsage(container.Handle())
 			fmt.Fprintf(GinkgoWriter, "Container handle: %s\n", container.Handle())
 		}
 
@@ -164,11 +207,22 @@ func createUser(container garden.Container, username string) {
 		return
 	}
 
-	process, err := container.Run(garden.ProcessSpec{
-		User: "root",
-		Path: "sh",
-		Args: []string{"-c", fmt.Sprintf("id -u %s || adduser -D %s", username, username)},
-	}, garden.ProcessIO{
+	var spec garden.ProcessSpec
+	if runtime.GOOS == "windows" {
+		spec = garden.ProcessSpec{
+			User: "",
+			Path: "cmd.exe",
+			Args: []string{"/c", fmt.Sprintf("net user %s /ADD /passwordreq:no && runas /user:%s whoami", username, username)},
+		}
+	} else {
+		spec = garden.ProcessSpec{
+			User: "root",
+			Path: "sh",
+			Args: []string{"-c", fmt.Sprintf("id -u %s || adduser -D %s", username, username)},
+		}
+	}
+
+	process, err := container.Run(spec, garden.ProcessIO{
 		Stdout: GinkgoWriter,
 		Stderr: GinkgoWriter,
 	})
@@ -274,6 +328,46 @@ func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (s
 	exitCode, stdout, _ := runProcess(container, processSpec)
 	Expect(exitCode).To(Equal(0))
 	return stdout
+}
+
+func getContainerUsage(handle string) uint64 {
+	if runtime.GOOS != "windows" {
+		return 0
+	}
+	// Get the volume path
+	winc_binary, exists := os.LookupEnv("WINC_BINARY")
+	ExpectWithOffset(1, exists).To(BeTrue(), "Set WINC_BINARY Env variable")
+
+	cmd := exec.Command(winc_binary, "state", handle)
+	cmdOut := new(bytes.Buffer)
+	cmd.Stdout = cmdOut
+	err := cmd.Run()
+	ExpectWithOffset(1, err).ToNot(HaveOccurred())
+
+	// Get the pid
+	type containerState struct {
+		Pid int `json:"pid"`
+	}
+	var cs containerState
+	err = json.Unmarshal(cmdOut.Bytes(), &cs)
+	ExpectWithOffset(1, err).ToNot(HaveOccurred())
+
+	// Get the amount of disk in use
+	path := fmt.Sprintf("C:\\proc\\%d\\root", cs.Pid)
+
+	cmd = exec.Command("powershell", fmt.Sprintf("(Get-FSRMQuota %s).Usage", path))
+	cmdOut = new(bytes.Buffer)
+	cmd.Stdout = cmdOut
+	err = cmd.Run()
+	ExpectWithOffset(1, err).ToNot(HaveOccurred())
+	usage := strings.TrimSpace(cmdOut.String())
+	if usage == "" {
+		usage = "0"
+	}
+
+	uintUsage, err := strconv.ParseUint(usage, 10, 64)
+	ExpectWithOffset(1, err).ToNot(HaveOccurred())
+	return uintUsage
 }
 
 func readAll(r io.Reader) []byte {

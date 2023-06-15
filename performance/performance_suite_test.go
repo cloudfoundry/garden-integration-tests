@@ -52,13 +52,13 @@ func resolveHost(host string) string {
 }
 
 var _ = SynchronizedBeforeSuite(func() []byte {
-	host := os.Getenv("GARDEN_ADDRESS")
+	host := os.Getenv("GDN_BIND_IP")
 	if host == "" {
 		host = "10.244.16.6"
 	}
 	resolved := resolveHost(host)
 
-	port := os.Getenv("GARDEN_PORT")
+	port := os.Getenv("GDN_BIND_PORT")
 	if port == "" {
 		port = "7777"
 	}

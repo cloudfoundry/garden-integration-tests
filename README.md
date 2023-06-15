@@ -6,11 +6,11 @@ Tests that run against a remote garden server.
 
 ## How to run
 
-1. Set `GARDEN_ADDRESS` and `GARDEN_PORT` to the address/port of your running garden server.
+1. Set `GDN_BIND_IP` and `GDN_BIND_PORT` to the address/port of your running garden server.
 
 ```
-export GARDEN_ADDRESS=10.244.0.2
-export GARDEN_PORT=7777
+export GDN_BIND_IP=10.244.0.2
+export GDN_BIND_PORT=7777
 ```
 
 1. Run the tests against the deployed garden.
