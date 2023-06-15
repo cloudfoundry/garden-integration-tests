@@ -92,7 +92,7 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	rootfs, exists := os.LookupEnv("TEST_ROOTFS")
 	ExpectWithOffset(1, exists).To(BeTrue(), "Set TEST_ROOTFS Env variable")
 
-	binary, err := gexec.BuildWithEnvironment("code.cloudfoundry.org/garden-integration-tests/plugins/consume-mem", []string{"GOOS=windows"})
+	binary, err := gexec.Build("code.cloudfoundry.org/garden-integration-tests/plugins/consume-mem")
 	Expect(err).ToNot(HaveOccurred())
 
 	limitsURI, exists := os.LookupEnv("LIMITS_TEST_URI")
