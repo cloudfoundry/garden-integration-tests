@@ -61,9 +61,9 @@ func TestGats98(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	BeforeSuite(func() {
-		gardenRootfs, present := os.LookupEnv("TEST_ROOTFS")
+		gardenRootfs, present := os.LookupEnv("WINDOWS_TEST_ROOTFS")
 		if !present {
-			fmt.Println("Must set $TEST_ROOTFS")
+			fmt.Println("Must set $WINDOWS_TEST_ROOTFS")
 			os.Exit(1)
 		}
 		testImage = garden.ImageRef{URI: gardenRootfs}
