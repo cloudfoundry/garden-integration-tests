@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"os"
+	"runtime"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo/v2"
@@ -10,6 +11,11 @@ import (
 )
 
 var _ = Describe("Rootfses", func() {
+	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
+	})
 
 	Context("when the rootfs path is a private azure image URL", func() {
 		BeforeEach(func() {

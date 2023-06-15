@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"runtime"
 	"time"
 
 	"code.cloudfoundry.org/garden"
@@ -12,12 +13,23 @@ import (
 var _ = Describe("Metrics", func() {
 	JustBeforeEach(func() {
 		skipIfWoot("Groot does not support metrics yet")
-		_, err := container.Run(garden.ProcessSpec{
-			Path: "sh",
-			Args: []string{
-				"-c", `while true; do ls -la; done`,
-			},
-		}, garden.ProcessIO{})
+		var spec garden.ProcessSpec
+		if runtime.GOOS == "windows" {
+			spec = garden.ProcessSpec{
+				Path: "cmd.exe",
+				Args: []string{
+					"/C", `waitfor ever /T 9999`,
+				},
+			}
+		} else {
+			spec = garden.ProcessSpec{
+				Path: "sh",
+				Args: []string{
+					"-c", `while true; do ls -la; done`,
+				},
+			}
+		}
+		_, err := container.Run(spec, garden.ProcessIO{})
 		Expect(err).NotTo(HaveOccurred())
 	})
 
@@ -47,6 +59,9 @@ var _ = Describe("Metrics", func() {
 
 	Context("when there is a pid limit", func() {
 		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			limits = garden.Limits{
 				Pid: garden.PidLimits{Max: 128},
 			}

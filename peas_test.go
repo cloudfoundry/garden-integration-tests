@@ -3,6 +3,7 @@ package garden_integration_tests_test
 import (
 	"fmt"
 	"io"
+	"runtime"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo/v2"
@@ -23,11 +24,16 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	BeforeEach(func() {
 		skipIfShed()
-		peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+		peaImage = garden.ImageRef{URI: gardenRootfs}
 		noImage = garden.ImageRef{}
 	})
 
 	Describe("sharing of namespaces", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+		})
 		It("runs a process that shares all of the namespaces besides the mount one", func() {
 			sandboxContainerMntNs := getNS("mnt", container, noImage)
 			peaContainerMntNs := getNS("mnt", container, peaImage)
@@ -60,6 +66,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	})
 
 	It("runs a process in its own rootfs", func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
 		stdout := runForStdout(container, garden.ProcessSpec{
 			Path:  "cat",
 			Args:  []string{"/etc/os-release"},
@@ -69,6 +78,11 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	})
 
 	Describe("pea process user and group", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+		})
 		It("runs the process as uid and gid 0 by default", func() {
 			stdout := runForStdout(container, garden.ProcessSpec{
 				Path:  "sh",
@@ -133,29 +147,57 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Describe("pea process Wait and IO", func() {
 		It("returns the process exit code", func() {
-			processExitCode, _, _ := runProcess(container, garden.ProcessSpec{
-				Path:  "sh",
-				Args:  []string{"-c", "exit 123"},
-				Image: peaImage,
-			})
+			var spec garden.ProcessSpec
+			if runtime.GOOS == "windows" {
+				spec = garden.ProcessSpec{
+					Path:  "cmd.exe",
+					Args:  []string{"/c", "exit /B 123"},
+					Image: peaImage,
+				}
+			} else {
+				spec = garden.ProcessSpec{
+					Path:  "sh",
+					Args:  []string{"-c", "exit 123"},
+					Image: peaImage,
+				}
+			}
+			processExitCode, _, _ := runProcess(container, spec)
 
 			Expect(processExitCode).To(Equal(123))
 		})
 
 		It("streams stdout and stderr back to the client", func() {
-			processExitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
-				Path:  "sh",
-				Args:  []string{"-c", "echo stdout && echo stderr >&2"},
-				Image: peaImage,
-			})
+			var spec garden.ProcessSpec
+			if runtime.GOOS == "windows" {
+				spec = garden.ProcessSpec{
+					Path:  "cmd.exe",
+					Args:  []string{"/c", `echo stdout & echo stderr 1>&2`},
+					Image: peaImage,
+				}
+				processExitCode, stdout, stderr := runProcess(container, spec)
 
-			Expect(processExitCode).To(Equal(0))
-			Expect(stdout).To(gbytes.Say("stdout\n"))
-			Expect(stderr).To(gbytes.Say("stderr\n"))
+				Expect(processExitCode).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("stdout"))
+				Expect(stderr).To(gbytes.Say("stderr"))
+			} else {
+				spec = garden.ProcessSpec{
+					Path:  "sh",
+					Args:  []string{"-c", "echo stdout && echo stderr >&2"},
+					Image: peaImage,
+				}
+				processExitCode, stdout, stderr := runProcess(container, spec)
+
+				Expect(processExitCode).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("stdout\n"))
+				Expect(stderr).To(gbytes.Say("stderr\n"))
+			}
 		})
 	})
 
 	It("bind mounts the same /etc/hosts file as the container", func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
 		originalContentsInContainer := readFileInContainer(container, "/etc/hosts", noImage)
 		originalContentsInPea := readFileInContainer(container, "/etc/hosts", peaImage)
 		Expect(originalContentsInContainer).To(Equal(originalContentsInPea))
@@ -169,6 +211,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 	})
 
 	It("bind mounts the same /etc/resolv.conf file as the container", func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
 		originalContentsInContainer := readFileInContainer(container, "/etc/resolv.conf", noImage)
 		originalContentsInPea := readFileInContainer(container, "/etc/resolv.conf", peaImage)
 		Expect(originalContentsInContainer).To(Equal(originalContentsInPea))
@@ -183,6 +228,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Context("when no working directory is specified", func() {
 		It("defaults to /", func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			stdout := runForStdout(container, garden.ProcessSpec{
 				Path:  "pwd",
 				Image: peaImage,
@@ -193,6 +241,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Describe("signalling", func() {
 		It("sends a TERM signal to the process if requested", func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			stdout := gbytes.NewBuffer()
 
 			process, err := container.Run(garden.ProcessSpec{
@@ -221,6 +272,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Describe("Limits", func() {
 		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			limits = garden.Limits{
 				Bandwidth: garden.BandwidthLimits{RateInBytesPerSecond: mb, BurstRateInBytesPerSecond: mb},
 				CPU:       garden.CPULimits{LimitInShares: 1024},
@@ -296,6 +350,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Context("when the sandbox is destroyed", func() {
 		It("kills all associated peas", func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			process, err := container.Run(garden.ProcessSpec{
 				Path:  "/bin/sleep",
 				Args:  []string{"10000d"},
@@ -314,6 +371,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Describe("Metrics", func() {
 		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			limits = garden.Limits{Memory: garden.MemoryLimits{
 				LimitInBytes: 64 * mb,
 			}}
@@ -355,6 +415,9 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 	Context("when the process executable doesn't exist", func() {
 		It("returns an error from Run", func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
 			_, err := container.Run(
 				garden.ProcessSpec{
 					Path:  "does-not-exist",

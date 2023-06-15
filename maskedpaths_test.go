@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"runtime"
 
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo/v2"
@@ -10,6 +11,11 @@ import (
 )
 
 var _ = Describe("MaskedPaths", func() {
+	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
+	})
 	Context("when the container is unprivileged", func() {
 		It("masks certain files in /proc with a null character device", func() {
 			files := []string{

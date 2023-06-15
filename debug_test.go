@@ -24,6 +24,13 @@ func loadDebug() Debug {
 }
 
 var _ = Describe("Debug", func() {
+
+	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("skip for windows")
+		}
+	})
+
 	Describe("Memory", func() {
 		It("should have non-zero allocated memory", func() {
 			debug := loadDebug()

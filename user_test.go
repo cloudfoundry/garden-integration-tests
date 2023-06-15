@@ -1,6 +1,7 @@
 package garden_integration_tests_test
 
 import (
+	"runtime"
 	"strconv"
 
 	"code.cloudfoundry.org/garden"
@@ -10,6 +11,11 @@ import (
 )
 
 var _ = Describe("users", func() {
+	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
+	})
 	It("has a sufficiently large UID/GID range", func() {
 		stdout := runForStdout(container, garden.ProcessSpec{
 			User: "1000000000:1000000000",

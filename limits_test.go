@@ -1,6 +1,15 @@
 package garden_integration_tests_test
 
 import (
+	"archive/tar"
+	"compress/gzip"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strconv"
+
 	"code.cloudfoundry.org/garden"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,37 +32,100 @@ var _ = Describe("Limits", func() {
 	})
 
 	Describe("memory limits", func() {
+		var tarStream io.Reader
 		BeforeEach(func() {
-			limits = garden.Limits{Memory: garden.MemoryLimits{
-				LimitInBytes: 64 * 1024 * 1024,
-			}}
+			var memLimit garden.MemoryLimits
+			if runtime.GOOS == "windows" {
+				memLimit = garden.MemoryLimits{
+					LimitInBytes: 150 * 1024 * 1024,
+				}
+
+			} else {
+				memLimit = garden.MemoryLimits{
+					LimitInBytes: 64 * 1024 * 1024,
+				}
+			}
+			limits = garden.Limits{Memory: memLimit}
+		})
+
+		JustBeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				tmpdir, err := ioutil.TempDir("", "")
+				Expect(err).ToNot(HaveOccurred())
+
+				tgzPath := filepath.Join(tmpdir, "consume.tgz")
+				contents, err := ioutil.ReadFile(consumeBin)
+				Expect(err).To(Succeed())
+
+				createTarGZArchive(
+					tgzPath,
+					[]archiveFile{
+						{
+							Name: "./consume.exe",
+							Body: contents,
+						},
+					},
+				)
+
+				tgz, err := os.Open(tgzPath)
+				Expect(err).ToNot(HaveOccurred())
+
+				tarStream, err = gzip.NewReader(tgz)
+				Expect(err).ToNot(HaveOccurred())
+
+				err = container.StreamIn(garden.StreamInSpec{
+					Path:      "C:\\",
+					TarStream: tarStream,
+				})
+				Expect(err).ToNot(HaveOccurred())
+			}
 		})
 
 		It("reports the memory limits", func() {
 			memoryLimits, err := container.CurrentMemoryLimits()
 			Expect(err).NotTo(HaveOccurred())
-			Expect(memoryLimits.LimitInBytes).To(BeEquivalentTo(64 * 1024 * 1024))
+			if runtime.GOOS == "windows" {
+				Expect(memoryLimits.LimitInBytes).To(BeEquivalentTo(150 * 1024 * 1024))
+			} else {
+				Expect(memoryLimits.LimitInBytes).To(BeEquivalentTo(64 * 1024 * 1024))
+			}
 		})
 
 		It("kills a process if it uses too much memory", func() {
-			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-				User: "root",
-				Path: "dd",
-				Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
-			})
+			if runtime.GOOS == "windows" {
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					Path: "C:\\consume.exe",
+					Args: []string{strconv.Itoa(150 * 1024 * 1024)},
+				})
+				Expect(exitCode).To(Equal(2))
+			} else {
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					User: "root",
+					Path: "dd",
+					Args: []string{"if=/dev/urandom", "of=/dev/shm/too-big", "bs=1M", "count=65"},
+				})
 
-			Expect(exitCode).ToNot(Equal(0))
+				Expect(exitCode).ToNot(Equal(0))
+			}
 		})
 
 		It("doesn't kill a process that uses lots of memory within the limit", func() {
-			// Note: the dd process itself takes up a certain amount of memory, so we have to
-			// allow for that overhead. This is why we don't E.g. write 63MB.
-			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-				User: "root",
-				Path: "dd",
-				Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=58"},
-			})
-			Expect(exitCode).To(Equal(0))
+			if runtime.GOOS == "windows" {
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					Path: "C:\\consume.exe",
+					Args: []string{strconv.Itoa(50 * 1024 * 1024)},
+				})
+				Expect(exitCode).To(Equal(0))
+			} else {
+				// Note: the dd process itself takes up a certain amount of memory, so we have to
+				// allow for that overhead. This is why we don't E.g. write 63MB.
+				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+					User: "root",
+					Path: "dd",
+					Args: []string{"if=/dev/urandom", "of=/dev/shm/almost-too-big", "bs=1M", "count=58"},
+				})
+				Expect(exitCode).To(Equal(0))
+			}
 		})
 	})
 
@@ -62,54 +134,71 @@ var _ = Describe("Limits", func() {
 			skipIfWoot("Groot does not support disk size limits yet")
 			privilegedContainer = false
 
-			limits.Disk.ByteSoft = 100 * 1024 * 1024
-			limits.Disk.ByteHard = 100 * 1024 * 1024
-			limits.Disk.Scope = garden.DiskLimitScopeTotal
+			if runtime.GOOS == "windows" {
+				limits.Disk.ByteHard = 100 * 1024 * 1024
+			} else {
+				limits.Disk.ByteSoft = 100 * 1024 * 1024
+				limits.Disk.ByteHard = 100 * 1024 * 1024
+				limits.Disk.Scope = garden.DiskLimitScopeTotal
+			}
 		})
+		Context("Validating Metrics", func() {
+			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
+			})
 
-		DescribeTable("Metrics",
-			func(reporter func() uint64) {
-				createUser(container, "alice")
+			DescribeTable("Metrics",
+				func(reporter func() uint64) {
+					createUser(container, "alice")
 
-				initialBytes := reporter()
-				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "dd",
-					Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=3"},
-				})
-				Expect(exitCode).To(Equal(0))
+					initialBytes := reporter()
+					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
+						User: "alice",
+						Path: "dd",
+						Args: []string{"if=/dev/zero", "of=/home/alice/some-file", "bs=1M", "count=3"},
+					})
+					Expect(exitCode).To(Equal(0))
 
-				Eventually(reporter).Should(BeNumerically("~", initialBytes+3*1024*1024, 1024*1024))
+					Eventually(reporter).Should(BeNumerically("~", initialBytes+3*1024*1024, 1024*1024))
 
-				exitCode, _, _ = runProcess(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "dd",
-					Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
-				})
-				Expect(exitCode).To(Equal(0))
+					exitCode, _, _ = runProcess(container, garden.ProcessSpec{
+						User: "alice",
+						Path: "dd",
+						Args: []string{"if=/dev/zero", "of=/home/alice/another-file", "bs=1M", "count=10"},
+					})
+					Expect(exitCode).To(Equal(0))
 
-				Eventually(reporter).Should(BeNumerically("~", initialBytes+uint64(13*1024*1024), 1024*1024))
-			},
+					Eventually(reporter).Should(BeNumerically("~", initialBytes+uint64(13*1024*1024), 1024*1024))
+				},
 
-			Entry("with exclusive metrics", func() uint64 {
-				metrics, err := container.Metrics()
-				Expect(err).ToNot(HaveOccurred())
-				return metrics.DiskStat.ExclusiveBytesUsed
-			}),
+				Entry("with exclusive metrics", func() uint64 {
+					metrics, err := container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+					return metrics.DiskStat.ExclusiveBytesUsed
+				}),
 
-			Entry("with total metrics", func() uint64 {
-				metrics, err := container.Metrics()
-				Expect(err).ToNot(HaveOccurred())
-				return metrics.DiskStat.TotalBytesUsed
-			}),
-		)
+				Entry("with total metrics", func() uint64 {
+					metrics, err := container.Metrics()
+					Expect(err).ToNot(HaveOccurred())
+					return metrics.DiskStat.TotalBytesUsed
+				}),
+			)
+		})
 
 		Context("when the scope is total", func() {
 			BeforeEach(func() {
-				imageRef.URI = "docker:///busybox#1.23"
-				limits.Disk.ByteSoft = 10 * 1024 * 1024
-				limits.Disk.ByteHard = 10 * 1024 * 1024
-				limits.Disk.Scope = garden.DiskLimitScopeTotal
+
+				imageRef.URI = limitsTestURI
+				if runtime.GOOS == "windows" {
+					limits.Disk.ByteHard = limitsTestContainerImageSize + 60*1024*1024
+					limits.Disk.Scope = garden.DiskLimitScopeTotal
+				} else {
+					limits.Disk.ByteSoft = 10 * 1024 * 1024
+					limits.Disk.ByteHard = 10 * 1024 * 1024
+					limits.Disk.Scope = garden.DiskLimitScopeTotal
+				}
 			})
 
 			It("reports initial total bytes of a container based on size of image", func() {
@@ -117,27 +206,57 @@ var _ = Describe("Limits", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically(">", metrics.DiskStat.ExclusiveBytesUsed))
-				Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
+				if runtime.GOOS == "windows" {
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", limitsTestContainerImageSize+containerStartUsage, 20*1024*1024))
+
+				} else {
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
+				}
 			})
 
 			Context("and run a process that does not exceed the limit", func() {
 				It("does not kill the process", func() {
-					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-						User: "root",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=7"},
-					})
+					var spec garden.ProcessSpec
+					if runtime.GOOS == "windows" {
+						spec = garden.ProcessSpec{
+							Path: "fsutil",
+							Args: []string{"file", "createnew", "foo.txt", strconv.Itoa(5 * 1024 * 1024)},
+						}
+					} else {
+						spec = garden.ProcessSpec{
+							User: "root",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=7"},
+						}
+					}
+					exitCode, _, _ := runProcess(container, spec)
 					Expect(exitCode).To(Equal(0))
 				})
 			})
 
 			Context("and run a process that exceeds the quota due to the size of the rootfs", func() {
+				var fileTooBigSize int
+
+				BeforeEach(func() {
+					fileTooBigSize = 120 * 1024 * 1024
+				})
+
 				It("kills the process", func() {
-					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-						User: "root",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=10"},
-					})
+					var spec garden.ProcessSpec
+					if runtime.GOOS == "windows" {
+						spec = garden.ProcessSpec{
+							Path: "fsutil",
+							Args: []string{"file", "createnew", "foo.txt", strconv.Itoa(fileTooBigSize)},
+						}
+
+					} else {
+						spec = garden.ProcessSpec{
+							User: "root",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=10"},
+						}
+					}
+					exitCode, _, _ := runProcess(container, spec)
 					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
@@ -145,7 +264,11 @@ var _ = Describe("Limits", func() {
 			Context("when rootfs exceeds the quota", func() {
 				BeforeEach(func() {
 					assertContainerCreate = false
-					imageRef.URI = "docker:///ubuntu#trusty-20160323"
+					if runtime.GOOS == "windows" {
+						limits.Disk.ByteHard = 1024 * 1024 * 1024
+					} else {
+						imageRef.URI = "docker:///ubuntu#trusty-20160323"
+					}
 				})
 
 				It("should fail to create a container", func() {
@@ -156,29 +279,54 @@ var _ = Describe("Limits", func() {
 
 		Context("when the scope is exclusive", func() {
 			BeforeEach(func() {
-				limits.Disk.ByteSoft = 10 * 1024 * 1024
-				limits.Disk.ByteHard = 10 * 1024 * 1024
-				limits.Disk.Scope = garden.DiskLimitScopeExclusive
+				if runtime.GOOS == "windows" {
+					limits.Disk.ByteSoft = 60 * 1024 * 1024
+					limits.Disk.ByteHard = 60 * 1024 * 1024
+					limits.Disk.Scope = garden.DiskLimitScopeExclusive
+				} else {
+					limits.Disk.ByteSoft = 10 * 1024 * 1024
+					limits.Disk.ByteHard = 10 * 1024 * 1024
+					limits.Disk.Scope = garden.DiskLimitScopeExclusive
+				}
 			})
 
 			Context("and run a process that would exceed the quota due to the size of the rootfs", func() {
 				It("does not kill the process", func() {
-					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-						User: "root",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
-					})
+					var spec garden.ProcessSpec
+					if runtime.GOOS == "windows" {
+						spec = garden.ProcessSpec{
+							Path: "fsutil",
+							Args: []string{"file", "createnew", "foo.txt", strconv.Itoa(15 * 1024 * 1024)},
+						}
+
+					} else {
+						spec = garden.ProcessSpec{
+							User: "root",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=9"}, // should succeed, even though equivalent with 'total' scope does not
+						}
+					}
+					exitCode, _, _ := runProcess(container, spec)
 					Expect(exitCode).To(Equal(0))
 				})
 			})
 
 			Context("and run a process that exceeds the quota", func() {
 				It("kills the process", func() {
-					exitCode, _, _ := runProcess(container, garden.ProcessSpec{
-						User: "root",
-						Path: "dd",
-						Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
-					})
+					var spec garden.ProcessSpec
+					if runtime.GOOS == "windows" {
+						spec = garden.ProcessSpec{
+							Path: "fsutil",
+							Args: []string{"file", "createnew", "foo.txt", strconv.Itoa(55 * 1024 * 1024)},
+						}
+					} else {
+						spec = garden.ProcessSpec{
+							User: "root",
+							Path: "dd",
+							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=11"},
+						}
+					}
+					exitCode, _, _ := runProcess(container, spec)
 					Expect(exitCode).ToNot(Equal(0))
 				})
 			})
@@ -186,6 +334,9 @@ var _ = Describe("Limits", func() {
 
 		Context("a rootfs with pre-existing users", func() {
 			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
 				limits.Disk.ByteHard = 10 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeExclusive
@@ -285,6 +436,9 @@ var _ = Describe("Limits", func() {
 
 		Context("when the container is privileged", func() {
 			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
 				setPrivileged()
 
 				limits.Disk.ByteSoft = 10 * 1024 * 1024
@@ -319,6 +473,11 @@ var _ = Describe("Limits", func() {
 	})
 
 	Describe("PID limits", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+		})
 		Context("when there is a pid limit applied", func() {
 			BeforeEach(func() {
 				major, minor := getKernelVersion()
@@ -357,3 +516,69 @@ var _ = Describe("Limits", func() {
 		})
 	})
 })
+
+type archiveFile struct {
+	Name string
+	Body []byte
+	Mode int64
+	Dir  bool
+	Link string
+}
+
+func createTarGZArchive(filename string, files []archiveFile) {
+	file, err := os.Create(filename)
+	Expect(err).NotTo(HaveOccurred())
+
+	gw := gzip.NewWriter(file)
+
+	writeTar(gw, files)
+
+	err = gw.Close()
+	Expect(err).NotTo(HaveOccurred())
+
+	err = file.Close()
+	Expect(err).NotTo(HaveOccurred())
+}
+
+func writeTar(destination io.Writer, files []archiveFile) {
+	w := tar.NewWriter(destination)
+
+	for _, file := range files {
+		var header *tar.Header
+
+		mode := file.Mode
+		if mode == 0 {
+			mode = 0777
+		}
+
+		if file.Dir {
+			header = &tar.Header{
+				Name:     file.Name,
+				Mode:     0755,
+				Typeflag: tar.TypeDir,
+			}
+		} else if file.Link != "" {
+			header = &tar.Header{
+				Name:     file.Name,
+				Typeflag: tar.TypeSymlink,
+				Linkname: file.Link,
+				Mode:     file.Mode,
+			}
+		} else {
+			header = &tar.Header{
+				Name: file.Name,
+				Mode: mode,
+				Size: int64(len(file.Body)),
+			}
+		}
+
+		err := w.WriteHeader(header)
+		Expect(err).NotTo(HaveOccurred())
+
+		_, err = w.Write(file.Body)
+		Expect(err).NotTo(HaveOccurred())
+	}
+
+	err := w.Close()
+	Expect(err).NotTo(HaveOccurred())
+}

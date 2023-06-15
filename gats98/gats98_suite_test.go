@@ -61,13 +61,13 @@ func TestGats98(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	BeforeSuite(func() {
-		gardenRootfs, present := os.LookupEnv("WINDOWS_TEST_ROOTFS")
+		gardenRootfs, present := os.LookupEnv("TEST_ROOTFS")
 		if !present {
-			fmt.Println("Must set $WINDOWS_TEST_ROOTFS")
+			fmt.Println("Must set $TEST_ROOTFS")
 			os.Exit(1)
 		}
 		testImage = garden.ImageRef{URI: gardenRootfs}
-		host := os.Getenv("GARDEN_ADDRESS")
+		host := os.Getenv("GDN_BIND_IP")
 		if host == "" {
 			host = "10.244.0.2"
 		}
@@ -79,11 +79,11 @@ func TestGats98(t *testing.T) {
 	})
 
 	BeforeEach(func() {
-		gardenPort = os.Getenv("GARDEN_PORT")
+		gardenPort = os.Getenv("GDN_BIND_PORT")
 		if gardenPort == "" {
 			gardenPort = "7777"
 		}
-		gardenDebugPort = os.Getenv("GARDEN_DEBUG_PORT")
+		gardenDebugPort = os.Getenv("GDN_DEBUG_PORT")
 		if gardenDebugPort == "" {
 			gardenDebugPort = "17013"
 		}

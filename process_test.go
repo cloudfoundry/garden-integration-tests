@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"fmt"
+	"runtime"
 	"runtime/debug"
 	"time"
 
@@ -13,6 +14,11 @@ import (
 
 var _ = Describe("Process", func() {
 	Describe("signalling", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+		})
 		It("a process can be sent SIGTERM immediately after having been started", func() {
 			stdout := gbytes.NewBuffer()
 
@@ -59,10 +65,19 @@ var _ = Describe("Process", func() {
 	})
 	Describe("process ID", func() {
 		It("return a process containing the ID passed in the process spec", func() {
-			process, err := container.Run(garden.ProcessSpec{
-				ID:   "some-id",
-				Path: "/bin/true",
-			}, garden.ProcessIO{})
+			var spec garden.ProcessSpec
+			if runtime.GOOS == "windows" {
+				spec = garden.ProcessSpec{
+					ID:   "some-id",
+					Path: "whoami",
+				}
+			} else {
+				spec = garden.ProcessSpec{
+					ID:   "some-id",
+					Path: "/bin/true",
+				}
+			}
+			process, err := container.Run(spec, garden.ProcessIO{})
 			Expect(err).ToNot(HaveOccurred())
 			Expect(process.ID()).To(Equal("some-id"))
 		})
@@ -72,19 +87,38 @@ var _ = Describe("Process", func() {
 
 			JustBeforeEach(func() {
 				processID = "same-id"
-				_, err := container.Run(garden.ProcessSpec{
-					ID:   processID,
-					Path: "/bin/sleep",
-					Args: []string{"5"},
-				}, garden.ProcessIO{})
+				var spec garden.ProcessSpec
+				if runtime.GOOS == "windows" {
+					spec = garden.ProcessSpec{
+						ID:   processID,
+						Path: "cmd.exe",
+						Args: []string{"/C", "waitfor five_sec /T 5 & exit /b 0"},
+					}
+				} else {
+					spec = garden.ProcessSpec{
+						ID:   processID,
+						Path: "/bin/sleep",
+						Args: []string{"5"},
+					}
+				}
+				_, err := container.Run(spec, garden.ProcessIO{})
 				Expect(err).ToNot(HaveOccurred())
 			})
 
 			It("the second process with the same id should explode", func() {
-				_, err := container.Run(garden.ProcessSpec{
-					ID:   processID,
-					Path: "/bin/true",
-				}, garden.ProcessIO{})
+				var spec garden.ProcessSpec
+				if runtime.GOOS == "windows" {
+					spec = garden.ProcessSpec{
+						ID:   processID,
+						Path: "whoami",
+					}
+				} else {
+					spec = garden.ProcessSpec{
+						ID:   processID,
+						Path: "/bin/true",
+					}
+				}
+				_, err := container.Run(spec, garden.ProcessIO{})
 				Expect(err).To(MatchError(MatchRegexp(`already (in use|exists)`)))
 			})
 		})
@@ -92,15 +126,32 @@ var _ = Describe("Process", func() {
 
 	Describe("environment", func() {
 		It("should apply the specified environment", func() {
-			exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
-				Path: "env",
-				Env: []string{
-					"TEST=hello",
-					"FRUIT=banana",
-				},
-			})
-			Expect(exitCode).To(Equal(0))
-			Expect(stdout).To(gbytes.Say("TEST=hello\nFRUIT=banana"))
+			var spec garden.ProcessSpec
+			if runtime.GOOS == "windows" {
+				spec = garden.ProcessSpec{
+					Path: "cmd.exe",
+					Args: []string{"/C", "set"},
+					Env: []string{
+						"TEST=hello",
+						"FRUIT=banana",
+					},
+				}
+				exitCode, stdout, _ := runProcess(container, spec)
+				Expect(exitCode).To(Equal(0))
+				Expect(stdout.Contents()).To(ContainSubstring("TEST=hello\r\n"))
+				Expect(stdout.Contents()).To(ContainSubstring("FRUIT=banana\r\n"))
+			} else {
+				spec = garden.ProcessSpec{
+					Path: "env",
+					Env: []string{
+						"TEST=hello",
+						"FRUIT=banana",
+					},
+				}
+				exitCode, stdout, _ := runProcess(container, spec)
+				Expect(exitCode).To(Equal(0))
+				Expect(stdout).To(gbytes.Say("TEST=hello\nFRUIT=banana"))
+			}
 		})
 
 		Context("when the container has container spec environment specified", func() {
@@ -112,20 +163,41 @@ var _ = Describe("Process", func() {
 			})
 
 			It("should apply the merged environment variables", func() {
-				exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
-					Path: "env",
-					Env: []string{
-						"TEST=hello",
-						"FRUIT=banana",
-					},
-				})
-				Expect(exitCode).To(Equal(0))
-				Expect(stdout).To(gbytes.Say("CONTAINER_ENV=1\nTEST=hello\nFRUIT=banana"))
+				if runtime.GOOS == "windows" {
+
+					exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+						Path: "cmd.exe",
+						Args: []string{"/C", "set"},
+						Env: []string{
+							"TEST=hello",
+							"FRUIT=banana",
+						},
+					})
+					Expect(exitCode).To(Equal(0))
+					Expect(stdout.Contents()).To(ContainSubstring("CONTAINER_ENV=1\r\n"))
+					Expect(stdout.Contents()).To(ContainSubstring("TEST=hello\r\n"))
+					Expect(stdout.Contents()).To(ContainSubstring("FRUIT=banana\r\n"))
+				} else {
+					exitCode, stdout, _ := runProcess(container, garden.ProcessSpec{
+						Path: "env",
+						Env: []string{
+							"TEST=hello",
+							"FRUIT=banana",
+						},
+					})
+					Expect(exitCode).To(Equal(0))
+					Expect(stdout).To(gbytes.Say("CONTAINER_ENV=1\nTEST=hello\nFRUIT=banana"))
+				}
 			})
 		})
 	})
 
 	Describe("wait", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+		})
 		It("does not block in Wait() when all children of the process have exited", func() {
 			stderr := gbytes.NewBuffer()
 			process, err := container.Run(garden.ProcessSpec{
@@ -179,6 +251,11 @@ var _ = Describe("Process", func() {
 
 	Describe("user", func() {
 		Context("when the user is specified in the form uid:gid", func() {
+			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
+			})
 			It("runs the process as that user", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "1001:1002",
@@ -191,6 +268,9 @@ var _ = Describe("Process", func() {
 
 		Context("when the user is specified ins the form username:groupname", func() {
 			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
 				imageRef = garden.ImageRef{
 					URI: "docker:///cfgarden/run-as-user-group:0.0.1",
 				}
@@ -211,7 +291,11 @@ var _ = Describe("Process", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					Path: "whoami",
 				})
-				Expect(stdout).To(gbytes.Say("root\n"))
+				if runtime.GOOS == "windows" {
+					Expect(stdout).To(gbytes.Say("containeradministrator"))
+				} else {
+					Expect(stdout).To(gbytes.Say("root\n"))
+				}
 			})
 		})
 	})
@@ -224,13 +308,24 @@ var _ = Describe("Process", func() {
 		Context("when user has access to working directory", func() {
 			Context("when working directory exists", func() {
 				It("spawns the process", func() {
-					stdout := runForStdout(container, garden.ProcessSpec{
-						User: "alice",
-						Dir:  "/home/alice",
-						Path: "pwd",
-					})
+					if runtime.GOOS == "windows" {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							User: "alice",
+							Dir:  "c:\\users\\alice",
+							Path: "cmd.exe",
+							Args: []string{"/C", `echo %cd%`},
+						})
 
-					Expect(stdout).To(gbytes.Say("/home/alice"))
+						Expect(stdout).To(gbytes.Say(`c:\\users\\alice`))
+					} else {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							User: "alice",
+							Dir:  "/home/alice",
+							Path: "pwd",
+						})
+
+						Expect(stdout).To(gbytes.Say("/home/alice"))
+					}
 				})
 			})
 
@@ -240,16 +335,30 @@ var _ = Describe("Process", func() {
 				})
 
 				It("spawns the process", func() {
-					stdout := runForStdout(container, garden.ProcessSpec{
-						User: "alice",
-						Dir:  "/home/alice/nonexistent",
-						Path: "pwd",
-					})
+					if runtime.GOOS == "windows" {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							User: "alice",
+							Dir:  "c:\\users\\alice\\nonexistent",
+							Path: "cmd.exe",
+							Args: []string{"/C", `echo %cd%`},
+						})
 
-					Expect(stdout).To(gbytes.Say("/home/alice/nonexistent"))
+						Expect(stdout.Contents()).To(ContainSubstring("c:\\users\\alice\\nonexistent"))
+					} else {
+						stdout := runForStdout(container, garden.ProcessSpec{
+							User: "alice",
+							Dir:  "/home/alice/nonexistent",
+							Path: "pwd",
+						})
+
+						Expect(stdout).To(gbytes.Say("/home/alice/nonexistent"))
+					}
 				})
 
 				It("is created owned by the requested user", func() {
+					if runtime.GOOS == "windows" {
+						Skip("pending for windows")
+					}
 					stdout := runForStdout(container, garden.ProcessSpec{
 						User: "root",
 						Dir:  "/root/nonexistent",
@@ -263,6 +372,11 @@ var _ = Describe("Process", func() {
 		})
 
 		Context("when user does not have access to working directory", func() {
+			BeforeEach(func() {
+				if runtime.GOOS == "windows" {
+					Skip("pending for windows")
+				}
+			})
 			JustBeforeEach(func() {
 				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "alice",
@@ -306,12 +420,22 @@ var _ = Describe("Process", func() {
 
 		Context("when the user does not specify the working directory", func() {
 			It("should have the user home directory in the output", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "pwd",
-				})
+				if runtime.GOOS == "windows" {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User: "alice",
+						Path: "cmd.exe",
+						Args: []string{"/C", `echo %cd%`},
+					})
 
-				Expect(stdout).To(gbytes.Say("/home/alice"))
+					Expect(stdout).To(gbytes.Say(`C:\\Users\\alice`))
+				} else {
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User: "alice",
+						Path: "pwd",
+					})
+
+					Expect(stdout).To(gbytes.Say("/home/alice"))
+				}
 			})
 		})
 	})

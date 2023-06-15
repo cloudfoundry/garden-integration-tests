@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
+	"runtime"
 	"strings"
 	"time"
 
@@ -19,6 +20,9 @@ const googleDNSIP = "8.8.8.8"
 
 var _ = Describe("Networking", func() {
 	BeforeEach(func() {
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
 		skipIfRootless()
 	})
 

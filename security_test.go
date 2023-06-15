@@ -2,6 +2,7 @@ package garden_integration_tests_test
 
 import (
 	"regexp"
+	"runtime"
 	"strings"
 
 	"code.cloudfoundry.org/garden"
@@ -17,7 +18,10 @@ var _ = Describe("Security", func() {
 	)
 
 	BeforeEach(func() {
-		peaImage = garden.ImageRef{URI: "docker:///alpine#3.6"}
+		if runtime.GOOS == "windows" {
+			Skip("pending for windows")
+		}
+		peaImage = garden.ImageRef{URI: gardenRootfs}
 		noImage = garden.ImageRef{}
 	})
 
