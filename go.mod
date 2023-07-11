@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/archiver v0.0.0-20230612152321-46722cbc3f99
 	code.cloudfoundry.org/garden v0.0.0-20230630233626-5b1da028ef88
 	code.cloudfoundry.org/guardian v0.0.0-20230630234409-bb0e8c01746a
-	github.com/cloudfoundry/gosigar v1.3.15
+	github.com/cloudfoundry/gosigar v1.3.16
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
@@ -37,10 +37,10 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
-	golang.org/x/net v0.11.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
-	golang.org/x/tools v0.10.0 // indirect
+	golang.org/x/tools v0.11.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
