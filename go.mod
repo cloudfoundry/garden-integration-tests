@@ -5,8 +5,8 @@ go 1.19
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20230612152321-46722cbc3f99
 	code.cloudfoundry.org/garden v0.0.0-20230711180045-f80036ea0624
-	code.cloudfoundry.org/guardian v0.0.0-20230704180509-f396aab4fb43
-	github.com/cloudfoundry/gosigar v1.3.16
+	code.cloudfoundry.org/guardian v0.0.0-20230711180542-9da10cd12b02
+	github.com/cloudfoundry/gosigar v1.3.17
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
