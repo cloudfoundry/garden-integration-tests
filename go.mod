@@ -3,13 +3,13 @@ module code.cloudfoundry.org/garden-integration-tests
 go 1.19
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20230612152321-46722cbc3f99
-	code.cloudfoundry.org/garden v0.0.0-20230711180045-f80036ea0624
-	code.cloudfoundry.org/guardian v0.0.0-20230711180542-9da10cd12b02
+	code.cloudfoundry.org/archiver v0.0.0-20230725151503-0d924a8ae786
+	code.cloudfoundry.org/garden v0.0.0-20230725180150-130beaa138e8
+	code.cloudfoundry.org/guardian v0.0.0-20230718180556-b9084250656d
 	github.com/cloudfoundry/gosigar v1.3.17
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.11.0
-	github.com/onsi/gomega v1.27.8
+	github.com/onsi/gomega v1.27.10
 	github.com/wavefronthq/wavefront-sdk-go v0.13.0
 )
 
@@ -31,8 +31,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
-	github.com/opencontainers/runc v1.1.7 // indirect
-	github.com/opencontainers/runtime-spec v1.1.0-rc.3 // indirect
+	github.com/opencontainers/runc v1.1.8 // indirect
+	github.com/opencontainers/runtime-spec v1.1.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
