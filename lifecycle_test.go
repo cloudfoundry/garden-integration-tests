@@ -683,8 +683,8 @@ var _ = Describe("Lifecycle", func() {
 					})
 					Expect(err).ToNot(HaveOccurred())
 
+					Eventually(stdout).Should(gbytes.Say("hi stdout"))
 					Expect(process.Wait()).To(Equal(0))
-					Expect(stdout).To(gbytes.Say("hi stdout"))
 				} else {
 					process, err := container.Run(garden.ProcessSpec{
 						User: regularUser,
