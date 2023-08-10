@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20230725151503-0d924a8ae786
-	code.cloudfoundry.org/garden v0.0.0-20230801180547-a97205a2bf54
-	code.cloudfoundry.org/guardian v0.0.0-20230801181554-98537022179a
+	code.cloudfoundry.org/garden v0.0.0-20230809153744-f4c82d95f956
+	code.cloudfoundry.org/guardian v0.0.0-20230809153707-556a24a0d5a8
 	github.com/cloudfoundry/gosigar v1.3.18
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.11.0
@@ -26,14 +26,14 @@ require (
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/pprof v0.0.0-20230728192033-2ba5b33183c6 // indirect
+	github.com/google/pprof v0.0.0-20230808223545-4887780b67fb // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/opencontainers/runc v1.1.8 // indirect
 	github.com/opencontainers/runtime-spec v1.1.0 // indirect
-	github.com/openzipkin/zipkin-go v0.4.1 // indirect
+	github.com/openzipkin/zipkin-go v0.4.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
