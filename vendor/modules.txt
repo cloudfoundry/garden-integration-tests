@@ -4,14 +4,14 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.0.0-20230612151827-2b11a2b4e9b8
 ## explicit; go 1.20
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20230810185310-50dbb20744dc => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20230815180424-064b8daa7e12 => ../garden
 ## explicit; go 1.20
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20230810185839-612bee071318 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20230817162430-9984cf369779 => ../guardian
 ## explicit; go 1.20
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -34,11 +34,11 @@ github.com/caio/go-tdigest
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.20
+# github.com/cloudfoundry/gosigar v1.3.21
 ## explicit; go 1.20
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20230710164515-a0a43d1dbbf8
+# github.com/cloudfoundry/sonde-go v0.0.0-20230822175501-8bbdd0e1d8ed
 ## explicit; go 1.17
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
@@ -64,7 +64,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20230811205829-9131a7e9cc17
+# github.com/google/pprof v0.0.0-20230821062121-407c9e7a662f
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
