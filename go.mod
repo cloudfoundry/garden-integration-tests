@@ -8,7 +8,7 @@ require (
 	code.cloudfoundry.org/guardian v0.0.0-20230822181411-3955bd1d72ff
 	github.com/cloudfoundry/gosigar v1.3.21
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.11.0
+	github.com/onsi/ginkgo/v2 v2.12.0
 	github.com/onsi/gomega v1.27.10
 	github.com/wavefronthq/wavefront-sdk-go v0.13.0
 )
