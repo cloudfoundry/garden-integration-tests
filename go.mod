@@ -4,11 +4,11 @@ go 1.19
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20230725151503-0d924a8ae786
-	code.cloudfoundry.org/garden v0.0.0-20230823164422-cf93827eac97
-	code.cloudfoundry.org/guardian v0.0.0-20230822181411-3955bd1d72ff
-	github.com/cloudfoundry/gosigar v1.3.21
+	code.cloudfoundry.org/garden v0.0.0-20230829180649-7b7a13d99011
+	code.cloudfoundry.org/guardian v0.0.0-20230823165512-f75880ba29a5
+	github.com/cloudfoundry/gosigar v1.3.22
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.11.0
+	github.com/onsi/ginkgo/v2 v2.12.0
 	github.com/onsi/gomega v1.27.10
 	github.com/wavefronthq/wavefront-sdk-go v0.13.0
 )
