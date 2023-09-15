@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20230725151503-0d924a8ae786
+	code.cloudfoundry.org/archiver v0.0.0-20230915144220-78e329af86f4
 	code.cloudfoundry.org/garden v0.0.0-20230912180837-747c18304b8a
 	code.cloudfoundry.org/guardian v0.0.0-20230905182434-81ea273ad434
 	github.com/cloudfoundry/gosigar v1.3.26
