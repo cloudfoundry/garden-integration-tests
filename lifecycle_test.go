@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"bytes"
 	"compress/gzip"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -1152,6 +1153,19 @@ done
 
 		Context("and streaming files in", func() {
 			var tarStream io.Reader
+			var filesToArchive []archiver.ArchiveFile
+
+			BeforeEach(func() {
+				filesToArchive = append(filesToArchive, []archiver.ArchiveFile{
+					{
+						Name: "./some-temp-dir",
+						Dir:  true,
+					}, {
+						Name: "./some-temp-dir/some-temp-file",
+						Body: "some-body",
+					},
+				}...)
+			})
 
 			JustBeforeEach(func() {
 				tmpdir, err := ioutil.TempDir("", "some-temp-dir-parent")
@@ -1159,25 +1173,63 @@ done
 
 				tgzPath := filepath.Join(tmpdir, "some.tgz")
 
-				archiver.CreateTarGZArchive(
-					tgzPath,
-					[]archiver.ArchiveFile{
-						{
-							Name: "./some-temp-dir",
-							Dir:  true,
-						},
-						{
-							Name: "./some-temp-dir/some-temp-file",
-							Body: "some-body",
-						},
-					},
-				)
+				archiver.CreateTarGZArchive(tgzPath, filesToArchive)
 
 				tgz, err := os.Open(tgzPath)
 				Expect(err).ToNot(HaveOccurred())
 
 				tarStream, err = gzip.NewReader(tgz)
 				Expect(err).ToNot(HaveOccurred())
+			})
+
+			Context("when streamed files + rootfs image have xattrs on files", func() {
+				BeforeEach(func() {
+					imageRef.URI = "docker:///tasruntime/base-image-with-xattrs"
+
+					var capabilities = "0100000200200000000000000000000000000000" // output from `getfattr -e hex -d -m '' /bin/ping`
+					capBytes, err := hex.DecodeString(capabilities)
+					Expect(err).NotTo(HaveOccurred())
+
+					filesToArchive = append(filesToArchive, archiver.ArchiveFile{
+						Name:   "./some-temp-dir/some-temp-file-with-xattrs",
+						Body:   "some-body",
+						Xattrs: map[string]string{"security.capability": string(capBytes)},
+					})
+				})
+
+				It("preserves the xattrs for files", func() {
+					if runtime.GOOS == "windows" {
+						Skip("xattr testing doesn't make sense on windows")
+					}
+
+					By("Ensuring xattrs are set when streaming content into the container")
+					err := container.StreamIn(garden.StreamInSpec{
+						User:      "root",
+						Path:      "/home/alice",
+						TarStream: tarStream,
+					})
+					Expect(err).ToNot(HaveOccurred())
+
+					exitCode, stdout, stderr := runProcess(container, garden.ProcessSpec{
+						User: "root",
+						Path: "/usr/bin/getfattr",
+						Args: []string{"-d", "--absolute-names", "-m", "-", "-e", "hex", "/home/alice/some-temp-dir/some-temp-file-with-xattrs"},
+					})
+					Expect(exitCode).To(Equal(0))
+					Expect(stderr).To(gbytes.Say("^$"))
+					Expect(stdout).To(gbytes.Say("# file: /home/alice/some-temp-dir/some-temp-file-with-xattrs\nsecurity.capability=0x0100000200200000000000000000000000000000"))
+
+					By("Ensuring xattrs on the rootfs image are preserved")
+					exitCode, stdout, stderr = runProcess(container, garden.ProcessSpec{
+						User: "root",
+						Path: "/usr/bin/getfattr",
+						Args: []string{"-d", "--absolute-names", "-m", "-", "-e", "hex", "/bin/ping"},
+					})
+					Expect(exitCode).To(Equal(0))
+					Expect(stderr).To(gbytes.Say("^$"))
+					Expect(stdout).To(gbytes.Say("# file: /bin/ping\nsecurity.capability=0x0100000200200000000000000000000000000000"))
+
+				})
 			})
 
 			It("creates the files in the container, as the specified user", func() {
