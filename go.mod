@@ -5,13 +5,13 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20230926150547-36074af502db
+	code.cloudfoundry.org/archiver v0.0.0-20231002200506-61a53cace15f
 	code.cloudfoundry.org/garden v0.0.0-20230926181103-e7edbb59045e
-	code.cloudfoundry.org/guardian v0.0.0-20230918154305-5977e679b062
-	github.com/cloudfoundry/gosigar v1.3.28
+	code.cloudfoundry.org/guardian v0.0.0-20230926181618-ab4058a6455e
+	github.com/cloudfoundry/gosigar v1.3.29
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.12.1
-	github.com/onsi/gomega v1.27.10
+	github.com/onsi/gomega v1.28.0
 	github.com/wavefronthq/wavefront-sdk-go v0.14.0
 )
 
