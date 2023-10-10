@@ -6,11 +6,11 @@ toolchain go1.21.0
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20231002200506-61a53cace15f
-	code.cloudfoundry.org/garden v0.0.0-20230926181103-e7edbb59045e
-	code.cloudfoundry.org/guardian v0.0.0-20230926181618-ab4058a6455e
-	github.com/cloudfoundry/gosigar v1.3.29
+	code.cloudfoundry.org/garden v0.0.0-20231010181202-f61f4780fa7d
+	code.cloudfoundry.org/guardian v0.0.0-20231003182229-63a6f1275122
+	github.com/cloudfoundry/gosigar v1.3.30
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.12.1
+	github.com/onsi/ginkgo/v2 v2.13.0
 	github.com/onsi/gomega v1.28.0
 	github.com/wavefronthq/wavefront-sdk-go v0.14.0
 )
@@ -27,7 +27,7 @@ require (
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -40,10 +40,10 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	golang.org/x/tools v0.13.0 // indirect
+	golang.org/x/tools v0.14.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
