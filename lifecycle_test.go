@@ -1184,6 +1184,9 @@ done
 
 			Context("when streamed files + rootfs image have xattrs on files", func() {
 				BeforeEach(func() {
+					if runtime.GOOS == "windows" {
+						Skip("xattr testing doesn't make sense on windows")
+					}
 					imageRef.URI = "docker:///tasruntime/base-image-with-xattrs"
 
 					var capabilities = "0100000200200000000000000000000000000000" // output from `getfattr -e hex -d -m '' /bin/ping`
