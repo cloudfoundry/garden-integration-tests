@@ -12,8 +12,6 @@ github.com/caio/go-tdigest/v4 v4.0.1 h1:sx4ZxjmIEcLROUPs2j1BGe2WhOtHD6VSe6NNbBdK
 github.com/caio/go-tdigest/v4 v4.0.1/go.mod h1:Wsa+f0EZnV2gShdj1adgl0tQSoXRxtM0QioTgukFw8U=
 github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6MP9QlACQ=
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
-github.com/cloudfoundry/gosigar v1.3.31 h1:g910azUMdaj1K36v2/4NqzAu6FL9FY1D3K0CKkdLsP4=
-github.com/cloudfoundry/gosigar v1.3.31/go.mod h1:DnkVoHZnc66oDi0JilJ0bUVVTQFnfXHw7to1Yn5hEmk=
 github.com/cloudfoundry/gosigar v1.3.32 h1:YKeFhdZK+pKseKOuhbysDvtKTh+mFUQ8MnmqhMKBuHg=
 github.com/cloudfoundry/gosigar v1.3.32/go.mod h1:BmFgcuE86/QUaerxZv8NcbJQJu0JiT5pCzb2RrfhXoY=
 github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20 h1:mlqnfrDRkWkO6HQ9CT0KkBZy5co/CgTX3xSmkuUNXHs=
@@ -89,8 +87,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/tedsuo/rata v1.0.0 h1:Sf9aZrYy6ElSTncjnGkyC2yuVvz5YJetBIUKJ4CmeKE=
 github.com/tedsuo/rata v1.0.0/go.mod h1:X47ELzhOoLbfFIY0Cql9P6yo3Cdwf2CMX3FVZxRzJPc=
-github.com/wavefronthq/wavefront-sdk-go v0.14.0 h1:Nq+yobFZrVw3bfXh+EsWmWDtwMHYRKLRVXgnB1S0j34=
-github.com/wavefronthq/wavefront-sdk-go v0.14.0/go.mod h1:V72c8e+bXuLK8HpA6ioW0ll5mK9IPD+4IHNNDY75ksA=
+github.com/wavefronthq/wavefront-sdk-go v0.15.0 h1:po9E3vh/0y7kOx8D9EtFp7kbSLLLKbmu/w/s1xGJAQU=
+github.com/wavefronthq/wavefront-sdk-go v0.15.0/go.mod h1:V72c8e+bXuLK8HpA6ioW0ll5mK9IPD+4IHNNDY75ksA=
 golang.org/x/mod v0.13.0 h1:I/DsJXRlw/8l/0c24sM9yb0T4z9liZTduXvdAWYiysY=
 golang.org/x/mod v0.13.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=
 golang.org/x/net v0.17.0 h1:pVaXccu2ozPjCXewfr1S7xza/zcXTity9cCdXQYSjIM=
