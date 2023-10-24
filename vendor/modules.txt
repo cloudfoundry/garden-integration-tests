@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20231017182413-a9eb5aba84f8 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20231019225728-e09c586439bc => ../guardian
 ## explicit; go 1.21.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -34,8 +34,8 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.32
-## explicit; go 1.21.0
+# github.com/cloudfoundry/gosigar v1.3.33
+## explicit; go 1.21
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
 # github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20
@@ -64,7 +64,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20230926050212-f7f687d19a98
+# github.com/google/pprof v0.0.0-20231023181126-ff6d637d2a7b
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
@@ -105,7 +105,7 @@ github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.28.0
+# github.com/onsi/gomega v1.28.1
 ## explicit; go 1.18
 github.com/onsi/gomega
 github.com/onsi/gomega/format
