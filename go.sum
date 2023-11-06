@@ -14,6 +14,8 @@ github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6M
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
 github.com/cloudfoundry/gosigar v1.3.34 h1:s8RtqVSVap8gFyYUfDErS7ZUATkXYHkG2mAWSd5EJIY=
 github.com/cloudfoundry/gosigar v1.3.34/go.mod h1:yvOokhHFPm+/CoLUBt2il5QR9lV9+CCuEFWi1Gh7Dyk=
+github.com/cloudfoundry/gosigar v1.3.35 h1:NlndNziljjb71qwZ3L6uI6NIOUHlfrzG3OwUkbjpVic=
+github.com/cloudfoundry/gosigar v1.3.35/go.mod h1:Rgtt8RX3zT3lsSw3TZtcFpdaDzEytvZqTm1boJp0WNs=
 github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20 h1:mlqnfrDRkWkO6HQ9CT0KkBZy5co/CgTX3xSmkuUNXHs=
 github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20/go.mod h1:GiUWdcLKuM+RX4gSQBSHn3ADveMrRadWxuY6AFK5JNk=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
@@ -42,6 +44,8 @@ github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/pprof v0.0.0-20231023181126-ff6d637d2a7b h1:RMpPgZTSApbPf7xaVel+QkoGPRLFLrwFO89uDUHEGf0=
 github.com/google/pprof v0.0.0-20231023181126-ff6d637d2a7b/go.mod h1:czg5+yv1E0ZGTi6S6vVK1mke0fV+FaUhNGcd6VRS9Ik=
+github.com/google/pprof v0.0.0-20231101202521-4ca4178f5c7a h1:fEBsGL/sjAuJrgah5XqmmYsTLzJp/TO9Lhy39gkverk=
+github.com/google/pprof v0.0.0-20231101202521-4ca4178f5c7a/go.mod h1:czg5+yv1E0ZGTi6S6vVK1mke0fV+FaUhNGcd6VRS9Ik=
 github.com/hashicorp/errwrap v1.0.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/errwrap v1.1.0 h1:OxrOeh75EUXMY8TBjag2fzXGZ40LB6IKw45YeGUDY2I=
 github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
