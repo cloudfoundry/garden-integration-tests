@@ -5,13 +5,13 @@ go 1.21.0
 toolchain go1.21.3
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20231101144724-e7fc2b4c7367
-	code.cloudfoundry.org/garden v0.0.0-20231031181541-0ff6ac1ac49c
-	code.cloudfoundry.org/guardian v0.0.0-20231031182052-8789f016ea2d
+	code.cloudfoundry.org/archiver v0.0.0-20231114143709-75c3c24574bd
+	code.cloudfoundry.org/garden v0.0.0-20231114181656-4c2a4ae2aad0
+	code.cloudfoundry.org/guardian v0.0.0-20231108202733-3d2fd9566e8b
 	github.com/cloudfoundry/gosigar v1.3.36
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.13.1
-	github.com/onsi/gomega v1.29.0
+	github.com/onsi/gomega v1.30.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
@@ -24,6 +24,7 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
+	github.com/docker/docker v24.0.7+incompatible // indirect
 	github.com/go-logr/logr v1.3.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
@@ -40,12 +41,15 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
+	github.com/vishvananda/netlink v1.2.1-beta.2 // indirect
+	github.com/vishvananda/netns v0.0.4 // indirect
 	golang.org/x/net v0.18.0 // indirect
 	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.15.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gotest.tools/v3 v3.5.1 // indirect
 )
 
 replace (
