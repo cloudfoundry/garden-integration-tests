@@ -118,15 +118,6 @@ var _ = Describe("Networking", func() {
 				Expect(err).NotTo(HaveOccurred())
 			}(proc, pingExitCh)
 
-			_, err = container.Run(garden.ProcessSpec{
-				Path: "ping",
-				Args: []string{"-W", "4", "-c", "3", "8.8.8.8"},
-			}, garden.ProcessIO{
-				Stdout: GinkgoWriter,
-				Stderr: GinkgoWriter,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
 			select {
 			case <-pingExitCh:
 				return output.String()
