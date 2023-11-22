@@ -113,9 +113,9 @@ var _ = Describe("Networking", func() {
 			pingExitCh := make(chan struct{})
 			go func(pingProc garden.Process, exitCh chan<- struct{}) {
 				defer GinkgoRecover()
+				defer close(exitCh)
 				_, err := pingProc.Wait()
 				Expect(err).NotTo(HaveOccurred())
-				close(pingExitCh)
 			}(proc, pingExitCh)
 
 			_, err = container.Run(garden.ProcessSpec{
@@ -131,6 +131,7 @@ var _ = Describe("Networking", func() {
 			case <-pingExitCh:
 				return output.String()
 			case <-time.After(time.Second * 2):
+				close(pingExitCh)
 				return "timed out after 2 seconds"
 			}
 		}
