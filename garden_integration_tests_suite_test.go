@@ -89,8 +89,8 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 		host = "10.244.0.2"
 	}
 
-	rootfs, exists := os.LookupEnv("TEST_ROOTFS")
-	ExpectWithOffset(1, exists).To(BeTrue(), "Set TEST_ROOTFS Env variable")
+	rootfs, exists := os.LookupEnv("GARDEN_TEST_ROOTFS")
+	ExpectWithOffset(1, exists).To(BeTrue(), "Set GARDEN_TEST_ROOTFS Env variable")
 
 	binary := ""
 	if runtime.GOOS == "windows" {
