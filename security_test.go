@@ -97,7 +97,7 @@ var _ = Describe("Security", func() {
 
 			It("cgroup filesystems are mounted as read-only", func() {
 				getCGroupMountOptions := func(mounts string) map[string]bool {
-					cgroupMountRegex := regexp.MustCompile(`.*\s/sys/fs/cgroup/[^\s]*\s([^\s]*) - cgroup cgroup *\s([^\s]*)`)
+					cgroupMountRegex := regexp.MustCompile(`.*\s/sys/fs/cgroup/[^\s]*\s([^\s]*).*cgroup cgroup *\s([^\s]*)`)
 					matches := cgroupMountRegex.FindAllStringSubmatch(mounts, -1)
 					cgroupMountOptions := make(map[string]bool)
 					for _, m := range matches {
@@ -127,11 +127,8 @@ var _ = Describe("Security", func() {
 				Expect(cgroupMountOptions).To(HaveKey("devices"))
 				Expect(cgroupMountOptions).To(HaveKey("freezer"))
 				Expect(cgroupMountOptions).To(HaveKey("perf_event"))
-
-				// TODO: re-add the "hugetlb" and "pids" cgroups to this list once we've fixed this bug:
-				// https://www.pivotaltracker.com/story/show/158623469
-				// Expect(cgroupMountOptions).To(HaveKey("pids"))
-				// Expect(cgroupMountOptions).To(HaveKey("hugetlb"))
+				Expect(cgroupMountOptions).To(HaveKey("pids"))
+				Expect(cgroupMountOptions).To(HaveKey("hugetlb"))
 			})
 		})
 
