@@ -3,7 +3,6 @@ package garden_integration_tests_test
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -101,12 +100,13 @@ var _ = Describe("Networking", func() {
 		tryPing := func(address string) string {
 			var output bytes.Buffer
 
+			GinkgoWriter.TeeTo(&output)
 			proc, err := container.Run(garden.ProcessSpec{
 				Path: "ping",
 				Args: []string{"-W", "2", "-c", "1", address},
 			}, garden.ProcessIO{
-				Stdout: io.MultiWriter(GinkgoWriter, &output),
-				Stderr: io.MultiWriter(GinkgoWriter, &output),
+				Stdout: GinkgoWriter,
+				Stderr: GinkgoWriter,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
