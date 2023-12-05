@@ -3,7 +3,6 @@ package garden_integration_tests_test
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os/exec"
 	"runtime"
 	"strings"
@@ -101,36 +100,29 @@ var _ = Describe("Networking", func() {
 		tryPing := func(address string) string {
 			var output bytes.Buffer
 
+			GinkgoWriter.TeeTo(&output)
 			proc, err := container.Run(garden.ProcessSpec{
 				Path: "ping",
 				Args: []string{"-W", "2", "-c", "1", address},
-			}, garden.ProcessIO{
-				Stdout: io.MultiWriter(GinkgoWriter, &output),
-				Stderr: io.MultiWriter(GinkgoWriter, &output),
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			pingExitCh := make(chan struct{})
-			go func(pingProc garden.Process, exitCh chan<- struct{}) {
-				defer GinkgoRecover()
-				_, err := pingProc.Wait()
-				Expect(err).NotTo(HaveOccurred())
-				close(pingExitCh)
-			}(proc, pingExitCh)
-
-			_, err = container.Run(garden.ProcessSpec{
-				Path: "ping",
-				Args: []string{"-W", "4", "-c", "3", "8.8.8.8"},
 			}, garden.ProcessIO{
 				Stdout: GinkgoWriter,
 				Stderr: GinkgoWriter,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
+			pingExitCh := make(chan struct{})
+			go func(pingProc garden.Process, exitCh chan<- struct{}) {
+				defer GinkgoRecover()
+				defer close(exitCh)
+				_, err := pingProc.Wait()
+				Expect(err).NotTo(HaveOccurred())
+			}(proc, pingExitCh)
+
 			select {
 			case <-pingExitCh:
 				return output.String()
 			case <-time.After(time.Second * 2):
+				close(pingExitCh)
 				return "timed out after 2 seconds"
 			}
 		}

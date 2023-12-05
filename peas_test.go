@@ -70,11 +70,10 @@ var _ = Describe("Partially shared containers (peas)", func() {
 			Skip("pending for windows")
 		}
 		stdout := runForStdout(container, garden.ProcessSpec{
-			Path:  "cat",
-			Args:  []string{"/etc/os-release"},
+			Path:  "busybox",
 			Image: peaImage,
 		})
-		Expect(stdout).To(gbytes.Say(`NAME="Alpine Linux"`))
+		Expect(stdout).To(gbytes.Say(`BusyBox v`))
 	})
 
 	Describe("pea process user and group", func() {
@@ -113,7 +112,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 					Args:  []string{"-c", "echo -n $(id -u):$(id -g); whoami"},
 					Image: peaImage,
 				})
-				Expect(stdout).To(gbytes.Say("11:0operator"))
+				Expect(stdout).To(gbytes.Say("37:37operator"))
 			})
 
 			Context("but /etc/passwd is empty", func() {

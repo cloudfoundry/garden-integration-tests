@@ -195,8 +195,8 @@ var _ = Describe("Limits", func() {
 					limits.Disk.ByteHard = limitsTestContainerImageSize + 60*1024*1024
 					limits.Disk.Scope = garden.DiskLimitScopeTotal
 				} else {
-					limits.Disk.ByteSoft = 10 * 1024 * 1024
-					limits.Disk.ByteHard = 10 * 1024 * 1024
+					limits.Disk.ByteSoft = 20 * 1024 * 1024
+					limits.Disk.ByteHard = 20 * 1024 * 1024
 					limits.Disk.Scope = garden.DiskLimitScopeTotal
 				}
 			})
@@ -210,7 +210,7 @@ var _ = Describe("Limits", func() {
 					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", limitsTestContainerImageSize+containerStartUsage, 20*1024*1024))
 
 				} else {
-					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 1024*1024, 512*1024)) // base busybox is > 1 MB but less than 1.5 MB
+					Expect(metrics.DiskStat.TotalBytesUsed).To(BeNumerically("~", 4*1024*1024, 1024*1024)) // base busybox is ~4 MB
 				}
 			})
 
@@ -253,7 +253,7 @@ var _ = Describe("Limits", func() {
 						spec = garden.ProcessSpec{
 							User: "root",
 							Path: "dd",
-							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=10"},
+							Args: []string{"if=/dev/zero", "of=/root/test", "bs=1M", "count=20"},
 						}
 					}
 					exitCode, _, _ := runProcess(container, spec)

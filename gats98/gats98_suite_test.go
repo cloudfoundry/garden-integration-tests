@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"runtime"
 	"testing"
 	"time"
 
@@ -61,6 +62,9 @@ func TestGats98(t *testing.T) {
 	RegisterFailHandler(Fail)
 
 	BeforeSuite(func() {
+		if runtime.GOOS != "windows" {
+			Skip("Skipping GATS98 as we are not running windows")
+		}
 		gardenRootfs, present := os.LookupEnv("WINDOWS_TEST_ROOTFS")
 		if !present {
 			fmt.Println("Must set $WINDOWS_TEST_ROOTFS")
