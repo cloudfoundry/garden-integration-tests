@@ -8,7 +8,7 @@ require (
 	code.cloudfoundry.org/archiver v0.0.0-20231114143709-75c3c24574bd
 	code.cloudfoundry.org/garden v0.0.0-20231205182107-29f436b24ad5
 	code.cloudfoundry.org/guardian v0.0.0-20231205230901-64f82b086a6d
-	github.com/cloudfoundry/gosigar v1.3.37
+	github.com/cloudfoundry/gosigar v1.3.38
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.13.2
 	github.com/onsi/gomega v1.30.0

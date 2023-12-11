@@ -14,6 +14,8 @@ github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6M
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
 github.com/cloudfoundry/gosigar v1.3.37 h1:tFOgzmDS9qAW1MqiqlnEnnTtavmC7qyPPmbfrjwJfBc=
 github.com/cloudfoundry/gosigar v1.3.37/go.mod h1:YkD/LaaO4ZM7c9UGZkAzchldB9wC69TT+7O1myltAG8=
+github.com/cloudfoundry/gosigar v1.3.38 h1:WbsrYoLFkJ/bN1s8SFLnFwjfo9U9bJ3rKFAZVj/AbM8=
+github.com/cloudfoundry/gosigar v1.3.38/go.mod h1:/V8poLl3GrM7iW3/UtoI3Mx64THn3Kfv21JR54A2E2M=
 github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20 h1:mlqnfrDRkWkO6HQ9CT0KkBZy5co/CgTX3xSmkuUNXHs=
 github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20/go.mod h1:GiUWdcLKuM+RX4gSQBSHn3ADveMrRadWxuY6AFK5JNk=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
