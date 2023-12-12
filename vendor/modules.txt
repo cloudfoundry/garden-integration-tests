@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/archiver v0.0.0-20231114143709-75c3c24574bd
+# code.cloudfoundry.org/archiver v0.0.0-20231206170638-1923b319e771
 ## explicit; go 1.20
 code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.0.0-20230612151827-2b11a2b4e9b8
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20231205230901-64f82b086a6d => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20231205235234-defbfc0b7a85 => ../guardian
 ## explicit; go 1.21.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.0.2
+# code.cloudfoundry.org/lager/v3 v3.0.3
 ## explicit; go 1.19
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -35,11 +35,11 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.37
+# github.com/cloudfoundry/gosigar v1.3.38
 ## explicit; go 1.21
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20230911203642-fa89d986ae20
+# github.com/cloudfoundry/sonde-go v0.0.0-20231211170018-44d78969daf7
 ## explicit; go 1.17
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
@@ -68,7 +68,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20231205033806-a5a03c77bf08
+# github.com/google/pprof v0.0.0-20231212022811-ec68065c825e
 ## explicit; go 1.19
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
