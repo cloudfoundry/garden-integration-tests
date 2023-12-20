@@ -26,6 +26,9 @@ var _ = Describe("Security", func() {
 	})
 
 	Describe("PID namespace", func() {
+		BeforeEach(func() {
+			imageRef.URI = limitsTestURI
+		})
 		It("isolates processes so that only processes from inside the container are visible", func() {
 			createUser(container, "alice")
 
@@ -185,6 +188,9 @@ var _ = Describe("Security", func() {
 	})
 
 	Describe("rlimits", func() {
+		BeforeEach(func() {
+			imageRef.URI = limitsTestURI
+		})
 		It("sets requested rlimits", func() {
 			limit := uint64(4567)
 			stdout := runForStdout(container, garden.ProcessSpec{
