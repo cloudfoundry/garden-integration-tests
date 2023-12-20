@@ -486,6 +486,7 @@ var _ = Describe("Limits", func() {
 				}
 
 				limits.Pid = garden.PidLimits{Max: 50}
+				imageRef.URI = limitsTestURI
 			})
 
 			It("prevents forking of processes", func() {
