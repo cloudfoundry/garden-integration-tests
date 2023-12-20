@@ -26,12 +26,12 @@ var _ = Describe("users", func() {
 
 	Context("when creating users", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/garden-busybox"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		It("creates a user with a large uid and gid", func() {
-			uid := 700000
-			gid := 700000
+			uid := 50000
+			gid := 50000
 
 			exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 				User: "root",
@@ -58,7 +58,7 @@ var _ = Describe("users", func() {
 
 	Context("when rootfs defines user/groups", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/with-user-with-groups"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		When("not rootless", func() {
@@ -97,13 +97,14 @@ var _ = Describe("users", func() {
 
 	Context("when rootfs does not have an /etc/passwd", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/hello"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		It("can still run as root", func() {
 			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "root",
-				Path: "/hello",
+				Path: "echo",
+				Args: []string{"hello"},
 			})
 
 			Expect(stdout).To(gbytes.Say(`hello`))
@@ -112,12 +113,12 @@ var _ = Describe("users", func() {
 		It("fails when run as non-root", func() {
 			_, err := container.Run(
 				garden.ProcessSpec{
-					User: "alice",
+					User: "invalid-user",
 					Path: "/hello",
 				},
 				garden.ProcessIO{},
 			)
-			Expect(err).To(MatchError(ContainSubstring("unable to find user alice: no matching entries in passwd file")))
+			Expect(err).To(MatchError(ContainSubstring("unable to find user invalid-user: no matching entries in passwd file")))
 		})
 	})
 })

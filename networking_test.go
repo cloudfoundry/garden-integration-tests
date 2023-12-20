@@ -72,7 +72,7 @@ var _ = Describe("Networking", func() {
 
 	Describe("running as a user other than container root", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/preexisting_users"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		It("non-container-root can't overwrite /etc/hosts", func() {

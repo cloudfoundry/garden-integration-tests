@@ -207,7 +207,7 @@ var _ = Describe("Security", func() {
 
 	Describe("Users and groups", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/garden-busybox"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		JustBeforeEach(func() {
@@ -219,7 +219,7 @@ var _ = Describe("Security", func() {
 			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "alice",
 				Path: "ls",
-				Args: []string{"-l", "/bin/busybox"},
+				Args: []string{"-l", "/bin/usemem-with-setuid"},
 			})
 			Eventually(stdout).Should(gbytes.Say("-rws"))
 		})
@@ -236,17 +236,13 @@ var _ = Describe("Security", func() {
 		})
 
 		Context("when running a command as a non-root user", func() {
-			JustBeforeEach(func() {
-				createUser(container, "alice")
-			})
-
 			It("executes with correct uid, gid, and supplementary gids", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
 					User: "alice",
 					Path: "/bin/sh",
 					Args: []string{"-c", "id -u; id -g; id -G"},
 				})
-				Expect(stdout).To(gbytes.Say("1001\n1001\n1001\n"))
+				Expect(stdout).To(gbytes.Say("1001\n1010\n1010 1011\n"))
 			})
 
 			It("sets $HOME, $USER, and $PATH", func() {
@@ -255,7 +251,7 @@ var _ = Describe("Security", func() {
 					Path: "/bin/sh",
 					Args: []string{"-c", "env | sort"},
 				})
-				Expect(stdout).To(gbytes.Say("HOME=/home/alice\nPATH=/usr/local/bin:/usr/bin:/bin\nPWD=/home/alice\nSHLVL=1\nUSER=alice\n"))
+				Expect(stdout).To(gbytes.Say("HOME=/home/alice\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/from-dockerfile\nPWD=/home/alice\nSHLVL=1\nTEST=second-test-from-dockerfile:test-from-dockerfile\nUSER=alice\n"))
 			})
 
 			Context("when $HOME is set in the spec", func() {
@@ -304,7 +300,7 @@ var _ = Describe("Security", func() {
 
 				_, err := container.Run(garden.ProcessSpec{
 					User: "alice",
-					Path: "ifconfig", // ifconfig is only available in /sbin
+					Path: "hello-world", // hello-world is only available in /sbin
 				}, garden.ProcessIO{
 					Stdout: GinkgoWriter,
 					Stderr: GinkgoWriter,
@@ -350,7 +346,7 @@ var _ = Describe("Security", func() {
 					Path: "/bin/sh",
 					Args: []string{"-c", "env | sort"},
 				})
-				Expect(stdout).To(gbytes.Say("HOME=/root\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\nPWD=/root\nSHLVL=1\nUSER=root\n"))
+				Expect(stdout).To(gbytes.Say("HOME=/root\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/from-dockerfile\nPWD=/root\nSHLVL=1\nTEST=second-test-from-dockerfile:test-from-dockerfile\nUSER=root\n"))
 			})
 
 			It("executes in root's home directory", func() {
@@ -364,7 +360,8 @@ var _ = Describe("Security", func() {
 			It("searches a sanitized path not including /sbin for the executable", func() {
 				exitCode, _, _ := runProcess(container, garden.ProcessSpec{
 					User: "root",
-					Path: "ifconfig", // ifconfig is only available in /sbin
+					Path: "hello-world", // hello-world is only available in /sbin
+					Env:  []string{"PATH=/sbin"},
 				})
 				Expect(exitCode).To(Equal(0))
 			})

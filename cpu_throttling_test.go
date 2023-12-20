@@ -26,7 +26,7 @@ var _ = Describe("CPU Throttling", func() {
 	BeforeEach(func() {
 		skipIfCpuThrottlingNotEnabled()
 
-		imageRef = garden.ImageRef{URI: "docker:///cfgarden/throttled-or-not"}
+		imageRef = garden.ImageRef{URI: "docker:///cloudfoundry/garden-rootfs"}
 		//We set the weight to the system memory in order to make sure that the container would be never punished
 		limits = garden.Limits{CPU: garden.CPULimits{Weight: totalMemoryInMegabytes()}}
 	})
@@ -100,7 +100,7 @@ func spinToPunish(container garden.Container, port uint32) {
 }
 
 func startSpinnerApp(container garden.Container, containerPort uint32) {
-	_, err := container.Run(garden.ProcessSpec{Path: "/go/src/app/main"}, garden.ProcessIO{})
+	_, err := container.Run(garden.ProcessSpec{Path: "/bin/throttled-or-not"}, garden.ProcessIO{})
 	Expect(err).NotTo(HaveOccurred())
 
 	Eventually(func() (string, error) {

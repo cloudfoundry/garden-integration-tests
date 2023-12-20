@@ -272,13 +272,13 @@ var _ = Describe("Process", func() {
 					Skip("pending for windows")
 				}
 				imageRef = garden.ImageRef{
-					URI: "docker:///cfgarden/run-as-user-group:0.0.1",
+					URI: "docker:///cloudfoundry/garden-rootfs",
 				}
 			})
 
 			It("runs the process as that user", func() {
 				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "vcap:staff",
+					User: "testuser:staff",
 					Path: "sh",
 					Args: []string{"-c", "echo $(id -u):$(id -g)"},
 				})

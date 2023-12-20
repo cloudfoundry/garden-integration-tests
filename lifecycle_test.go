@@ -1187,7 +1187,7 @@ done
 					if runtime.GOOS == "windows" {
 						Skip("xattr testing doesn't make sense on windows")
 					}
-					imageRef.URI = "docker:///tasruntime/base-image-with-xattrs"
+					imageRef.URI = gardenFuseRootfs
 
 					var capabilities = "0100000200200000000000000000000000000000" // output from `getfattr -e hex -d -m '' /bin/ping`
 					capBytes, err := hex.DecodeString(capabilities)
@@ -1226,11 +1226,11 @@ done
 					exitCode, stdout, stderr = runProcess(container, garden.ProcessSpec{
 						User: "root",
 						Path: "/usr/bin/getfattr",
-						Args: []string{"-d", "--absolute-names", "-m", "-", "-e", "hex", "/bin/ping"},
+						Args: []string{"-d", "--absolute-names", "-m", "-", "-e", "hex", "/usr/bin/ping"},
 					})
 					Expect(exitCode).To(Equal(0))
 					Expect(stderr).To(gbytes.Say("^$"))
-					Expect(stdout).To(gbytes.Say("# file: /bin/ping\nsecurity.capability=0x0100000200200000000000000000000000000000"))
+					Expect(stdout).To(gbytes.Say("# file: /usr/bin/ping\nsecurity.capability=0x0100000200200000000000000000000000000000"))
 
 				})
 			})

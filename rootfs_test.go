@@ -35,7 +35,7 @@ var _ = Describe("Rootfses", func() {
 	Context("when the rootfs path is a docker image URL", func() {
 		Context("and the image specifies $PATH", func() {
 			BeforeEach(func() {
-				imageRef.URI = "docker:///cfgarden/with-process-env"
+				imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 				skipIfWoot("Groot does not place environemnt variables in the bundle spec yet")
 			})
 
@@ -46,7 +46,7 @@ var _ = Describe("Rootfses", func() {
 					Args: []string{"-c", "echo $PATH"},
 				})
 
-				Expect(stdout).To(gbytes.Say("/usr/local/bin:/usr/bin:/bin:/from-dockerfile"))
+				Expect(stdout).To(gbytes.Say("/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/bin:/from-dockerfile"))
 			})
 
 			It("$TEST is taken from the docker image", func() {
@@ -91,7 +91,7 @@ var _ = Describe("Rootfses", func() {
 
 	Context("and the Docker image contains opaque whiteouts", func() {
 		BeforeEach(func() {
-			imageRef.URI = "docker:///cfgarden/opaque-whiteouts-regression-image#0.0.1"
+			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
 		It("handles them correctly", func() {
