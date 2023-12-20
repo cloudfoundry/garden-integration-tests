@@ -1187,7 +1187,7 @@ done
 					if runtime.GOOS == "windows" {
 						Skip("xattr testing doesn't make sense on windows")
 					}
-					imageRef.URI = gardenFuseRootfs
+					imageRef.URI = "docker:///cloudfoundry/garden-fuse"
 
 					var capabilities = "0100000200200000000000000000000000000000" // output from `getfattr -e hex -d -m '' /bin/ping`
 					capBytes, err := hex.DecodeString(capabilities)

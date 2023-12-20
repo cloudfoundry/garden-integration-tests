@@ -32,7 +32,6 @@ var (
 	gardenPort            string
 	gardenDebugPort       string
 	gardenRootfs          string
-	gardenFuseRootfs      string
 	gardenClient          garden.Client
 	container             garden.Container
 	containerStartUsage   uint64
@@ -93,9 +92,6 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	rootfs, exists := os.LookupEnv("GARDEN_TEST_ROOTFS")
 	ExpectWithOffset(1, exists).To(BeTrue(), "Set GARDEN_TEST_ROOTFS Env variable")
 
-	fuseRootfs, exists := os.LookupEnv("GARDEN_FUSE_TEST_ROOTFS")
-	ExpectWithOffset(1, exists).To(BeTrue(), "Set GARDEN_FUSE_TEST_ROOTFS Env variable")
-
 	binary := ""
 	if runtime.GOOS == "windows" {
 		var err error
@@ -109,7 +105,6 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 	testData := make(map[string]interface{})
 	testData["gardenHost"] = host
 	testData["gardenRootfs"] = rootfs
-	testData["gardenFuseRootfs"] = fuseRootfs
 	testData["consumeBin"] = binary
 	testData["limitsTestUri"] = limitsURI
 
@@ -123,7 +118,6 @@ var _ = SynchronizedBeforeSuite(func() []byte {
 
 	gardenHost = testData["gardenHost"].(string)
 	gardenRootfs = testData["gardenRootfs"].(string)
-	gardenFuseRootfs = testData["gardenFuseRootfs"].(string)
 	consumeBin = testData["consumeBin"].(string)
 	limitsTestURI = testData["limitsTestUri"].(string)
 	limitsTestContainerImageSize = 4562899158 //Used only in windows tests
