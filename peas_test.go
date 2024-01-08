@@ -117,13 +117,14 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 			Context("but /etc/passwd is empty", func() {
 				BeforeEach(func() {
-					peaImage = garden.ImageRef{URI: "docker:///cfgarden/hello"}
+					peaImage = garden.ImageRef{URI: "docker:///cloudfoundry/garden-rootfs"}
 				})
 
 				It("can run when the user is root", func() {
 					stdout := runForStdout(container, garden.ProcessSpec{
 						User:  "root",
-						Path:  "/hello",
+						Path:  "echo",
+						Args:  []string{"hello"},
 						Image: peaImage,
 					})
 					Expect(stdout).To(gbytes.Say("hello"))
@@ -132,13 +133,14 @@ var _ = Describe("Partially shared containers (peas)", func() {
 				It("cannot run when the user is non-root", func() {
 					_, err := container.Run(
 						garden.ProcessSpec{
-							User:  "alice",
-							Path:  "/hello",
+							User:  "invalid-user",
+							Path:  "echo",
+							Args:  []string{"hello"},
 							Image: peaImage,
 						},
 						garden.ProcessIO{},
 					)
-					Expect(err).To(MatchError(ContainSubstring("unable to find user alice: no matching entries in passwd file")))
+					Expect(err).To(MatchError(ContainSubstring("unable to find user invalid-user: no matching entries in passwd file")))
 				})
 			})
 		})
