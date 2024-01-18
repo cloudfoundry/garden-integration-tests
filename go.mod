@@ -10,7 +10,7 @@ require (
 	code.cloudfoundry.org/guardian v0.0.0-20240109162708-27756c2c6e21
 	github.com/cloudfoundry/gosigar v1.3.42
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.14.0
+	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.30.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
