@@ -1,8 +1,6 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.22
-
-toolchain go1.22.0
+go 1.21
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240209143848-e43eec6a484c
