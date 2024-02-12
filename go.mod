@@ -5,10 +5,10 @@ go 1.22
 toolchain go1.22.0
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20231206170638-1923b319e771
+	code.cloudfoundry.org/archiver v0.0.0-20240209143848-e43eec6a484c
 	code.cloudfoundry.org/garden v0.0.0-20240208213822-ed90b805ca2b
-	code.cloudfoundry.org/guardian v0.0.0-20240209143719-2ffb30a216a8
-	github.com/cloudfoundry/gosigar v1.3.46
+	code.cloudfoundry.org/guardian v0.0.0-20240209145120-d07fa9e7f789
+	github.com/cloudfoundry/gosigar v1.3.47
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.31.1
