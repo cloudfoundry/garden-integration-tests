@@ -1,12 +1,13 @@
 module code.cloudfoundry.org/garden-integration-tests
 
 go 1.21
+toolchain go1.22.0
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240209143848-e43eec6a484c
 	code.cloudfoundry.org/garden v0.0.0-20240208213822-ed90b805ca2b
 	code.cloudfoundry.org/guardian v0.0.0-20240212132805-81dfa3cb2b2f
-	github.com/cloudfoundry/gosigar v1.3.47
+	github.com/cloudfoundry/gosigar v1.3.48
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.15.0
 	github.com/onsi/gomega v1.31.1
