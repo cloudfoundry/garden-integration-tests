@@ -12,7 +12,7 @@ func main() {
 		fmt.Println("bad arg: " + err.Error())
 	}
 
-	a := make([]byte, mem, mem)
+	a := make([]byte, mem)
 	fmt.Printf("Allocated %d\n", len(a))
 	os.Exit(0)
 }
