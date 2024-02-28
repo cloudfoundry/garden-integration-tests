@@ -25,10 +25,6 @@ var (
 	gardenDebugPort string
 	gardenClient    garden.Client
 
-	ginkgoIO garden.ProcessIO = garden.ProcessIO{
-		Stdout: GinkgoWriter,
-		Stderr: GinkgoWriter,
-	}
 	testImage garden.ImageRef
 )
 
