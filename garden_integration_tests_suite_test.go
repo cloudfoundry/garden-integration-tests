@@ -3,11 +3,8 @@ package garden_integration_tests_test
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -45,42 +42,12 @@ var (
 	properties          garden.Properties
 	limits              garden.Limits
 	env                 []string
-	ginkgoIO            garden.ProcessIO = garden.ProcessIO{
-		Stdout: GinkgoWriter,
-		Stderr: GinkgoWriter,
-	}
 
 	consumeBin string
 
 	limitsTestURI                string
 	limitsTestContainerImageSize uint64 // Obtained by summing the values in <groot-image-store>\layers\<layer-id>\size
 )
-
-// We suspect that bosh powerdns lookups have a low success rate (less than
-// 99%) and when it fails, we get an empty string IP address instead of an
-// actual error.
-// Therefore, we explicity look up the IP once at the start of the suite with
-// retries to minimise flakes.
-func resolveHost(host string) string {
-	if net.ParseIP(host) != nil {
-		return host
-	}
-
-	var ip net.IP
-	Eventually(func() error {
-		ips, err := net.LookupIP(host)
-		if err != nil {
-			return err
-		}
-		if len(ips) == 0 {
-			return errors.New("0 IPs returned from DNS")
-		}
-		ip = ips[0]
-		return nil
-	}, time.Minute, time.Second*5).Should(Succeed())
-
-	return ip.String()
-}
 
 var _ = SynchronizedBeforeSuite(func() []byte {
 
@@ -374,12 +341,6 @@ func getContainerUsage(handle string) uint64 {
 	return uintUsage
 }
 
-func readAll(r io.Reader) []byte {
-	b, err := ioutil.ReadAll(r)
-	ExpectWithOffset(1, err).NotTo(HaveOccurred())
-	return b
-}
-
 func httpGet(url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -387,7 +348,7 @@ func httpGet(url string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("HTTP %d: %s", resp.StatusCode, string(body))
 	}

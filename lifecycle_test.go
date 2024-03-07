@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -1168,7 +1167,7 @@ done
 			})
 
 			JustBeforeEach(func() {
-				tmpdir, err := ioutil.TempDir("", "some-temp-dir-parent")
+				tmpdir, err := os.MkdirTemp("", "some-temp-dir-parent")
 				Expect(err).ToNot(HaveOccurred())
 
 				tgzPath := filepath.Join(tmpdir, "some.tgz")

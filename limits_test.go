@@ -4,7 +4,6 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -50,11 +49,11 @@ var _ = Describe("Limits", func() {
 
 		JustBeforeEach(func() {
 			if runtime.GOOS == "windows" {
-				tmpdir, err := ioutil.TempDir("", "")
+				tmpdir, err := os.MkdirTemp("", "")
 				Expect(err).ToNot(HaveOccurred())
 
 				tgzPath := filepath.Join(tmpdir, "consume.tgz")
-				contents, err := ioutil.ReadFile(consumeBin)
+				contents, err := os.ReadFile(consumeBin)
 				Expect(err).To(Succeed())
 
 				createTarGZArchive(

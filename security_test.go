@@ -372,8 +372,6 @@ var _ = Describe("Security", func() {
 		Describe("seccomp", func() {
 			itAppliesSeccomp := func(image garden.ImageRef) {
 				It("blocks syscalls not whitelisted in the default seccomp profile", func() {
-					stderr := gbytes.NewBuffer()
-
 					exitCode, _, stderr := runProcess(container, garden.ProcessSpec{
 						Path:  "unshare",
 						Args:  []string{"--user", "whoami"},
