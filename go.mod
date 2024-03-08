@@ -5,9 +5,9 @@ go 1.21.0
 toolchain go1.21.7
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20240304173111-59a4168d75ce
+	code.cloudfoundry.org/archiver v0.0.0-20240308143919-052b78e49a62
 	code.cloudfoundry.org/garden v0.0.0-20240307003505-d50f0989a829
-	code.cloudfoundry.org/guardian v0.0.0-20240307231923-34ee2511efc2
+	code.cloudfoundry.org/guardian v0.0.0-20240308002535-da86c7ca0930
 	github.com/cloudfoundry/gosigar v1.3.49
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.16.0
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.0.0-20240301144845-6dda09145d14 // indirect
+	code.cloudfoundry.org/commandrunner v0.0.0-20240308145019-f0c16f7f4dd2 // indirect
 	code.cloudfoundry.org/lager/v3 v3.0.3 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
