@@ -26,6 +26,7 @@ var _ = Describe("Limits", func() {
 		It("reports the CPU limit", func() {
 			cpuLimits, err := container.CurrentCPULimits()
 			Expect(err).NotTo(HaveOccurred())
+			//lint:ignore SA1019 - we still specify this to make the deprecated logic work until we get rid of the code in garden
 			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(100))
 		})
 	})
