@@ -1,7 +1,7 @@
 # code.cloudfoundry.org/archiver v0.0.0-20240320161425-44d089c09e86
 ## explicit; go 1.20
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.0.0-20240308145019-f0c16f7f4dd2
+# code.cloudfoundry.org/commandrunner v0.0.0-20240321142806-aff69e64e03a
 ## explicit; go 1.20
 code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-20240321140256-3cb1fc657e4d => ../garden
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20240321110608-53430baa744f => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20240321174239-f04b2a907247 => ../guardian
 ## explicit; go 1.21
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
