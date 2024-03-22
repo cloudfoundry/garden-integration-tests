@@ -66,6 +66,7 @@ var _ = Describe("CPU Throttling", func() {
 
 			It("allows the previously idle application to spike", func() {
 				Eventually(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "2m").Should(BeNumerically("<", 0.5))
+				Consistently(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "10s").Should(BeNumerically("<", 0.5))
 				Consistently(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer))).Should(BeNumerically("<", 0.5, 0.1))
 			})
 		})
