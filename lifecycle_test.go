@@ -1540,12 +1540,12 @@ done
 				Eventually(func() error {
 					_, err := gardenClient.Lookup(containerHandle)
 					return err
-				}, "60s", "1s").Should(HaveOccurred())
+				}, "60s", "2s").Should(HaveOccurred())
 			} else {
 				Eventually(func() error {
 					_, err := gardenClient.Lookup(containerHandle)
 					return err
-				}, "10s", "1s").Should(HaveOccurred())
+				}, "10s", "2s").Should(HaveOccurred())
 			}
 		})
 
