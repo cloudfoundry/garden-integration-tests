@@ -60,14 +60,25 @@ var _ = Describe("CPU Throttling", func() {
 		})
 
 		Context("and another application wants to spike", func() {
+			var beforeUsage uint64
 			JustBeforeEach(func() {
+				initialUsage, _, err := getCPUUsageAndEntitlement(container)
+				Expect(err).ToNot(HaveOccurred())
+				time.Sleep(5 * time.Second)
+				finalUsage, _, err := getCPUUsageAndEntitlement(container)
+				Expect(err).ToNot(HaveOccurred())
+				beforeUsage = finalUsage - initialUsage
 				Expect(spin(container, containerPort)).To(Succeed())
 			})
 
 			It("allows the previously idle application to spike", func() {
-				Eventually(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "2m").Should(BeNumerically("<", 0.5))
-				Consistently(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer)), "10s").Should(BeNumerically("<", 0.5))
-				Consistently(goodVsBadCpuUsageRatio(currentUsage(container), currentUsage(badContainer))).Should(BeNumerically("<", 0.5, 0.1))
+				initialUsage, _, err := getCPUUsageAndEntitlement(container)
+				Expect(err).ToNot(HaveOccurred())
+				time.Sleep(5 * time.Second)
+				finalUsage, _, err := getCPUUsageAndEntitlement(container)
+				Expect(err).ToNot(HaveOccurred())
+				afterUsage := finalUsage - initialUsage
+				Expect(afterUsage).To(BeNumerically(">", beforeUsage*10))
 			})
 		})
 	})
@@ -168,20 +179,4 @@ func totalMemoryInMegabytes() uint64 {
 	mem := sigar.Mem{}
 	ExpectWithOffset(1, mem.Get()).To(Succeed())
 	return mem.Total / 1024 / 1024
-}
-
-func goodVsBadCpuUsageRatio(goodContainerUsageFunc, badContainerUsageFunc func() (float64, error)) func() (float64, error) {
-	return func() (float64, error) {
-		goodUsage, err := goodContainerUsageFunc()
-		if err != nil {
-			return 0, err
-		}
-
-		badUsage, err := badContainerUsageFunc()
-		if err != nil {
-			return 0, err
-		}
-
-		return float64(goodUsage) / float64(badUsage), nil
-	}
 }
