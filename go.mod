@@ -7,7 +7,7 @@ toolchain go1.21.7
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240409162627-dfb032b3bdac
 	code.cloudfoundry.org/garden v0.0.0-20240409184058-44b21cda626c
-	code.cloudfoundry.org/guardian v0.0.0-20240409184632-ecc8a400d70d
+	code.cloudfoundry.org/guardian v0.0.0-20240410184651-068f6b63681a
 	github.com/cloudfoundry/gosigar v1.3.53
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.17.1
@@ -24,7 +24,7 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20240311165458-423aa0d4dfc8 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
-	github.com/docker/docker v26.0.0+incompatible // indirect
+	github.com/docker/docker v26.0.1+incompatible // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
