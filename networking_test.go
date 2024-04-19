@@ -22,7 +22,6 @@ var _ = Describe("Networking", func() {
 		if runtime.GOOS == "windows" {
 			Skip("pending for windows")
 		}
-		skipIfRootless()
 	})
 
 	It("can be contacted after a NetIn", func() {
