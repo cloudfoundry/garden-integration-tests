@@ -40,7 +40,6 @@ var _ = Describe("Devices", func() {
 
 	Context("in a privileged container", func() {
 		BeforeEach(func() {
-			skipIfRootless()
 			privilegedContainer = true
 		})
 

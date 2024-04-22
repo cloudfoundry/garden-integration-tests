@@ -122,9 +122,6 @@ var _ = Describe("Lifecycle", func() {
 		})
 
 		mappingSize := `0\s+4294967294\s+1\n\s+1\s+1\s+4294967293`
-		if rootless() {
-			mappingSize = `0\s+4294967294\s+1\n\s+1\s+65536\s+4294901758`
-		}
 		Expect(stdout).To(gbytes.Say(mappingSize))
 	}
 
@@ -1362,23 +1359,6 @@ done
 					})
 
 					Expect(exitCode).To(Equal(0))
-				})
-			})
-
-			Context("when running rootless", func() {
-				BeforeEach(func() {
-					if runtime.GOOS == "windows" {
-						Skip("pending for windows")
-					}
-					if !rootless() {
-						Skip("this behaviour only makes sense when rootless")
-					}
-					privilegedContainer = true
-					assertContainerCreate = false
-				})
-
-				It("cannot create privileged containers", func() {
-					Expect(containerCreateErr).To(MatchError("privileged container creation is disabled"))
 				})
 			})
 

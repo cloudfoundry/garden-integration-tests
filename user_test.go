@@ -61,37 +61,14 @@ var _ = Describe("users", func() {
 			imageRef.URI = "docker:///cloudfoundry/garden-rootfs"
 		})
 
-		When("not rootless", func() {
-			BeforeEach(func() {
-				skipIfRootless()
+		It("ignores inherited groups from gdn but includes supplementary groups", func() {
+			stdout := runForStdout(container, garden.ProcessSpec{
+				User: "alice",
+				Path: "cat",
+				Args: []string{"/proc/self/status"},
 			})
 
-			It("ignores inherited groups from gdn but includes supplementary groups", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "cat",
-					Args: []string{"/proc/self/status"},
-				})
-
-				Expect(stdout).To(gbytes.Say(`Groups:(\s)*1010(\s)*1011(\s)*\n`))
-			})
-		})
-
-		When("running as rootless", func() {
-			BeforeEach(func() {
-				skipIfNotRootless()
-			})
-
-			It("ignores inherited groups from gdn and supplementary groups", func() {
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "alice",
-					Path: "cat",
-					Args: []string{"/proc/self/status"},
-				})
-
-				Expect(stdout).To(gbytes.Say(`Groups:\s*\n`))
-			})
-
+			Expect(stdout).To(gbytes.Say(`Groups:(\s)*1010(\s)*1011(\s)*\n`))
 		})
 	})
 

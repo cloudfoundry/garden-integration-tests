@@ -226,22 +226,6 @@ func getKernelVersion() (int, int) {
 	return major, minor
 }
 
-func skipIfRootless() {
-	if rootless() {
-		Skip("behaviour being tested is either not relevant or not implemented in rootless")
-	}
-}
-
-func skipIfNotRootless() {
-	if !rootless() {
-		Skip("behaviour being tested is specific to rootless")
-	}
-}
-
-func rootless() bool {
-	return os.Getenv("ROOTLESS") != "false"
-}
-
 func skipIfWoot(reason string) {
 	if woot() {
 		Skip("Skipping this test because I am WOOT: " + reason)
@@ -274,7 +258,6 @@ func isContainerdForProcesses() bool {
 
 func setPrivileged() {
 	privilegedContainer = true
-	skipIfRootless()
 }
 
 func runProcessWithIO(container garden.Container, processSpec garden.ProcessSpec, pio garden.ProcessIO) int {
