@@ -1,7 +1,7 @@
-# code.cloudfoundry.org/archiver v0.0.0-20240418163434-c40e99445913
+# code.cloudfoundry.org/archiver v0.0.0-20240423163804-2a617de174c0
 ## explicit; go 1.20
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.0.0-20240419143856-d3eb31508218
+# code.cloudfoundry.org/commandrunner v0.0.0-20240423144235-215bc524215e
 ## explicit; go 1.20
 code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-20240422185338-b6a7119e7b1e => ../garden
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20240422135044-ab940d94e366 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20240422185804-82fbb6d2deca => ../guardian
 ## explicit; go 1.21
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -48,7 +48,7 @@ github.com/coreos/go-systemd/v22/dbus
 # github.com/cyphar/filepath-securejoin v0.2.4
 ## explicit; go 1.13
 github.com/cyphar/filepath-securejoin
-# github.com/docker/docker v26.0.2+incompatible
+# github.com/docker/docker v26.1.0+incompatible
 ## explicit
 github.com/docker/docker/pkg/reexec
 # github.com/go-logr/logr v1.4.1
