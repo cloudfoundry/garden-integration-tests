@@ -1,7 +1,7 @@
-# code.cloudfoundry.org/archiver v0.0.0-20240425163902-8b2a0fbf664d
+# code.cloudfoundry.org/archiver v0.0.0-20240428164227-f3f7fe4af24d
 ## explicit; go 1.20
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.0.0-20240425144352-90fe6552927d
+# code.cloudfoundry.org/commandrunner v0.0.0-20240428144643-688921cfed79
 ## explicit; go 1.20
 code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-20240425185711-86bce9cbe65b => ../garden
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20240426190152-42bfd3d18838 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20240427190348-69732fbf2c16 => ../guardian
 ## explicit; go 1.21
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -55,9 +55,9 @@ github.com/docker/docker/pkg/reexec
 ## explicit; go 1.18
 github.com/go-logr/logr
 github.com/go-logr/logr/funcr
-# github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572
-## explicit; go 1.13
-github.com/go-task/slim-sprig
+# github.com/go-task/slim-sprig/v3 v3.0.0
+## explicit; go 1.20
+github.com/go-task/slim-sprig/v3
 # github.com/godbus/dbus/v5 v5.1.0
 ## explicit; go 1.12
 github.com/godbus/dbus/v5
@@ -87,7 +87,7 @@ github.com/moby/sys/mountinfo
 github.com/nu7hatch/gouuid
 # github.com/nxadm/tail v1.4.8
 ## explicit; go 1.13
-# github.com/onsi/ginkgo/v2 v2.17.1
+# github.com/onsi/ginkgo/v2 v2.17.2
 ## explicit; go 1.20
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
