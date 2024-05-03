@@ -1,5 +1,5 @@
-code.cloudfoundry.org/archiver v0.0.0-20240430164516-f7c0d9876a1c h1:zayhlRBLYW564/CVzX+ydHRN4nvnG6XoMdE8f4VtHMU=
-code.cloudfoundry.org/archiver v0.0.0-20240430164516-f7c0d9876a1c/go.mod h1:M9b9rQYgdMJv4X1roGO0pRc4+3On9wuFn16tjcruqgg=
+code.cloudfoundry.org/archiver v0.0.0-20240503164829-54569192ba7c h1:Vzg7XeVM0MvKQdmpCWxjnRhhUInYkAwt72uDwp/5ZJ0=
+code.cloudfoundry.org/archiver v0.0.0-20240503164829-54569192ba7c/go.mod h1:H9nC0MdIo5gC9PUjkVaaCnKZlqcokQ31jt4WjFYizls=
 code.cloudfoundry.org/commandrunner v0.0.0-20240430144735-3759ba9b3646 h1:FSyiRsmCy2LEEDVMdWkOD9ktubMC6C2mMMvFqLkGEL4=
 code.cloudfoundry.org/commandrunner v0.0.0-20240430144735-3759ba9b3646/go.mod h1:zg9SihoF95wTmRGImrw5Zx2bDLCEpYA+2TXodJYJNIg=
 code.cloudfoundry.org/lager/v3 v3.0.3 h1:/UTmadZfIaKuT/whEinSxK1mzRfNu1uPfvjFfGqiwzM=
@@ -19,8 +19,8 @@ github.com/cloudfoundry/sonde-go v0.0.0-20240311165458-423aa0d4dfc8/go.mod h1:QF
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
-github.com/cyphar/filepath-securejoin v0.2.4 h1:Ugdm7cg7i6ZK6x3xDF1oEu1nfkyfH53EtKeQYTC3kyg=
-github.com/cyphar/filepath-securejoin v0.2.4/go.mod h1:aPGpWjXOXUn2NCNjFvBE6aRxGGx79pTxQpKOJNYHHl4=
+github.com/cyphar/filepath-securejoin v0.2.5 h1:6iR5tXJ/e6tJZzzdMc1km3Sa7RRIVBKAK32O2s7AYfo=
+github.com/cyphar/filepath-securejoin v0.2.5/go.mod h1:aPGpWjXOXUn2NCNjFvBE6aRxGGx79pTxQpKOJNYHHl4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
