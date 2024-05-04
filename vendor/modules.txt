@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/archiver v0.0.0-20240503164829-54569192ba7c
+# code.cloudfoundry.org/archiver v0.0.0-20240504164959-606c5c897933
 ## explicit; go 1.20
 code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.0.0-20240430144735-3759ba9b3646
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20240501190810-d5272b51dd2d => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20240503191003-ce641ed2f1f8 => ../guardian
 ## explicit; go 1.21
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -177,11 +177,11 @@ golang.org/x/net/context
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.19.0
+# golang.org/x/sys v0.20.0
 ## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.14.0
+# golang.org/x/text v0.15.0
 ## explicit; go 1.18
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
