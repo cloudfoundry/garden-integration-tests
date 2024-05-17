@@ -7,7 +7,7 @@ toolchain go1.21.7
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240510172921-e1824a4905ba
 	code.cloudfoundry.org/garden v0.0.0-20240509191138-2c301b84985a
-	code.cloudfoundry.org/guardian v0.0.0-20240515192234-c981d9486b99
+	code.cloudfoundry.org/guardian v0.0.0-20240516192241-69eb6bbb05cb
 	github.com/cloudfoundry/gosigar v1.3.58
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.17.3
