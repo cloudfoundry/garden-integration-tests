@@ -5,18 +5,18 @@ go 1.21.0
 toolchain go1.21.7
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20240510172921-e1824a4905ba
-	code.cloudfoundry.org/garden v0.0.0-20240509191138-2c301b84985a
-	code.cloudfoundry.org/guardian v0.0.0-20240519192653-d9c13d13a36b
+	code.cloudfoundry.org/archiver v0.0.0-20240521170704-3ae5ca8bfd17
+	code.cloudfoundry.org/garden v0.0.0-20240521192510-e538d3d654a1
+	code.cloudfoundry.org/guardian v0.0.0-20240520192748-99c5b8b5de2a
 	github.com/cloudfoundry/gosigar v1.3.58
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.17.3
+	github.com/onsi/ginkgo/v2 v2.18.0
 	github.com/onsi/gomega v1.33.1
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.0.0-20240515185236-07f33b5fb036 // indirect
+	code.cloudfoundry.org/commandrunner v0.0.0-20240521151053-ad3fed403f21 // indirect
 	code.cloudfoundry.org/lager/v3 v3.0.3 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
@@ -25,11 +25,11 @@ require (
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.5 // indirect
 	github.com/docker/docker v26.1.3+incompatible // indirect
-	github.com/go-logr/logr v1.4.1 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240509144519-723abb6459b7 // indirect
+	github.com/google/pprof v0.0.0-20240521024322-9665fa269a30 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
