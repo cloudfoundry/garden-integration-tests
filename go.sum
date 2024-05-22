@@ -1,7 +1,7 @@
-code.cloudfoundry.org/archiver v0.0.0-20240521170704-3ae5ca8bfd17 h1:L6JcKGf+TUMskCrrAA78sW/n9RMZxy2HU1Ns2WnvK00=
-code.cloudfoundry.org/archiver v0.0.0-20240521170704-3ae5ca8bfd17/go.mod h1:VZdosRwy+W0EFW2alHiEC45JY3GSF7ythtoX2dQrUa0=
-code.cloudfoundry.org/commandrunner v0.0.0-20240521151053-ad3fed403f21 h1:yzGkvIdDrieS0j44iNCCuId0G7+QRAqqXVUD1dacJnE=
-code.cloudfoundry.org/commandrunner v0.0.0-20240521151053-ad3fed403f21/go.mod h1:S5ucqMbrxGKJlcA1C7x02dWJWOctBkHrA2j3PFbkTtk=
+code.cloudfoundry.org/archiver v0.0.0-20240522170718-c5e8bbd9d152 h1:IrW6lkfiis9fFb1mZq27JwBFdeX+KTiNrbXYEQaMLNU=
+code.cloudfoundry.org/archiver v0.0.0-20240522170718-c5e8bbd9d152/go.mod h1:tuAhpvgrQtbAEgtFIBdnvmzguVLfjUDp6qOXZ0k3t0g=
+code.cloudfoundry.org/commandrunner v0.0.0-20240522151236-22325e44c787 h1:kSLGNa00YuY35QD9O9RSGjxFwZZOdzS124ne1Tr30Z4=
+code.cloudfoundry.org/commandrunner v0.0.0-20240522151236-22325e44c787/go.mod h1:cd3GI6d6AoB/9ErbkWcM///s9XsGFSSpewW6wsaw2EQ=
 code.cloudfoundry.org/lager/v3 v3.0.3 h1:/UTmadZfIaKuT/whEinSxK1mzRfNu1uPfvjFfGqiwzM=
 code.cloudfoundry.org/lager/v3 v3.0.3/go.mod h1:Zn5q1SrIuuHjEUE7xerMKt3ztunrJQCZETAo7rV0CH8=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
