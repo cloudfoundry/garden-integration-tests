@@ -6,8 +6,8 @@ toolchain go1.21.7
 
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240605172148-a469d42dc1f4
-	code.cloudfoundry.org/garden v0.0.0-20240604193611-1a2f0f635229
-	code.cloudfoundry.org/guardian v0.0.0-20240608194540-dde64cadcc0a
+	code.cloudfoundry.org/garden v0.0.0-20240611194356-c66dc427ceca
+	code.cloudfoundry.org/guardian v0.0.0-20240610194527-90708584e472
 	github.com/cloudfoundry/gosigar v1.3.61
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.19.0
@@ -47,7 +47,7 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
-	google.golang.org/protobuf v1.34.1 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )
