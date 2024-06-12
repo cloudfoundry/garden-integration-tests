@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20240610194527-90708584e472 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20240611194827-d1ef24edb705 => ../guardian
 ## explicit; go 1.21
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -48,7 +48,7 @@ github.com/coreos/go-systemd/v22/dbus
 # github.com/cyphar/filepath-securejoin v0.2.5
 ## explicit; go 1.13
 github.com/cyphar/filepath-securejoin
-# github.com/docker/docker v26.1.4+incompatible
+# github.com/docker/docker v27.0.0+incompatible
 ## explicit
 github.com/docker/docker/pkg/reexec
 # github.com/go-logr/logr v1.4.2
@@ -235,8 +235,6 @@ google.golang.org/protobuf/runtime/protoimpl
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# gotest.tools/v3 v3.5.1
-## explicit; go 1.17
 # code.cloudfoundry.org/garden => ../garden
 # code.cloudfoundry.org/grootfs => ../grootfs
 # code.cloudfoundry.org/guardian => ../guardian
