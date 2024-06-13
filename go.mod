@@ -7,7 +7,7 @@ toolchain go1.21.7
 require (
 	code.cloudfoundry.org/archiver v0.0.0-20240605172148-a469d42dc1f4
 	code.cloudfoundry.org/garden v0.0.0-20240611194356-c66dc427ceca
-	code.cloudfoundry.org/guardian v0.0.0-20240611194827-d1ef24edb705
+	code.cloudfoundry.org/guardian v0.0.0-20240612195129-03c7750a5812
 	github.com/cloudfoundry/gosigar v1.3.61
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.19.0
@@ -35,7 +35,7 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.1 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
-	github.com/opencontainers/runc v1.1.12 // indirect
+	github.com/opencontainers/runc v1.1.13 // indirect
 	github.com/opencontainers/runtime-spec v1.2.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
