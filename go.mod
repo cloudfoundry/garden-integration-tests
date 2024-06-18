@@ -5,9 +5,9 @@ go 1.21.0
 toolchain go1.21.7
 
 require (
-	code.cloudfoundry.org/archiver v0.0.0-20240605172148-a469d42dc1f4
+	code.cloudfoundry.org/archiver v0.0.0-20240618173604-ae53fb2b9670
 	code.cloudfoundry.org/garden v0.0.0-20240611194356-c66dc427ceca
-	code.cloudfoundry.org/guardian v0.0.0-20240615195319-737404f66b17
+	code.cloudfoundry.org/guardian v0.0.0-20240617195542-f35fecab25df
 	github.com/cloudfoundry/gosigar v1.3.61
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.19.0
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.0.0-20240605152816-dde9de7e7f5d // indirect
+	code.cloudfoundry.org/commandrunner v0.0.0-20240618153606-5b8870f0deba // indirect
 	code.cloudfoundry.org/lager/v3 v3.0.3 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba // indirect
+	github.com/google/pprof v0.0.0-20240618054019-d3b898a103f8 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
