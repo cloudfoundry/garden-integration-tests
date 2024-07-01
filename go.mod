@@ -24,7 +24,7 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20240620221854-09ef53324489 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.5 // indirect
-	github.com/docker/docker v27.0.2+incompatible // indirect
+	github.com/docker/docker v27.0.3+incompatible // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
