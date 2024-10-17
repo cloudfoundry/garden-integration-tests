@@ -1,7 +1,7 @@
 # code.cloudfoundry.org/archiver v0.14.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.12.0
+# code.cloudfoundry.org/commandrunner v0.13.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/commandrunner
 # code.cloudfoundry.org/garden v0.0.0-20241015133258-e596c7c58892 => ../garden
@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20241015134029-8fdda0bbf7ff => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20241016021009-af10d19ce8f0 => ../guardian
 ## explicit; go 1.22.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -39,7 +39,7 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.22.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20241007161526-e3ce7aa1aabc
+# github.com/cloudfoundry/sonde-go v0.0.0-20241016180203-3c0e1c24e908
 ## explicit; go 1.18
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
