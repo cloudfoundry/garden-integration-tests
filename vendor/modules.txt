@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20241030021055-8901fb77cc6f => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20241106202013-c4b1b570fe17 => ../guardian
 ## explicit; go 1.22.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -154,7 +154,7 @@ github.com/tedsuo/rata
 ## explicit; go 1.12
 github.com/vishvananda/netlink
 github.com/vishvananda/netlink/nl
-# github.com/vishvananda/netns v0.0.4
+# github.com/vishvananda/netns v0.0.5
 ## explicit; go 1.17
 github.com/vishvananda/netns
 # github.com/wavefronthq/wavefront-sdk-go v0.15.0

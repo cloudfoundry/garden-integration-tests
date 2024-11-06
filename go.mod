@@ -7,7 +7,7 @@ toolchain go1.22.3
 require (
 	code.cloudfoundry.org/archiver v0.18.0
 	code.cloudfoundry.org/garden v0.0.0-20241106020650-8b5ced818ad7
-	code.cloudfoundry.org/guardian v0.0.0-20241030021055-8901fb77cc6f
+	code.cloudfoundry.org/guardian v0.0.0-20241106202013-c4b1b570fe17
 	github.com/cloudfoundry/gosigar v1.3.75
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.21.0
@@ -43,7 +43,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
 	github.com/vishvananda/netlink v1.3.0 // indirect
-	github.com/vishvananda/netns v0.0.4 // indirect
+	github.com/vishvananda/netns v0.0.5 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
