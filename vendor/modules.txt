@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.23.0
+# code.cloudfoundry.org/archiver v0.24.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.21.0
+# code.cloudfoundry.org/commandrunner v0.22.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20241218021336-76cb7fa71f17 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20241220222956-8586d072bbe1 => ../garden
 ## explicit; go 1.22.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20241218022048-e6383bd9744d => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20241220223603-024aa85e5e7c => ../guardian
 ## explicit; go 1.22.7
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.19.0
+# code.cloudfoundry.org/lager/v3 v3.20.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -35,11 +35,11 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.80
+# github.com/cloudfoundry/gosigar v1.3.81
 ## explicit; go 1.22.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20241016180203-3c0e1c24e908
+# github.com/cloudfoundry/sonde-go v0.0.0-20241223073712-8666f251e654
 ## explicit; go 1.18
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
@@ -112,8 +112,8 @@ github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.36.1
-## explicit; go 1.22
+# github.com/onsi/gomega v1.36.2
+## explicit; go 1.22.0
 github.com/onsi/gomega
 github.com/onsi/gomega/format
 github.com/onsi/gomega/gbytes
@@ -204,7 +204,7 @@ golang.org/x/text/transform
 ## explicit; go 1.22.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/ast/inspector
-# google.golang.org/protobuf v1.36.0
+# google.golang.org/protobuf v1.36.1
 ## explicit; go 1.21
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
