@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250101022152-888b829e4480 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250110214355-52f6548e2144 => ../guardian
 ## explicit; go 1.22.7
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -131,6 +131,7 @@ github.com/onsi/gomega/types
 ## explicit; go 1.22
 github.com/opencontainers/runc/libcontainer/cgroups
 github.com/opencontainers/runc/libcontainer/cgroups/fs
+github.com/opencontainers/runc/libcontainer/cgroups/fs2
 github.com/opencontainers/runc/libcontainer/cgroups/fscommon
 github.com/opencontainers/runc/libcontainer/configs
 github.com/opencontainers/runc/libcontainer/devices
