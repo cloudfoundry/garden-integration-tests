@@ -11,7 +11,7 @@ replace github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-secu
 require (
 	code.cloudfoundry.org/archiver v0.26.0
 	code.cloudfoundry.org/garden v0.0.0-20250108022507-4d85c9b08b69
-	code.cloudfoundry.org/guardian v0.0.0-20250110214355-52f6548e2144
+	code.cloudfoundry.org/guardian v0.0.0-20250113235113-a4522d6c0f9a
 	github.com/cloudfoundry/gosigar v1.3.84
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.22.2

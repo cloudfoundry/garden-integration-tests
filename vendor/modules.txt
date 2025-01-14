@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250110214355-52f6548e2144 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250113235113-a4522d6c0f9a => ../guardian
 ## explicit; go 1.22.7
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -35,20 +35,20 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.83
+# github.com/cloudfoundry/gosigar v1.3.84
 ## explicit; go 1.22.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20250107093625-3b887caf8df2
+# github.com/cloudfoundry/sonde-go v0.0.0-20250113140334-595e96981704
 ## explicit; go 1.18
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
 ## explicit; go 1.12
 github.com/coreos/go-systemd/v22/dbus
-# github.com/cyphar/filepath-securejoin v0.3.6
+# github.com/cyphar/filepath-securejoin v0.4.0 => github.com/cyphar/filepath-securejoin v0.3.6
 ## explicit; go 1.18
 github.com/cyphar/filepath-securejoin
-# github.com/docker/docker v27.4.1+incompatible
+# github.com/docker/docker v27.5.0+incompatible
 ## explicit
 github.com/docker/docker/pkg/reexec
 # github.com/go-logr/logr v1.4.2
@@ -82,6 +82,9 @@ github.com/hashicorp/go-multierror
 # github.com/moby/sys/mountinfo v0.7.2
 ## explicit; go 1.17
 github.com/moby/sys/mountinfo
+# github.com/moby/sys/reexec v0.1.0
+## explicit; go 1.18
+github.com/moby/sys/reexec
 # github.com/moby/sys/userns v0.1.0
 ## explicit; go 1.21
 github.com/moby/sys/userns
@@ -237,6 +240,7 @@ google.golang.org/protobuf/runtime/protoimpl
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-securejoin v0.3.6
 # code.cloudfoundry.org/garden => ../garden
 # code.cloudfoundry.org/grootfs => ../grootfs
 # code.cloudfoundry.org/guardian => ../guardian
