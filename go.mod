@@ -11,7 +11,7 @@ replace github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-secu
 require (
 	code.cloudfoundry.org/archiver v0.26.0
 	code.cloudfoundry.org/garden v0.0.0-20250108022507-4d85c9b08b69
-	code.cloudfoundry.org/guardian v0.0.0-20250113235113-a4522d6c0f9a
+	code.cloudfoundry.org/guardian v0.0.0-20250114211235-79b8c37f8773
 	github.com/cloudfoundry/gosigar v1.3.84
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.22.2
@@ -28,7 +28,6 @@ require (
 	github.com/cloudfoundry/sonde-go v0.0.0-20250113140334-595e96981704 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.0 // indirect
-	github.com/docker/docker v27.5.0+incompatible // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
