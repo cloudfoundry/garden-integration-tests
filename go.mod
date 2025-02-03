@@ -1,8 +1,8 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.22.7
+go 1.22.8
 
-toolchain go1.23.2
+toolchain go1.23.4
 
 // PIN filepath-securejoin until the https://github.com/cyphar/filepath-securejoin/pull/44/commits/0c2fbe6ccc9604cdb6870e24cf4e154cbaf16801
 // is released
@@ -11,8 +11,8 @@ replace github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-secu
 require (
 	code.cloudfoundry.org/archiver v0.26.0
 	code.cloudfoundry.org/garden v0.0.0-20250129021958-9305191a0939
-	code.cloudfoundry.org/guardian v0.0.0-20250122022516-1b7c33184def
-	github.com/cloudfoundry/gosigar v1.3.85
+	code.cloudfoundry.org/guardian v0.0.0-20250203205850-ab4679e00df6
+	github.com/cloudfoundry/gosigar v1.3.86
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
@@ -32,7 +32,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/google/pprof v0.0.0-20250128161936-077ca0a936bf // indirect
+	github.com/google/pprof v0.0.0-20250202011525-fc3143867406 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect

@@ -11,8 +11,8 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250122022516-1b7c33184def => ../guardian
-## explicit; go 1.22.7
+# code.cloudfoundry.org/guardian v0.0.0-20250203205850-ab4679e00df6 => ../guardian
+## explicit; go 1.22.8
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
 code.cloudfoundry.org/guardian/kawasaki/netns
@@ -35,7 +35,7 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.85
+# github.com/cloudfoundry/gosigar v1.3.86
 ## explicit; go 1.22.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
@@ -65,7 +65,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20250128161936-077ca0a936bf
+# github.com/google/pprof v0.0.0-20250202011525-fc3143867406
 ## explicit; go 1.22
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
