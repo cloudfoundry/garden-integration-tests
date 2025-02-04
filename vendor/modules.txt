@@ -4,14 +4,14 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.26.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20250129021958-9305191a0939 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20250204164024-2360009b9575 => ../garden
 ## explicit; go 1.22.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250203205850-ab4679e00df6 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250203212249-209fc11dcd6b => ../guardian
 ## explicit; go 1.22.8
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.24.0
+# code.cloudfoundry.org/lager/v3 v3.25.0
 ## explicit; go 1.22.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -178,11 +178,11 @@ github.com/wavefronthq/wavefront-sdk-go/version
 golang.org/x/net/html
 golang.org/x/net/html/atom
 golang.org/x/net/html/charset
-# golang.org/x/sys v0.29.0
+# golang.org/x/sys v0.30.0
 ## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.21.0
+# golang.org/x/text v0.22.0
 ## explicit; go 1.18
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap

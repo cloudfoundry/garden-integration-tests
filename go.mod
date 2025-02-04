@@ -10,8 +10,8 @@ replace github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-secu
 
 require (
 	code.cloudfoundry.org/archiver v0.26.0
-	code.cloudfoundry.org/garden v0.0.0-20250129021958-9305191a0939
-	code.cloudfoundry.org/guardian v0.0.0-20250203205850-ab4679e00df6
+	code.cloudfoundry.org/garden v0.0.0-20250204164024-2360009b9575
+	code.cloudfoundry.org/guardian v0.0.0-20250203212249-209fc11dcd6b
 	github.com/cloudfoundry/gosigar v1.3.86
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.22.2
@@ -21,7 +21,7 @@ require (
 
 require (
 	code.cloudfoundry.org/commandrunner v0.26.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.24.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.25.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
@@ -49,8 +49,8 @@ require (
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
