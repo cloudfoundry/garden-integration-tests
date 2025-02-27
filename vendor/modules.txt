@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250227214220-2f2f63d68234 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250227220756-aa2efc2c502c => ../guardian
 ## explicit; go 1.23.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
