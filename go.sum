@@ -1,7 +1,7 @@
 code.cloudfoundry.org/archiver v0.26.0 h1:iB4nK6rhw1KOJpk/hID9xosexjCYoEEWW9DwW1+AekE=
 code.cloudfoundry.org/archiver v0.26.0/go.mod h1:LPRtzMmTGwT+V19rUepSNTo5ynMImdisXOXniuBcnFM=
-code.cloudfoundry.org/commandrunner v0.28.0 h1:vTQmmHE0J8EYFJwWTu1e6aEVuCLtzpPJxE6LagtoYVU=
-code.cloudfoundry.org/commandrunner v0.28.0/go.mod h1:vhXeBAWklmRT/kai7KLFoXolDbSOhw4rbuBQPLQSu0U=
+code.cloudfoundry.org/commandrunner v0.29.0 h1:XPXk1IJje2HXeX5PJ2EUTEb1jXifq7jiq2bmqxcQSzs=
+code.cloudfoundry.org/commandrunner v0.29.0/go.mod h1:v4GbuUvI9w08mwh5I9Oj7LEoRQn56O5cv2SdKK1dSKs=
 code.cloudfoundry.org/lager/v3 v3.27.0 h1:LZ/cxraneE84Rq7J7Z6lDA7x/nbe5iOM90yKJmVMhAU=
 code.cloudfoundry.org/lager/v3 v3.27.0/go.mod h1:f8QnZ+7h8JXO/qujwTKVbuPj83gJuVJEXuet/1DTjjc=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
@@ -12,10 +12,10 @@ github.com/caio/go-tdigest/v4 v4.0.1 h1:sx4ZxjmIEcLROUPs2j1BGe2WhOtHD6VSe6NNbBdK
 github.com/caio/go-tdigest/v4 v4.0.1/go.mod h1:Wsa+f0EZnV2gShdj1adgl0tQSoXRxtM0QioTgukFw8U=
 github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6MP9QlACQ=
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
-github.com/cloudfoundry/gosigar v1.3.87 h1:Jb1hDkFHOknenRgVuAWjMHzctovhw442EiWPJSV6SK4=
-github.com/cloudfoundry/gosigar v1.3.87/go.mod h1:JuS0GsFPyanXJ/MQlhq7jra6o7zuDrBE/oOaIZYdyHE=
-github.com/cloudfoundry/sonde-go v0.0.0-20250211080004-ff2843c4063b h1:kQ6Imq1uxhzU5VgdLX13o8xI+F0YcD7goNfHeqPfxrw=
-github.com/cloudfoundry/sonde-go v0.0.0-20250211080004-ff2843c4063b/go.mod h1:aK2gTMdJflWjbQ2/ePs5/fBrv5YxoSqav/TxFo8GF9w=
+github.com/cloudfoundry/gosigar v1.3.88 h1:5DMK13C0wKBYBtDfFEXcgW9LpJK0gGdZRWH2kFeFfnk=
+github.com/cloudfoundry/gosigar v1.3.88/go.mod h1:lC508fd/yfkk9XciYdbB/G0KlfaMm8nuhC9aGpZzxxY=
+github.com/cloudfoundry/sonde-go v0.0.0-20250217093333-7351ffed9384 h1:kZ1LU1+qxNuiA9S+X7/mb+J6Ml0zC6hs9+NW9otCh9Q=
+github.com/cloudfoundry/sonde-go v0.0.0-20250217093333-7351ffed9384/go.mod h1:aK2gTMdJflWjbQ2/ePs5/fBrv5YxoSqav/TxFo8GF9w=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
