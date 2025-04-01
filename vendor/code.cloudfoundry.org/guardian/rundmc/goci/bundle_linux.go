@@ -44,13 +44,15 @@ func (b Bndl) setMemoryLimit(limit specs.LinuxMemory) Bndl {
 		}
 		if limit.Limit != nil && *limit.Limit > 0 {
 			resources.Unified["memory.max"] = fmt.Sprintf("%d", *limit.Limit)
+			resources.Unified["memory.oom.group"] = "1"
 		}
 		if limit.Swap != nil && *limit.Swap > 0 {
 			resources.Unified["memory.swap.max"] = fmt.Sprintf("%d", *limit.Swap)
 		}
-	} else {
-		resources.Memory = &limit
 	}
+	// } else {
+	resources.Memory = &limit
+	// }
 
 	b.CloneLinux().Spec.Linux.Resources = resources
 

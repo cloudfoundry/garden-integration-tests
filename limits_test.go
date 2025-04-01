@@ -10,14 +10,18 @@ import (
 	"strconv"
 
 	"code.cloudfoundry.org/garden"
+	"code.cloudfoundry.org/guardian/rundmc/cgroups"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
 )
 
 var _ = Describe("Limits", func() {
-	Describe("CPU limits", func() {
+	Describe("cgroups-v1 CPU limits", func() {
 		BeforeEach(func() {
+			if cgroups.IsCgroup2UnifiedMode() {
+				Skip("running this for cgroups-v1 only")
+			}
 			limits.CPU = garden.CPULimits{
 				LimitInShares: 100,
 			}
@@ -28,6 +32,24 @@ var _ = Describe("Limits", func() {
 			Expect(err).NotTo(HaveOccurred())
 			//lint:ignore SA1019 - we still specify this to make the deprecated logic work until we get rid of the code in garden
 			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(100))
+		})
+	})
+
+	Describe("cgroups-v2 CPU limits", func() {
+		BeforeEach(func() {
+			if !cgroups.IsCgroup2UnifiedMode() {
+				Skip("running this for cgroups-v2 only")
+			}
+			limits.CPU = garden.CPULimits{
+				Weight: 280,
+			}
+		})
+
+		It("reports the CPU limit", func() {
+			cpuLimits, err := container.CurrentCPULimits()
+			Expect(err).NotTo(HaveOccurred())
+			//lint:ignore SA1019 - we still specify this to make the deprecated logic work until we get rid of the code in garden
+			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(cgroups.ConvertCPUSharesToCgroupV2Value(limits.CPU.Weight)))
 		})
 	})
 

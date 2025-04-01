@@ -353,13 +353,17 @@ func (c *Containerizer) Info(log lager.Logger, handle string) (spec.ActualContai
 	if bundle.Resources() != nil {
 		if bundle.Resources().CPU != nil {
 			cpuShares = *bundle.Resources().CPU.Shares
+			log.Info("MEOW-1:", lager.Data{"cpushares": cpuShares})
 		}
 		if cpuWeight, ok := bundle.Resources().Unified["cpu.weight"]; ok {
+			log.Info("MEOW-21:", lager.Data{"cpuWeight": cpuWeight})
 			cpuSharesInt, err := strconv.Atoi(cpuWeight)
+			log.Info("MEOW-2:", lager.Data{"cpusharesInt": cpuSharesInt})
 			if err != nil {
 				return spec.ActualContainerSpec{}, err
 			}
 			cpuShares = uint64(cpuSharesInt)
+			log.Info("MEOW-3:", lager.Data{"cpushares": cpuShares})
 		}
 		if bundle.Resources().Memory != nil {
 			// #nosec G115 - limits should never be negative
