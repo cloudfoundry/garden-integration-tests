@@ -17,6 +17,7 @@ import (
 
 	archiver "code.cloudfoundry.org/archiver/extractor/test_helper"
 	"code.cloudfoundry.org/garden"
+	"code.cloudfoundry.org/guardian/rundmc/cgroups"
 	uuid "github.com/nu7hatch/gouuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -53,9 +54,6 @@ var _ = Describe("Lifecycle", func() {
 				Memory: garden.MemoryLimits{
 					LimitInBytes: 1024 * 1024 * 128,
 				},
-				CPU: garden.CPULimits{
-					LimitInShares: 50,
-				},
 			}
 		})
 
@@ -63,10 +61,33 @@ var _ = Describe("Lifecycle", func() {
 			memoryLimit, err := container.CurrentMemoryLimits()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(memoryLimit).To(Equal(limits.Memory))
-
-			cpuLimit, err := container.CurrentCPULimits()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(cpuLimit).To(Equal(limits.CPU))
+		})
+		When("In cgroups-v1", func() {
+			BeforeEach(func() {
+				if cgroups.IsCgroup2UnifiedMode() {
+					Skip("for cgroups-v1 only")
+				}
+				limits.CPU = garden.CPULimits{LimitInShares: 50}
+			})
+			It("it applies limits if set in the container spec", func() {
+				cpuLimit, err := container.CurrentCPULimits()
+				Expect(err).ToNot(HaveOccurred())
+				Expect(cpuLimit).To(Equal(limits.CPU))
+			})
+		})
+		When("In cgroups-v2", func() {
+			BeforeEach(func() {
+				if !cgroups.IsCgroup2UnifiedMode() {
+					Skip("for cgroups-v2 only")
+				}
+				limits.CPU = garden.CPULimits{Weight: 1028, LimitInShares: 0}
+			})
+			It("it applies limits if set in the container spec", func() {
+				cpuLimit, err := container.CurrentCPULimits()
+				Expect(err).ToNot(HaveOccurred())
+				value := garden.CPULimits{LimitInShares: cgroups.ConvertCPUSharesToCgroupV2Value(limits.CPU.Weight)}
+				Expect(cpuLimit).To(Equal(value))
+			})
 		})
 
 		It("does not apply limits if not set in container spec", func() {
