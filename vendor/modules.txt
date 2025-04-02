@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.30.0
+# code.cloudfoundry.org/archiver v0.31.0
 ## explicit; go 1.23.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.32.0
+# code.cloudfoundry.org/commandrunner v0.33.0
 ## explicit; go 1.23.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20250326022559-bc5d6fb7cf5c => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20250402022550-6fe78a10209e => ../garden
 ## explicit; go 1.23.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250324182623-711f3a7c0e12 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250326023201-c2442f91fbbf => ../guardian
 ## explicit; go 1.23.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.31.0
+# code.cloudfoundry.org/lager/v3 v3.32.0
 ## explicit; go 1.23.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -39,7 +39,7 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.23.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20250324121045-7c2c4152bc7b
+# github.com/cloudfoundry/sonde-go v0.0.0-20250331174251-ed5dffef2bf1
 ## explicit; go 1.18
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.5.0
@@ -173,7 +173,7 @@ github.com/wavefronthq/wavefront-sdk-go/internal/sdkmetrics
 github.com/wavefronthq/wavefront-sdk-go/internal/span
 github.com/wavefronthq/wavefront-sdk-go/senders
 github.com/wavefronthq/wavefront-sdk-go/version
-# golang.org/x/net v0.37.0
+# golang.org/x/net v0.38.0
 ## explicit; go 1.23.0
 golang.org/x/net/html
 golang.org/x/net/html/atom

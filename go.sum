@@ -1,9 +1,9 @@
-code.cloudfoundry.org/archiver v0.30.0 h1:KqvsM4TnTLlo+1HIrcZgsDoCIBt6BDMDv/ngX5oRaL8=
-code.cloudfoundry.org/archiver v0.30.0/go.mod h1:N5Mbw9CQH1+taiP3VnSs/0aZEMW2qszq+kEfA3ynlA0=
-code.cloudfoundry.org/commandrunner v0.32.0 h1:M7FZk53yUT3bGR9+5h9znSstV/0VHUxLMAQr6rN8bvQ=
-code.cloudfoundry.org/commandrunner v0.32.0/go.mod h1:hczeSINtqifIsytTdiJZKUCrIDk2BCt+ib46NlSqHiQ=
-code.cloudfoundry.org/lager/v3 v3.31.0 h1:9ZcDMEsxJtLGNI4wBQenioaT5/4XF9Oq49md2Za5eZ4=
-code.cloudfoundry.org/lager/v3 v3.31.0/go.mod h1:uwpwrDtyPgf2Yh63FKFibBvv4+ClsRBTxoP8LqYzza0=
+code.cloudfoundry.org/archiver v0.31.0 h1:PrvNuWt5iZVy3+jNjHuVpoh2XXU1whlhS9dg5SQm+CY=
+code.cloudfoundry.org/archiver v0.31.0/go.mod h1:V6EiK9y/TEOKEGCi+AyoWsIJ+HWg/PTpAsNzBPxeACg=
+code.cloudfoundry.org/commandrunner v0.33.0 h1:oKJ6LQuDbGGhkDByEF0N1Li1HeWjcnxuk+LNe51OYJk=
+code.cloudfoundry.org/commandrunner v0.33.0/go.mod h1:vyih3gvM/Xssiz9+2dNfBrXa8jgrKWQ4u3L1jLI4Oc8=
+code.cloudfoundry.org/lager/v3 v3.32.0 h1:2OmBpTkX17PSFhkPny1P9K642Anwq5OsdpU5vGyerVc=
+code.cloudfoundry.org/lager/v3 v3.32.0/go.mod h1:8agmjq9SQseFS7XGTm4iAf6Rn76V7JKfRe60wEMvkCQ=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77/go.mod h1:bXvGk6IkT1Agy7qzJ+DjIw/SJ1AaB3AvAuMDVV+Vkoo=
 github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f h1:gOO/tNZMjjvTKZWpY7YnXC72ULNLErRtp94LountVE8=
@@ -14,8 +14,8 @@ github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6M
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
 github.com/cloudfoundry/gosigar v1.3.91 h1:kQ01WlgD2eOT73JjIwbtxRuc+tETue9U4HrmdJFkQEQ=
 github.com/cloudfoundry/gosigar v1.3.91/go.mod h1:4prTPsneAn5biiNbw+mVUxJNeAYxOEcgkqvQ7L3UIzE=
-github.com/cloudfoundry/sonde-go v0.0.0-20250324121045-7c2c4152bc7b h1:qxbktq8LlYdhEHvxlGC042Jnu/YPTy9yemLFJsOcyBE=
-github.com/cloudfoundry/sonde-go v0.0.0-20250324121045-7c2c4152bc7b/go.mod h1:aK2gTMdJflWjbQ2/ePs5/fBrv5YxoSqav/TxFo8GF9w=
+github.com/cloudfoundry/sonde-go v0.0.0-20250331174251-ed5dffef2bf1 h1:os1RF/4QSXOLGiZ4AHtYSt9c5q+z3U6zcJuCfpeuYTY=
+github.com/cloudfoundry/sonde-go v0.0.0-20250331174251-ed5dffef2bf1/go.mod h1:aK2gTMdJflWjbQ2/ePs5/fBrv5YxoSqav/TxFo8GF9w=
 github.com/coreos/go-systemd/v22 v22.5.0 h1:RrqgGjYQKalulkV8NGVIfkXQf6YYmOyiJKk8iXXhfZs=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
@@ -93,8 +93,8 @@ github.com/vishvananda/netns v0.0.5 h1:DfiHV+j8bA32MFM7bfEunvT8IAqQ/NzSJHtcmW5zd
 github.com/vishvananda/netns v0.0.5/go.mod h1:SpkAiCQRtJ6TvvxPnOSyH3BMl6unz3xZlaprSwhNNJM=
 github.com/wavefronthq/wavefront-sdk-go v0.15.0 h1:po9E3vh/0y7kOx8D9EtFp7kbSLLLKbmu/w/s1xGJAQU=
 github.com/wavefronthq/wavefront-sdk-go v0.15.0/go.mod h1:V72c8e+bXuLK8HpA6ioW0ll5mK9IPD+4IHNNDY75ksA=
-golang.org/x/net v0.37.0 h1:1zLorHbz+LYj7MQlSf1+2tPIIgibq2eL5xkrGk6f+2c=
-golang.org/x/net v0.37.0/go.mod h1:ivrbrMbzFq5J41QOQh0siUuly180yBYtLp+CKbEaFx8=
+golang.org/x/net v0.38.0 h1:vRMAPTMaeGqVhG5QyLJHqNDwecKTomGeqbnfZyKlBI8=
+golang.org/x/net v0.38.0/go.mod h1:ivrbrMbzFq5J41QOQh0siUuly180yBYtLp+CKbEaFx8=
 golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.2.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
