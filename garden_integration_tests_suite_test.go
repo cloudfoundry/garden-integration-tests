@@ -280,7 +280,7 @@ func runProcess(container garden.Container, processSpec garden.ProcessSpec) (exi
 
 func runForStdout(container garden.Container, processSpec garden.ProcessSpec) (stdout *gbytes.Buffer) {
 	exitCode, stdout, _ := runProcess(container, processSpec)
-	Expect(exitCode).To(Equal(0))
+	ExpectWithOffset(1, exitCode).To(Equal(0))
 	return stdout
 }
 
