@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"code.cloudfoundry.org/garden"
+	"code.cloudfoundry.org/guardian/rundmc/cgroups"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
@@ -98,40 +99,48 @@ var _ = Describe("Security", func() {
 				Expect(stdout).To(gbytes.Say("sysfs /sys sysfs ro"))
 			})
 
-			It("cgroup filesystems are mounted as read-only", func() {
-				getCGroupMountOptions := func(mounts string) map[string]bool {
-					cgroupMountRegex := regexp.MustCompile(`.*\s/sys/fs/cgroup/[^\s]*\s([^\s]*).*cgroup cgroup *\s([^\s]*)`)
-					matches := cgroupMountRegex.FindAllStringSubmatch(mounts, -1)
-					cgroupMountOptions := make(map[string]bool)
-					for _, m := range matches {
-						if len(m) == 3 && strings.Contains(m[1], "ro") {
-							for _, option := range strings.Split(m[2], ",") {
-								cgroupMountOptions[option] = true
-							}
-						}
+			Describe("for cgroups-v1", func() {
+				BeforeEach(func() {
+					if cgroups.IsCgroup2UnifiedMode() {
+						Skip("skiping for cgroups-v2")
 					}
-					return cgroupMountOptions
-				}
-
-				stdout := runForStdout(container, garden.ProcessSpec{
-					User: "root",
-					Path: "grep",
-					Args: []string{"cgroup", "/proc/self/mountinfo"},
 				})
 
-				cgroupMountOptions := getCGroupMountOptions(string(stdout.Contents()))
-				Expect(cgroupMountOptions).To(HaveKey("cpu"))
-				Expect(cgroupMountOptions).To(HaveKey("cpuacct"))
-				Expect(cgroupMountOptions).To(HaveKey("net_cls"))
-				Expect(cgroupMountOptions).To(HaveKey("net_prio"))
-				Expect(cgroupMountOptions).To(HaveKey("memory"))
-				Expect(cgroupMountOptions).To(HaveKey("cpuset"))
-				Expect(cgroupMountOptions).To(HaveKey("blkio"))
-				Expect(cgroupMountOptions).To(HaveKey("devices"))
-				Expect(cgroupMountOptions).To(HaveKey("freezer"))
-				Expect(cgroupMountOptions).To(HaveKey("perf_event"))
-				Expect(cgroupMountOptions).To(HaveKey("pids"))
-				Expect(cgroupMountOptions).To(HaveKey("hugetlb"))
+				It("cgroup filesystems are mounted as read-only", func() {
+					getCGroupMountOptions := func(mounts string) map[string]bool {
+						cgroupMountRegex := regexp.MustCompile(`.*\s/sys/fs/cgroup/[^\s]*\s([^\s]*).*cgroup cgroup *\s([^\s]*)`)
+						matches := cgroupMountRegex.FindAllStringSubmatch(mounts, -1)
+						cgroupMountOptions := make(map[string]bool)
+						for _, m := range matches {
+							if len(m) == 3 && strings.Contains(m[1], "ro") {
+								for _, option := range strings.Split(m[2], ",") {
+									cgroupMountOptions[option] = true
+								}
+							}
+						}
+						return cgroupMountOptions
+					}
+
+					stdout := runForStdout(container, garden.ProcessSpec{
+						User: "root",
+						Path: "grep",
+						Args: []string{"cgroup", "/proc/self/mountinfo"},
+					})
+
+					cgroupMountOptions := getCGroupMountOptions(string(stdout.Contents()))
+					Expect(cgroupMountOptions).To(HaveKey("cpu"))
+					Expect(cgroupMountOptions).To(HaveKey("cpuacct"))
+					Expect(cgroupMountOptions).To(HaveKey("net_cls"))
+					Expect(cgroupMountOptions).To(HaveKey("net_prio"))
+					Expect(cgroupMountOptions).To(HaveKey("memory"))
+					Expect(cgroupMountOptions).To(HaveKey("cpuset"))
+					Expect(cgroupMountOptions).To(HaveKey("blkio"))
+					Expect(cgroupMountOptions).To(HaveKey("devices"))
+					Expect(cgroupMountOptions).To(HaveKey("freezer"))
+					Expect(cgroupMountOptions).To(HaveKey("perf_event"))
+					Expect(cgroupMountOptions).To(HaveKey("pids"))
+					Expect(cgroupMountOptions).To(HaveKey("hugetlb"))
+				})
 			})
 		})
 
@@ -171,6 +180,11 @@ var _ = Describe("Security", func() {
 	})
 
 	Describe("Control groups", func() {
+		BeforeEach(func() {
+			if cgroups.IsCgroup2UnifiedMode() {
+				Skip("this test is for cgroups-v1")
+			}
+		})
 		It("places the container in the required cgroup subsystems", func() {
 			stdout := runForStdout(container, garden.ProcessSpec{
 				User: "root",

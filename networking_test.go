@@ -127,7 +127,7 @@ var _ = Describe("Networking", func() {
 		}
 
 		itCanResolve := func(domainName string) {
-			Eventually(func() string {
+			EventuallyWithOffset(1, func() string {
 				return tryPing(domainName)
 			}).Should(ContainSubstring("1 packets transmitted, 1 packets received"))
 		}
