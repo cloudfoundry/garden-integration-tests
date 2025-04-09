@@ -12,30 +12,30 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.31.0
-	code.cloudfoundry.org/garden v0.0.0-20250402022550-6fe78a10209e
-	code.cloudfoundry.org/guardian v0.0.0-20250326023201-c2442f91fbbf
+	code.cloudfoundry.org/archiver v0.32.0
+	code.cloudfoundry.org/garden v0.0.0-20250409022702-f497a0aaee4b
+	code.cloudfoundry.org/guardian v0.0.0-20250402023119-e98bcba8165d
 	github.com/cloudfoundry/gosigar v1.3.91
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.23.3
-	github.com/onsi/gomega v1.36.3
+	github.com/onsi/ginkgo/v2 v2.23.4
+	github.com/onsi/gomega v1.37.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.33.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.32.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.34.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.33.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20250331174251-ed5dffef2bf1 // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20250403123151-62edc04c2604 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250317173921-a4b03ec1a45e // indirect
+	github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
@@ -51,10 +51,11 @@ require (
 	github.com/tedsuo/rata v1.0.0 // indirect
 	github.com/vishvananda/netlink v1.3.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
-	golang.org/x/text v0.23.0 // indirect
-	golang.org/x/tools v0.31.0 // indirect
+	go.uber.org/automaxprocs v1.6.0 // indirect
+	golang.org/x/net v0.39.0 // indirect
+	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/tools v0.32.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
