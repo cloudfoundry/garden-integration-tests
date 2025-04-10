@@ -4,13 +4,6 @@ go 1.23.0
 
 toolchain go1.23.6
 
-// PIN filepath-securejoin until the https://github.com/cyphar/filepath-securejoin/pull/44/commits/0c2fbe6ccc9604cdb6870e24cf4e154cbaf16801
-// is released
-replace (
-	github.com/cyphar/filepath-securejoin => github.com/cyphar/filepath-securejoin v0.3.6
-	github.com/opencontainers/runc => github.com/opencontainers/runc v1.2.4
-)
-
 replace (
 	code.cloudfoundry.org/garden => ../garden
 	code.cloudfoundry.org/grootfs => ../grootfs
