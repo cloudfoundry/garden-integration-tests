@@ -333,7 +333,7 @@ var _ = Describe("Partially shared containers (peas)", func() {
 
 		Context("when a memory limit is specified on the pea", func() {
 			It("kills processes that exceed that limit", func() {
-				cmd := fmt.Sprintf("dd if=/dev/urandom of=/dev/shm/too-big bs=1M count=33 && echo hello")
+				cmd := "dd if=/dev/urandom of=/dev/shm/too-big bs=1M count=33 && echo hello"
 				// Temporarily checking the memory limit of the process as part of #161555465
 				exitCode, stdout, stderr := runProcess(container,
 					garden.ProcessSpec{
