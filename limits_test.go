@@ -159,8 +159,8 @@ var _ = Describe("Limits", func() {
 			if runtime.GOOS == "windows" {
 				limits.Disk.ByteHard = 100 * 1024 * 1024
 			} else {
-				limits.Disk.ByteSoft = 100 * 1024 * 1024
-				limits.Disk.ByteHard = 100 * 1024 * 1024
+				limits.Disk.ByteSoft = 500 * 1024 * 1024
+				limits.Disk.ByteHard = 500 * 1024 * 1024
 				limits.Disk.Scope = garden.DiskLimitScopeTotal
 			}
 		})
