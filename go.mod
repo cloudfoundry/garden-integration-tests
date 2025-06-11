@@ -12,10 +12,10 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.37.0
-	code.cloudfoundry.org/garden v0.0.0-20250507022932-d3475276d354
-	code.cloudfoundry.org/guardian v0.0.0-20250514023630-af31d1ee6689
-	github.com/cloudfoundry/gosigar v1.3.92
+	code.cloudfoundry.org/archiver v0.38.0
+	code.cloudfoundry.org/garden v0.0.0-20250604020255-2f07acb6e208
+	code.cloudfoundry.org/guardian v0.0.0-20250604020826-30b5a859f9dd
+	github.com/cloudfoundry/gosigar v1.3.93
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.23.4
 	github.com/onsi/gomega v1.37.0
@@ -23,8 +23,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.38.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.38.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.39.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.39.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
@@ -35,7 +35,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250602020802-c6617b811d0e // indirect
+	github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
@@ -52,10 +52,10 @@ require (
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
-	golang.org/x/tools v0.33.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
+	golang.org/x/tools v0.34.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
