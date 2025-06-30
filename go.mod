@@ -14,7 +14,7 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.38.0
 	code.cloudfoundry.org/garden v0.0.0-20250611020234-e214b0859579
-	code.cloudfoundry.org/guardian v0.0.0-20250618020817-caa1dd747d30
+	code.cloudfoundry.org/guardian v0.0.0-20250630185217-e2b6536e99a0
 	github.com/cloudfoundry/gosigar v1.3.94
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.23.4
@@ -35,7 +35,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250607225305-033d6d78b36a // indirect
+	github.com/google/pprof v0.0.0-20250630185457-6e76a2b096b5 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
