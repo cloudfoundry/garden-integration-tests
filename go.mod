@@ -12,9 +12,9 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.38.0
-	code.cloudfoundry.org/garden v0.0.0-20250611020234-e214b0859579
-	code.cloudfoundry.org/guardian v0.0.0-20250630185217-e2b6536e99a0
+	code.cloudfoundry.org/archiver v0.39.0
+	code.cloudfoundry.org/garden v0.0.0-20250630203456-610b5c082a0f
+	code.cloudfoundry.org/guardian v0.0.0-20250630204325-6af1e3421091
 	github.com/cloudfoundry/gosigar v1.3.94
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.23.4
@@ -23,8 +23,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.39.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.39.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.40.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.40.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
