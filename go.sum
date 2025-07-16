@@ -1,9 +1,9 @@
-code.cloudfoundry.org/archiver v0.39.0 h1:xoBUhZW6VStOx8EsI8EbNmmCoXFvCpgdwpOzke2VNec=
-code.cloudfoundry.org/archiver v0.39.0/go.mod h1:RcTgzlEbwW9JCkxjWZAsy4+CNROG1393qj+mM2hdAqY=
-code.cloudfoundry.org/commandrunner v0.40.0 h1:ORwj6FJnAvbcYNeyJ01wUmnkxJ4MPJihFO/zqsR0etk=
-code.cloudfoundry.org/commandrunner v0.40.0/go.mod h1:2YqoZD5ThMVAU5XcmAx4048t9I8qaING0qPeWV4ttcY=
-code.cloudfoundry.org/lager/v3 v3.40.0 h1:Dtg0RgxELbiw5t+26jFNCzeZNhzwBJQsUf8z+JxFdrA=
-code.cloudfoundry.org/lager/v3 v3.40.0/go.mod h1:35Ji1Bqm7Hnzi8H1uxcEc2xPnO/lTOAi3WFkD5Z6W4A=
+code.cloudfoundry.org/archiver v0.40.0 h1:eSNk1QyvXlpHeCW6gZw0xmnAoAoh0oOapNWvNpCahms=
+code.cloudfoundry.org/archiver v0.40.0/go.mod h1:I1LWF9xz99NPNwcrP7TJu1YvqNLDwKcGO2xwx/ilcFA=
+code.cloudfoundry.org/commandrunner v0.41.0 h1:02+dBLDxJ0AboA3t4Vb1jaBezNyix10wtNyapOVcxUM=
+code.cloudfoundry.org/commandrunner v0.41.0/go.mod h1:xqF8oOv/OTlJjhjby0sraGVc+qRqfAoV/y9lJ47s7Vo=
+code.cloudfoundry.org/lager/v3 v3.41.0 h1:VCnZVVmFNTQgslxiY9UH363H4+jXZyredvFCino6kRA=
+code.cloudfoundry.org/lager/v3 v3.41.0/go.mod h1:T3TdJR+5s7mct3jChCxUV/ctAyeio4T3p10hP75BZaA=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77/go.mod h1:bXvGk6IkT1Agy7qzJ+DjIw/SJ1AaB3AvAuMDVV+Vkoo=
 github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f h1:gOO/tNZMjjvTKZWpY7YnXC72ULNLErRtp94LountVE8=
@@ -63,8 +63,8 @@ github.com/onsi/ginkgo/v2 v2.23.4 h1:ktYTpKJAVZnDT4VjxSbiBenUjmlL/5QkBEocaWXiQus
 github.com/onsi/ginkgo/v2 v2.23.4/go.mod h1:Bt66ApGPBFzHyR+JO10Zbt0Gsp4uWxu5mIOTusL46e8=
 github.com/onsi/gomega v1.37.0 h1:CdEG8g0S133B4OswTDC/5XPSzE1OeP29QOioj2PID2Y=
 github.com/onsi/gomega v1.37.0/go.mod h1:8D9+Txp43QWKhM24yyOBEdpkzN8FvJyAwecBgsU4KU0=
-github.com/opencontainers/cgroups v0.0.3 h1:Jc9dWh/0YLGjdy6J/9Ln8NM5BfTA4W2BY0GMozy3aDU=
-github.com/opencontainers/cgroups v0.0.3/go.mod h1:s8lktyhlGUqM7OSRL5P7eAW6Wb+kWPNvt4qvVfzA5vs=
+github.com/opencontainers/cgroups v0.0.4 h1:XVj8P/IHVms/j+7eh8ggdkTLAxjz84ZzuFyGoE28DR4=
+github.com/opencontainers/cgroups v0.0.4/go.mod h1:s8lktyhlGUqM7OSRL5P7eAW6Wb+kWPNvt4qvVfzA5vs=
 github.com/opencontainers/runc v1.3.0 h1:cvP7xbEvD0QQAs0nZKLzkVog2OPZhI/V2w3WmTmUSXI=
 github.com/opencontainers/runc v1.3.0/go.mod h1:9wbWt42gV+KRxKRVVugNP6D5+PQciRbenB4fLVsqGPs=
 github.com/opencontainers/runtime-spec v1.2.1 h1:S4k4ryNgEpxW1dzyqffOmhI1BHYcjzU8lpJfSlR0xww=

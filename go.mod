@@ -12,9 +12,9 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.39.0
-	code.cloudfoundry.org/garden v0.0.0-20250714184504-978aa3287c99
-	code.cloudfoundry.org/guardian v0.0.0-20250714180910-625c9450c31c
+	code.cloudfoundry.org/archiver v0.40.0
+	code.cloudfoundry.org/garden v0.0.0-20250716020550-aabeeb44f19e
+	code.cloudfoundry.org/guardian v0.0.0-20250714200212-d16908221133
 	github.com/cloudfoundry/gosigar v1.3.96
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.23.4
@@ -23,8 +23,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.40.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.40.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.41.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.41.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
@@ -42,7 +42,7 @@ require (
 	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
-	github.com/opencontainers/cgroups v0.0.3 // indirect
+	github.com/opencontainers/cgroups v0.0.4 // indirect
 	github.com/opencontainers/runc v1.3.0 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
