@@ -14,16 +14,16 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.40.0
 	code.cloudfoundry.org/garden v0.0.0-20250716020550-aabeeb44f19e
-	code.cloudfoundry.org/guardian v0.0.0-20250721193622-b9d7bab6b891
+	code.cloudfoundry.org/guardian v0.0.0-20250722141719-0269b9225543
 	github.com/cloudfoundry/gosigar v1.3.96
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.23.4
-	github.com/onsi/gomega v1.37.0
+	github.com/onsi/gomega v1.38.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.41.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.42.0 // indirect
 	code.cloudfoundry.org/lager/v3 v3.41.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
