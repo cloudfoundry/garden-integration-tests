@@ -13,22 +13,23 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.41.0
-	code.cloudfoundry.org/garden v0.0.0-20250730020702-3c607f063fc6
-	code.cloudfoundry.org/guardian v0.0.0-20250808184411-192bb72b6048
-	github.com/cloudfoundry/gosigar v1.3.97
+	code.cloudfoundry.org/garden v0.0.0-20250813020845-616be2b2878a
+	code.cloudfoundry.org/guardian v0.0.0-20250813021533-41691f414571
+	github.com/cloudfoundry/gosigar v1.3.98
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.23.4
+	github.com/onsi/ginkgo/v2 v2.24.0
 	github.com/onsi/gomega v1.38.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.42.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.43.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.43.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.44.0 // indirect
+	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
-	github.com/caio/go-tdigest/v4 v4.0.1 // indirect
+	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20250811070242-4f9472e98427 // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20250818115817-5d1eaa4214d2 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
