@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.42.0
-## explicit; go 1.23.0
+# code.cloudfoundry.org/archiver v0.43.0
+## explicit; go 1.24.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.43.0
-## explicit; go 1.23.0
+# code.cloudfoundry.org/commandrunner v0.44.0
+## explicit; go 1.24.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20250820020934-176fcbafd0b1 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20250827021015-6595353d2654 => ../garden
 ## explicit; go 1.24.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250820021601-755f7030f48a => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250825140236-4008f483eea5 => ../guardian
 ## explicit; go 1.24.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,8 +21,8 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.44.0
-## explicit; go 1.23.0
+# code.cloudfoundry.org/lager/v3 v3.45.0
+## explicit; go 1.24.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 # github.com/Masterminds/semver/v3 v3.4.0
@@ -42,8 +42,8 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.23.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20250818115817-5d1eaa4214d2
-## explicit; go 1.22
+# github.com/cloudfoundry/sonde-go v0.0.0-20250826064732-542f5d3e37ff
+## explicit; go 1.23
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.6.0
 ## explicit; go 1.23
@@ -113,8 +113,8 @@ github.com/onsi/ginkgo/v2/internal/parallel_support
 github.com/onsi/ginkgo/v2/internal/testingtproxy
 github.com/onsi/ginkgo/v2/reporters
 github.com/onsi/ginkgo/v2/types
-# github.com/onsi/gomega v1.38.1
-## explicit; go 1.24.0
+# github.com/onsi/gomega v1.38.2
+## explicit; go 1.23.0
 github.com/onsi/gomega
 github.com/onsi/gomega/format
 github.com/onsi/gomega/gbytes
