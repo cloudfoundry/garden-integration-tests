@@ -13,11 +13,11 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.44.0
-	code.cloudfoundry.org/garden v0.0.0-20250827021015-6595353d2654
-	code.cloudfoundry.org/guardian v0.0.0-20250827022048-0e3818ede36b
-	github.com/cloudfoundry/gosigar v1.3.98
+	code.cloudfoundry.org/garden v0.0.0-20250904195342-2bb9f69d6881
+	code.cloudfoundry.org/guardian v0.0.0-20250903021757-27fc1615572e
+	github.com/cloudfoundry/gosigar v1.3.99
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.25.2
+	github.com/onsi/ginkgo/v2 v2.25.3
 	github.com/onsi/gomega v1.38.2
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
@@ -36,7 +36,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250902232947-5eec23c92c42 // indirect
+	github.com/google/pprof v0.0.0-20250903194437-c28834ac2320 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
 	github.com/opencontainers/cgroups v0.0.4 // indirect
-	github.com/opencontainers/runc v1.3.0 // indirect
+	github.com/opencontainers/runc v1.3.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

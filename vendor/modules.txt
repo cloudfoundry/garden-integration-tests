@@ -4,14 +4,14 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.45.0
 ## explicit; go 1.24.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20250827021015-6595353d2654 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20250904195342-2bb9f69d6881 => ../garden
 ## explicit; go 1.24.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250827022048-0e3818ede36b => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250903021757-27fc1615572e => ../guardian
 ## explicit; go 1.24.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -38,7 +38,7 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.98
+# github.com/cloudfoundry/gosigar v1.3.99
 ## explicit; go 1.23.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
@@ -68,7 +68,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20250902232947-5eec23c92c42
+# github.com/google/pprof v0.0.0-20250903194437-c28834ac2320
 ## explicit; go 1.24.0
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
@@ -91,7 +91,7 @@ github.com/moby/sys/userns
 github.com/nu7hatch/gouuid
 # github.com/nxadm/tail v1.4.11
 ## explicit; go 1.13
-# github.com/onsi/ginkgo/v2 v2.25.2
+# github.com/onsi/ginkgo/v2 v2.25.3
 ## explicit; go 1.23.0
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -136,7 +136,7 @@ github.com/opencontainers/cgroups/fs
 github.com/opencontainers/cgroups/fs2
 github.com/opencontainers/cgroups/fscommon
 github.com/opencontainers/cgroups/internal/path
-# github.com/opencontainers/runc v1.3.0
+# github.com/opencontainers/runc v1.3.1
 ## explicit; go 1.23.0
 github.com/opencontainers/runc/libcontainer/configs
 # github.com/opencontainers/runtime-spec v1.2.1
