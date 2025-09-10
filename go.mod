@@ -12,10 +12,10 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.44.0
-	code.cloudfoundry.org/garden v0.0.0-20250904195342-2bb9f69d6881
-	code.cloudfoundry.org/guardian v0.0.0-20250903021757-27fc1615572e
-	github.com/cloudfoundry/gosigar v1.3.99
+	code.cloudfoundry.org/archiver v0.45.0
+	code.cloudfoundry.org/garden v0.0.0-20250904200541-47838cd97b9c
+	code.cloudfoundry.org/guardian v0.0.0-20250904201253-46f1db7abef6
+	github.com/cloudfoundry/gosigar v1.3.100
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.25.3
 	github.com/onsi/gomega v1.38.2
@@ -24,12 +24,12 @@ require (
 
 require (
 	code.cloudfoundry.org/commandrunner v0.45.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.46.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.47.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20250826064732-542f5d3e37ff // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20250909082137-fc1b731b62ac // indirect
 	github.com/coreos/go-systemd/v22 v22.6.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.4.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -43,7 +43,7 @@ require (
 	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
-	github.com/opencontainers/cgroups v0.0.4 // indirect
+	github.com/opencontainers/cgroups v0.0.5 // indirect
 	github.com/opencontainers/runc v1.3.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
@@ -54,9 +54,9 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
+	google.golang.org/protobuf v1.36.9 // indirect
 )
