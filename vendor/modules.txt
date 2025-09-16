@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.45.0
+# code.cloudfoundry.org/archiver v0.46.0
 ## explicit; go 1.24.0
 code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.45.0
 ## explicit; go 1.24.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20250904200541-47838cd97b9c => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20250910021241-ba9233db87fe => ../garden
 ## explicit; go 1.24.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20250904201253-46f1db7abef6 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20250910021926-22793b175722 => ../guardian
 ## explicit; go 1.24.0
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.47.0
+# code.cloudfoundry.org/lager/v3 v3.48.0
 ## explicit; go 1.24.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -42,7 +42,7 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.23.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20250909082137-fc1b731b62ac
+# github.com/cloudfoundry/sonde-go v0.0.0-20250915135239-ebea5d8dc26e
 ## explicit; go 1.23
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.6.0
@@ -136,9 +136,6 @@ github.com/opencontainers/cgroups/fs
 github.com/opencontainers/cgroups/fs2
 github.com/opencontainers/cgroups/fscommon
 github.com/opencontainers/cgroups/internal/path
-# github.com/opencontainers/runc v1.3.1
-## explicit; go 1.23.0
-github.com/opencontainers/runc/libcontainer/configs
 # github.com/opencontainers/runtime-spec v1.2.1
 ## explicit
 github.com/opencontainers/runtime-spec/specs-go
@@ -213,8 +210,8 @@ golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
-# golang.org/x/tools v0.36.0
-## explicit; go 1.23.0
+# golang.org/x/tools v0.37.0
+## explicit; go 1.24.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/ast/edge
 golang.org/x/tools/go/ast/inspector
