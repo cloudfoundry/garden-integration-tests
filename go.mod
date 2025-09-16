@@ -13,8 +13,8 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.46.0
-	code.cloudfoundry.org/garden v0.0.0-20250910021241-ba9233db87fe
-	code.cloudfoundry.org/guardian v0.0.0-20250910021926-22793b175722
+	code.cloudfoundry.org/garden v0.0.0-20250916215733-c693739b5ca4
+	code.cloudfoundry.org/guardian v0.0.0-20250916220615-6c1973783e38
 	github.com/cloudfoundry/gosigar v1.3.100
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.25.3
