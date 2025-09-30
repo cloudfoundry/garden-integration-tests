@@ -1,9 +1,9 @@
-code.cloudfoundry.org/archiver v0.47.0 h1:zp+s7dak0W3AJdKvXZHtj9o7VNCLkCh8GcszNbZgpdU=
-code.cloudfoundry.org/archiver v0.47.0/go.mod h1:ASzUIGB63sgYVRDLPaPETGcV/cupOtYyBBvxC4HnUYo=
+code.cloudfoundry.org/archiver v0.48.0 h1:cLowPuM2bDpJ3afAPRrbzbL0Yi3YX8AeLclHPiB9aYA=
+code.cloudfoundry.org/archiver v0.48.0/go.mod h1:me8lc5yoKPf5I9oM43VQRLGLmUsEEF1I26Wls4CmCPc=
 code.cloudfoundry.org/commandrunner v0.47.0 h1:OZeI+ZfQzCd2hF18NeXNtdnpNY1qT/6GXVHMxX7PN4w=
 code.cloudfoundry.org/commandrunner v0.47.0/go.mod h1:qLCRG2ta2351e9qS1SwN9OuAhhJ18IbvEIO4SswRUWE=
-code.cloudfoundry.org/lager/v3 v3.49.0 h1:aoyvzyeQWLwgqem/rmM1YaKjOUILqCFhp8g5YMTUHs8=
-code.cloudfoundry.org/lager/v3 v3.49.0/go.mod h1:7nUnT7/qqQuN/X9Vm/bevJWJBDKrEIvDcndJNPGrqeY=
+code.cloudfoundry.org/lager/v3 v3.50.0 h1:X+PoobV3YsUgr3VAmUQdxCOyRCVGr+m//x/LsZsO9Fk=
+code.cloudfoundry.org/lager/v3 v3.50.0/go.mod h1:FtRU4Cz9pDIKfkyrDBYrUvurLJw8nFrwHpjGIgDwJ70=
 github.com/Masterminds/semver/v3 v3.4.0 h1:Zog+i5UMtVoCU8oKka5P7i9q9HgrJeGzI9SA1Xbatp0=
 github.com/Masterminds/semver/v3 v3.4.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
@@ -20,8 +20,8 @@ github.com/cloudfoundry/sonde-go v0.0.0-20250915135239-ebea5d8dc26e h1:EdjJ2rT8O
 github.com/cloudfoundry/sonde-go v0.0.0-20250915135239-ebea5d8dc26e/go.mod h1:tvwtavYyf4EOTuk9v+MOB4XOfYMgkSd3Ulb45I4afYY=
 github.com/coreos/go-systemd/v22 v22.6.0 h1:aGVa/v8B7hpb0TKl0MWoAavPDmHvobFe5R5zn0bCJWo=
 github.com/coreos/go-systemd/v22 v22.6.0/go.mod h1:iG+pp635Fo7ZmV/j14KUcmEyWF+0X7Lua8rrTWzYgWU=
-github.com/cyphar/filepath-securejoin v0.4.1 h1:JyxxyPEaktOD+GAnqIqTf9A8tHyAG22rowi7HkoSU1s=
-github.com/cyphar/filepath-securejoin v0.4.1/go.mod h1:Sdj7gXlvMcPZsbhwhQ33GguGLDGQL7h7bg04C/+u9jI=
+github.com/cyphar/filepath-securejoin v0.5.0 h1:hIAhkRBMQ8nIeuVwcAoymp7MY4oherZdAxD+m0u9zaw=
+github.com/cyphar/filepath-securejoin v0.5.0/go.mod h1:Sdj7gXlvMcPZsbhwhQ33GguGLDGQL7h7bg04C/+u9jI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
