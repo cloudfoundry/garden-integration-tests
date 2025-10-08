@@ -12,19 +12,19 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.48.0
-	code.cloudfoundry.org/garden v0.0.0-20250930202639-e70ce4d3bcd2
-	code.cloudfoundry.org/guardian v0.0.0-20251001022146-bccaf3ca44a9
-	github.com/cloudfoundry/gosigar v1.3.101
+	code.cloudfoundry.org/archiver v0.49.0
+	code.cloudfoundry.org/garden v0.0.0-20251008021559-4bd09d2c5600
+	code.cloudfoundry.org/guardian v0.0.0-20251008024448-cbb40f6bda5b
+	github.com/cloudfoundry/gosigar v1.3.102
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.25.3
+	github.com/onsi/ginkgo/v2 v2.26.0
 	github.com/onsi/gomega v1.38.2
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.47.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.50.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.48.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.51.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250923004556-9e5a51aed1e8 // indirect
+	github.com/google/pprof v0.0.0-20251007162407-5df77e3f7d1d // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
@@ -53,9 +53,11 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/net v0.45.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )
