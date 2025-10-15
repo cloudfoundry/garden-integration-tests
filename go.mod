@@ -12,7 +12,7 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.49.0
+	code.cloudfoundry.org/archiver v0.50.0
 	code.cloudfoundry.org/garden v0.0.0-20251008021559-4bd09d2c5600
 	code.cloudfoundry.org/guardian v0.0.0-20251008024448-cbb40f6bda5b
 	github.com/cloudfoundry/gosigar v1.3.102
@@ -23,13 +23,13 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.48.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.51.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.49.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.52.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20250915135239-ebea5d8dc26e // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20251008062332-ece9fc2bedb4 // indirect
 	github.com/coreos/go-systemd/v22 v22.6.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.5.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -53,11 +53,11 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.28.0 // indirect
-	golang.org/x/net v0.45.0 // indirect
+	golang.org/x/mod v0.29.0 // indirect
+	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.29.0 // indirect
-	golang.org/x/tools v0.37.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
+	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
