@@ -14,8 +14,8 @@ github.com/caio/go-tdigest/v4 v4.1.0 h1:T0ADU/ZVBdP69plvliZ526x/m/3wg/OxMogzp341
 github.com/caio/go-tdigest/v4 v4.1.0/go.mod h1:Wsa+f0EZnV2gShdj1adgl0tQSoXRxtM0QioTgukFw8U=
 github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6MP9QlACQ=
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
-github.com/cloudfoundry/gosigar v1.3.102 h1:5yRagCTQXZJnk+lyQRu5I/YNO2Hz/Ko8NOuAtrf3W/g=
-github.com/cloudfoundry/gosigar v1.3.102/go.mod h1:q23pjOXI2Swjp5KorM77iZOKWpDr1/eeHECHlhvw+WE=
+github.com/cloudfoundry/gosigar v1.3.103 h1:1X69OSpRr8Nq9UziQjgpgL+hQv0sKW+44aJcfKUjzFw=
+github.com/cloudfoundry/gosigar v1.3.103/go.mod h1:q23pjOXI2Swjp5KorM77iZOKWpDr1/eeHECHlhvw+WE=
 github.com/cloudfoundry/sonde-go v0.0.0-20251008062332-ece9fc2bedb4 h1:nqUUpOvNO6kSiWhIg80OaSyMs+nby7GPIYNCLQMC7AM=
 github.com/cloudfoundry/sonde-go v0.0.0-20251008062332-ece9fc2bedb4/go.mod h1:v+cDQ84Hd6/BBmD8KAdCalHd0OStgvmxhitrPrF/ha4=
 github.com/coreos/go-systemd/v22 v22.6.0 h1:aGVa/v8B7hpb0TKl0MWoAavPDmHvobFe5R5zn0bCJWo=
