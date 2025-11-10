@@ -4,14 +4,14 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.50.0
 ## explicit; go 1.24.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20251029021825-d47b35eadfbb => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20251110153920-e22a5d6234cc => ../garden
 ## explicit; go 1.24.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20251110153036-28c830cc2d3d => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20251110154723-f8f90f7c3ef5 => ../guardian
 ## explicit; go 1.24.3
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
