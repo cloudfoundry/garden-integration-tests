@@ -11,8 +11,8 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.53.0
-	code.cloudfoundry.org/garden v0.0.0-20251110153920-e22a5d6234cc
-	code.cloudfoundry.org/guardian v0.0.0-20251111152510-7b89c9ec6075
+	code.cloudfoundry.org/garden v0.0.0-20251111152658-dfcf4927986e
+	code.cloudfoundry.org/guardian v0.0.0-20251111212900-1a5525a12a8d
 	github.com/cloudfoundry/gosigar v1.3.109
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.27.2
@@ -49,11 +49,11 @@ require (
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.29.0 // indirect
-	golang.org/x/net v0.46.0 // indirect
+	golang.org/x/mod v0.30.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/text v0.31.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
