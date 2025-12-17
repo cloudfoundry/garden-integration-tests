@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.55.0
-## explicit; go 1.24.0
+# code.cloudfoundry.org/archiver v0.56.0
+## explicit; go 1.24.9
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.52.0
-## explicit; go 1.24.0
+# code.cloudfoundry.org/commandrunner v0.53.0
+## explicit; go 1.24.9
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20251119022154-f0775181931d => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20251217022801-f5e0d83c4fa9 => ../garden
 ## explicit; go 1.24.9
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20251203023209-1256038f3c48 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20251210023407-f1ea28dbe0ea => ../guardian
 ## explicit; go 1.24.9
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,8 +21,8 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.55.0
-## explicit; go 1.24.0
+# code.cloudfoundry.org/lager/v3 v3.56.0
+## explicit; go 1.24.9
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
 # github.com/Masterminds/semver/v3 v3.4.0
@@ -69,7 +69,7 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
-# github.com/google/pprof v0.0.0-20251208000136-3d256cb9ff16
+# github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f
 ## explicit; go 1.24.9
 github.com/google/pprof/profile
 # github.com/hashicorp/errwrap v1.1.0
@@ -232,7 +232,7 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/protobuf v1.36.10
+# google.golang.org/protobuf v1.36.11
 ## explicit; go 1.23
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
