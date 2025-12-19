@@ -11,7 +11,7 @@ code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20251219151525-705561c5efda => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20251219202820-3b0011cfb41a => ../guardian
 ## explicit; go 1.24.9
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -59,7 +59,7 @@ github.com/go-logr/logr/funcr
 # github.com/go-task/slim-sprig/v3 v3.0.0
 ## explicit; go 1.20
 github.com/go-task/slim-sprig/v3
-# github.com/godbus/dbus/v5 v5.2.0
+# github.com/godbus/dbus/v5 v5.2.1
 ## explicit; go 1.20
 github.com/godbus/dbus/v5
 # github.com/google/go-cmp v0.7.0

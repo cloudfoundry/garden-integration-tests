@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.56.0
 	code.cloudfoundry.org/garden v0.0.0-20251217022801-f5e0d83c4fa9
-	code.cloudfoundry.org/guardian v0.0.0-20251219151525-705561c5efda
+	code.cloudfoundry.org/guardian v0.0.0-20251219202820-3b0011cfb41a
 	github.com/cloudfoundry/gosigar v1.3.112
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.27.3
@@ -32,7 +32,7 @@ require (
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/godbus/dbus/v5 v5.2.0 // indirect
+	github.com/godbus/dbus/v5 v5.2.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
