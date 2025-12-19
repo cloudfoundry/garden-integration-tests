@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.56.0
 	code.cloudfoundry.org/garden v0.0.0-20251217022801-f5e0d83c4fa9
-	code.cloudfoundry.org/guardian v0.0.0-20251218205957-690b95f2f226
+	code.cloudfoundry.org/guardian v0.0.0-20251219151525-705561c5efda
 	github.com/cloudfoundry/gosigar v1.3.112
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.27.3
