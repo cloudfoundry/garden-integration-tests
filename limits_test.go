@@ -538,6 +538,75 @@ var _ = Describe("Limits", func() {
 			})
 		})
 	})
+
+	Describe("FD limits", func() {
+		BeforeEach(func() {
+			if runtime.GOOS == "windows" {
+				Skip("pending for windows")
+			}
+			imageRef.URI = limitsTestURI
+			imageRef.Username = "gfranks"
+			imageRef.Password = "iXtJhLixuMrFWhgkarncpKRJjhTbbsakqgEVzzxoYb6HZWZFuRpyUUJ4wENACejU"
+		})
+		Context("When there is a FD limit applied", func() {
+			var processSpec garden.ProcessSpec
+			BeforeEach(func() {
+				nofile := uint64(30)
+				// this test runs as busybox, which has a `sh` binary capable of handling FDs >9
+				processSpec = garden.ProcessSpec{
+					User: "root",
+					Path: "sh",
+					Args: []string{"-c", `
+set -e
+
+# must start after fd 2
+exec 10<>file1
+exec 11<>file2
+exec 12<>file3
+exec 13<>file4
+exec 14<>file5
+exec 15<>file6
+exec 16<>file7
+exec 17<>file8
+exec 18<>file9
+exec 19<>file10
+exec 20<>file11
+exec 21<>file12
+exec 22<>file13
+exec 23<>file14
+exec 24<>file15
+exec 25<>file16
+exec 26<>file17
+exec 27<>file18
+exec 28<>file19
+exec 29<>file20
+exec 30<>file21
+exec 31<>file22
+exec 32<>file23
+exec 33<>file24
+exec 34<>file25
+exec 35<>file26
+exec 36<>file27
+exec 37<>file28
+exec 38<>file29
+exec 39<>file30
+exec 41<>file31
+
+echo should have died by now
+`},
+					Limits: garden.ResourceLimits{
+						Nofile: &nofile,
+					},
+				}
+			})
+
+			It("applies the FD limit to containers", func() {
+				exitCode, _, stderr := runProcess(container, processSpec)
+				Expect(exitCode).To(Equal(1))
+				Eventually(stderr, "1s").Should(gbytes.Say(`sh: dup2\(3,30\): Bad file descriptor`))
+			})
+		})
+	})
 })
 
 type archiveFile struct {
