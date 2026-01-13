@@ -152,7 +152,7 @@ var _ = Describe("Networking", func() {
 
 		Context("when the rootFS doesn't contain /etc/hosts or /etc/resolv.conf", func() {
 			BeforeEach(func() {
-				imageRef.URI = "docker:///busybox#1.36.1"
+				imageRef.URI = "docker:///busybox#1.37.0"
 			})
 
 			It("can still resolve domain names because garden modifies /etc/resolv.conf", func() {
