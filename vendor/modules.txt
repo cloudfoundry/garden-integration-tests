@@ -4,14 +4,14 @@ code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.55.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20260114023242-b0c72d3d55e3 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20260121023424-879cfc366958 => ../garden
 ## explicit; go 1.24.9
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20260114024131-2da481271a23 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20260121024111-7225277b5229 => ../guardian
 ## explicit; go 1.24.9
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -45,7 +45,7 @@ github.com/cloudfoundry/gosigar/sys/windows
 # github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a
 ## explicit; go 1.23
 github.com/cloudfoundry/sonde-go/events
-# github.com/coreos/go-systemd/v22 v22.6.0
+# github.com/coreos/go-systemd/v22 v22.7.0
 ## explicit; go 1.23
 github.com/coreos/go-systemd/v22/dbus
 # github.com/cyphar/filepath-securejoin v0.6.1

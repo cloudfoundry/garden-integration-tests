@@ -11,8 +11,8 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.60.0
-	code.cloudfoundry.org/garden v0.0.0-20260114023242-b0c72d3d55e3
-	code.cloudfoundry.org/guardian v0.0.0-20260114024131-2da481271a23
+	code.cloudfoundry.org/garden v0.0.0-20260121023424-879cfc366958
+	code.cloudfoundry.org/guardian v0.0.0-20260121024111-7225277b5229
 	github.com/cloudfoundry/gosigar v1.3.112
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.27.5
@@ -28,7 +28,7 @@ require (
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
 	github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a // indirect
-	github.com/coreos/go-systemd/v22 v22.6.0 // indirect
+	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
