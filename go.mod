@@ -12,11 +12,11 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.60.0
 	code.cloudfoundry.org/garden v0.0.0-20260121023424-879cfc366958
-	code.cloudfoundry.org/guardian v0.0.0-20260121024111-7225277b5229
+	code.cloudfoundry.org/guardian v0.0.0-20260202222315-a165832dd27e
 	github.com/cloudfoundry/gosigar v1.3.112
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.27.5
-	github.com/onsi/gomega v1.39.0
+	github.com/onsi/ginkgo/v2 v2.28.1
+	github.com/onsi/gomega v1.39.1
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
@@ -34,7 +34,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
+	github.com/google/pprof v0.0.0-20260202012954-cb029daf43ef // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
