@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.60.0
+# code.cloudfoundry.org/archiver v0.61.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.55.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20260121023424-879cfc366958 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20260202221647-967ed235c6cc => ../garden
 ## explicit; go 1.24.9
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20260202222315-a165832dd27e => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20260203210958-b9da30fe4350 => ../guardian
 ## explicit; go 1.24.9
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.59.0
+# code.cloudfoundry.org/lager/v3 v3.60.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
