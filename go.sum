@@ -1,7 +1,7 @@
 code.cloudfoundry.org/archiver v0.61.0 h1:n7QBOFUgkl5N/Xonwlk5YkyBhovGP4PmmHLhGOGdLUA=
 code.cloudfoundry.org/archiver v0.61.0/go.mod h1:uMyIXRz7Mv/fLTobTg3n99MLKv7w1IsnhPFDIvl2pVk=
-code.cloudfoundry.org/commandrunner v0.55.0 h1:TQwL9R9TARBjS+7hK9bB+lvE/F/0xseaPpg0vs7aBYo=
-code.cloudfoundry.org/commandrunner v0.55.0/go.mod h1:0lvOUphxi00MDJxl6lLz7Ny2vUPfwKws+0kO8pPRT2E=
+code.cloudfoundry.org/commandrunner v0.56.0 h1:TgszAgMt61KvZYDqInlVkxqsKSZvKhfFfpX791Tu+XM=
+code.cloudfoundry.org/commandrunner v0.56.0/go.mod h1:Zmv9Xv5l7U6/qeZvAmMe6GbHy0sDJWdQadsDDv5vH90=
 code.cloudfoundry.org/lager/v3 v3.60.0 h1:Xtc1orbWeRaHA7HQR5zmerldvzAuvIQsodThGBC0C4k=
 code.cloudfoundry.org/lager/v3 v3.60.0/go.mod h1:raTjd59mrvXX7JqYUOBQgpv36b9+TvtaKsJErufk5J8=
 github.com/Masterminds/semver/v3 v3.4.0 h1:Zog+i5UMtVoCU8oKka5P7i9q9HgrJeGzI9SA1Xbatp0=
@@ -14,8 +14,8 @@ github.com/caio/go-tdigest/v4 v4.1.0 h1:T0ADU/ZVBdP69plvliZ526x/m/3wg/OxMogzp341
 github.com/caio/go-tdigest/v4 v4.1.0/go.mod h1:Wsa+f0EZnV2gShdj1adgl0tQSoXRxtM0QioTgukFw8U=
 github.com/cloudfoundry/dropsonde v1.1.0 h1:nerhj8K0heOsv/U/Ddou5Esw56YlNeHHJH6MP9QlACQ=
 github.com/cloudfoundry/dropsonde v1.1.0/go.mod h1:OrkxsBrAvM8X0Ve9vaSNKLR+/Jeohu3+J0M4JEaTmnM=
-github.com/cloudfoundry/gosigar v1.3.112 h1:cGGZ2sj1GKyiwSxzouIR7ATNbgAkC4zqwWDxYQ2ObPc=
-github.com/cloudfoundry/gosigar v1.3.112/go.mod h1:Ldc+tVw3dfqPwasZ9om1LT2aRwpjC1eFfbWKfv2WbDI=
+github.com/cloudfoundry/gosigar v1.3.115 h1:cfBWN+5Q7u2p9AFxe/Qy78lWvl6jbnF2u5xI1h4wATQ=
+github.com/cloudfoundry/gosigar v1.3.115/go.mod h1:qQzL9po6C4oiEf/MQ3PS4JmMORK9DISSlJDNTIASLro=
 github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a h1:sdb/rlGNOaPbB7vYmYXnO6ePuHyxxaXwuKmgu87kSx0=
 github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a/go.mod h1:rR3cyMIEfcaknKHjUDMf7Cuq5gn9Aiqvzz/gqsnsQBI=
 github.com/coreos/go-systemd/v22 v22.7.0 h1:LAEzFkke61DFROc7zNLX/WA2i5J8gYqe0rSj9KI28KA=

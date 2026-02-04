@@ -1,17 +1,17 @@
 # code.cloudfoundry.org/archiver v0.61.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.55.0
+# code.cloudfoundry.org/commandrunner v0.56.0
 ## explicit; go 1.24.9
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20260202221647-967ed235c6cc => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20260203210302-095611563a47 => ../garden
 ## explicit; go 1.24.9
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20260203210958-b9da30fe4350 => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20260204024336-cd956baf2af2 => ../guardian
 ## explicit; go 1.24.9
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -38,8 +38,8 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.112
-## explicit; go 1.23.0
+# github.com/cloudfoundry/gosigar v1.3.115
+## explicit; go 1.24.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
 # github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a
