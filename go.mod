@@ -1,6 +1,6 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.24.9
+go 1.25.0
 
 replace (
 	code.cloudfoundry.org/garden => ../garden
@@ -12,8 +12,8 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.62.0
 	code.cloudfoundry.org/garden v0.0.0-20260211023825-fb202bdd1b27
-	code.cloudfoundry.org/guardian v0.0.0-20260210193714-8130b1d370a2
-	github.com/cloudfoundry/gosigar v1.3.115
+	code.cloudfoundry.org/guardian v0.0.0-20260213015549-0e3db70b2d4c
+	github.com/cloudfoundry/gosigar v1.3.116
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
@@ -21,7 +21,7 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.56.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.57.0 // indirect
 	code.cloudfoundry.org/lager/v3 v3.61.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
