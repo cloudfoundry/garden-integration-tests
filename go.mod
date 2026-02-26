@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.62.0
 	code.cloudfoundry.org/garden v0.0.0-20260211023825-fb202bdd1b27
-	code.cloudfoundry.org/guardian v0.0.0-20260225024627-9d024b2f2d14
+	code.cloudfoundry.org/guardian v0.0.0-20260226175158-f13627c594a1
 	github.com/cloudfoundry/gosigar v1.3.116
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.28.1
@@ -50,7 +50,7 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.33.0 // indirect
-	golang.org/x/net v0.50.0 // indirect
+	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
