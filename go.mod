@@ -10,7 +10,7 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.63.0
+	code.cloudfoundry.org/archiver v0.64.0
 	code.cloudfoundry.org/garden v0.0.0-20260304024058-46dd12e5cd10
 	code.cloudfoundry.org/guardian v0.0.0-20260304024757-b2a02a8878e6
 	github.com/cloudfoundry/gosigar v1.3.116
@@ -22,7 +22,7 @@ require (
 
 require (
 	code.cloudfoundry.org/commandrunner v0.58.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.62.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.63.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
@@ -51,8 +51,8 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 	golang.org/x/tools v0.42.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
