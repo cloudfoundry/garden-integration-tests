@@ -1,6 +1,6 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.25.0
+go 1.26.2
 
 replace (
 	code.cloudfoundry.org/garden => ../garden
@@ -10,8 +10,8 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.68.0
-	code.cloudfoundry.org/garden v0.0.0-20260415024759-5d3f072af7f8
+	code.cloudfoundry.org/archiver v0.69.0
+	code.cloudfoundry.org/garden v0.0.0-20260429025054-3f9ac7a76d56
 	code.cloudfoundry.org/guardian v0.0.0-20260429025616-2da7633199df
 	github.com/cloudfoundry/gosigar v1.3.118
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
@@ -21,9 +21,9 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.61.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.67.0 // indirect
-	github.com/Masterminds/semver/v3 v3.4.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.63.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.68.0 // indirect
+	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
@@ -55,5 +55,5 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 )
