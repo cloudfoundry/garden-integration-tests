@@ -10,9 +10,9 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.69.0
-	code.cloudfoundry.org/garden v0.0.0-20260429025054-3f9ac7a76d56
-	code.cloudfoundry.org/guardian v0.0.0-20260429025616-2da7633199df
+	code.cloudfoundry.org/archiver v0.70.0
+	code.cloudfoundry.org/garden v0.0.0-20260506025108-a2d6ae9c8f5b
+	code.cloudfoundry.org/guardian v0.0.0-20260513025600-6d4bb0492aa0
 	github.com/cloudfoundry/gosigar v1.3.118
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.28.3
@@ -21,8 +21,8 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.63.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.68.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.64.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.69.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
@@ -34,7 +34,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260402051712-545e8a4df936 // indirect
+	github.com/google/pprof v0.0.0-20260507013755-92041b743c96 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
@@ -49,11 +49,11 @@ require (
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/net v0.53.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/tools v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 )
