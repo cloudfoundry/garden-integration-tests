@@ -1,6 +1,6 @@
 module code.cloudfoundry.org/garden-integration-tests
 
-go 1.26.2
+go 1.26.3
 
 replace (
 	code.cloudfoundry.org/garden => ../garden
@@ -10,10 +10,10 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.71.0
-	code.cloudfoundry.org/garden v0.0.0-20260513025144-9934e0066727
-	code.cloudfoundry.org/guardian v0.0.0-20260513025600-6d4bb0492aa0
-	github.com/cloudfoundry/gosigar v1.3.119
+	code.cloudfoundry.org/archiver v0.72.0
+	code.cloudfoundry.org/garden v0.0.0-20260520025236-3c8c94cab4c6
+	code.cloudfoundry.org/guardian v0.0.0-20260520025704-ff216401e047
+	github.com/cloudfoundry/gosigar v1.3.120
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.29.0
 	github.com/onsi/gomega v1.41.0
@@ -22,12 +22,12 @@ require (
 
 require (
 	code.cloudfoundry.org/commandrunner v0.64.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.70.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.71.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20251217143644-d1670a435f2a // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20260526083715-66f310f13c26 // indirect
 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.6.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -50,9 +50,9 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.36.0 // indirect
-	golang.org/x/net v0.54.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/tools v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
