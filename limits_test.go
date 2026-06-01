@@ -519,7 +519,7 @@ var _ = Describe("Limits", func() {
 				})
 
 				Expect(exitCode).To(Equal(2))
-				Expect(stderr).To(gbytes.Say("sh: can't fork"))
+				Expect(stderr).To(gbytes.Say(`sh: (?:line \d+: )?can't fork`))
 			})
 		})
 
@@ -603,7 +603,7 @@ echo should have died by now
 			It("applies the FD limit to containers", func() {
 				exitCode, _, stderr := runProcess(container, processSpec)
 				Expect(exitCode).To(Equal(1))
-				Eventually(stderr, "1s").Should(gbytes.Say(`sh: dup2\(3,30\): Bad file descriptor`))
+				Eventually(stderr, "1s").Should(gbytes.Say(`sh: (?:line \d+: )?dup2\(3,30\): Bad file descriptor`))
 			})
 		})
 	})
