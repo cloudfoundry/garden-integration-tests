@@ -1,9 +1,9 @@
-code.cloudfoundry.org/archiver v0.72.0 h1:ze3cAASLfYAXPoMNRbbq5Y/l3xsPIfC/tLLXl94s/rc=
-code.cloudfoundry.org/archiver v0.72.0/go.mod h1:sRsE2ZYmotHKPcUAoZfHAx+IXzsQb1sWOXGE3lUIw4g=
+code.cloudfoundry.org/archiver v0.73.0 h1:AOihTqMWDxXqzZAa/3JTEbRWL5zjyREnzNDWeyrvbV8=
+code.cloudfoundry.org/archiver v0.73.0/go.mod h1:sRsE2ZYmotHKPcUAoZfHAx+IXzsQb1sWOXGE3lUIw4g=
 code.cloudfoundry.org/commandrunner v0.64.0 h1:fRV1rgXffAHd8kAKcgCRqaQy7Kh4FWurvRULefDoIas=
 code.cloudfoundry.org/commandrunner v0.64.0/go.mod h1:Im7uhyI9Q39+Q34U6JOOB/kgIlA8GDJZ+JV8rHXMM2s=
-code.cloudfoundry.org/lager/v3 v3.71.0 h1:Jm2vkbp2daadOwWrDWmdRqFN0lPy6fkEicAEP1lsPZo=
-code.cloudfoundry.org/lager/v3 v3.71.0/go.mod h1:4ZEDdXpEDs64bd5kTxQwQMCNeWSFd+5bnL9UeDObNug=
+code.cloudfoundry.org/lager/v3 v3.72.0 h1:RgVZB62Axo97i+Yf3evoE3Vbu5zohN27ks+q8osqZjI=
+code.cloudfoundry.org/lager/v3 v3.72.0/go.mod h1:4ZEDdXpEDs64bd5kTxQwQMCNeWSFd+5bnL9UeDObNug=
 github.com/Masterminds/semver/v3 v3.5.0 h1:kQceYJfbupGfZOKZQg0kou0DgAKhzDg2NZPAwZ/2OOE=
 github.com/Masterminds/semver/v3 v3.5.0/go.mod h1:4V+yj/TJE1HU9XfppCwVMZq3I84lprf4nC11bSS5beM=
 github.com/apoydence/eachers v0.0.0-20181020210610-23942921fe77 h1:afT88tB6u9JCKQZVAAaa9ICz/uGn5Uw9ekn6P22mYKM=
