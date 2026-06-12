@@ -11,11 +11,11 @@ replace (
 
 require (
 	code.cloudfoundry.org/archiver v0.74.0
-	code.cloudfoundry.org/garden v0.0.0-20260605151806-250ac484dd9a
-	code.cloudfoundry.org/guardian v0.0.0-20260605171223-aa33de635baa
+	code.cloudfoundry.org/garden v0.0.0-20260612142927-e02c02da0c18
+	code.cloudfoundry.org/guardian v0.0.0-20260612145047-6dd01274a982
 	github.com/cloudfoundry/gosigar v1.3.120
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.29.0
+	github.com/onsi/ginkgo/v2 v2.30.0
 	github.com/onsi/gomega v1.41.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
@@ -50,10 +50,10 @@ require (
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.37.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	golang.org/x/tools v0.45.0 // indirect
+	golang.org/x/tools v0.46.0 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 )
