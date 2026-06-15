@@ -12,11 +12,11 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.74.0
 	code.cloudfoundry.org/garden v0.0.0-20260612142927-e02c02da0c18
-	code.cloudfoundry.org/guardian v0.0.0-20260612145047-6dd01274a982
-	github.com/cloudfoundry/gosigar v1.3.120
+	code.cloudfoundry.org/guardian v0.0.0-20260612145632-32259e5546ce
+	github.com/cloudfoundry/gosigar v1.3.121
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
-	github.com/onsi/ginkgo/v2 v2.30.0
-	github.com/onsi/gomega v1.41.0
+	github.com/onsi/ginkgo/v2 v2.31.0
+	github.com/onsi/gomega v1.42.0
 	github.com/wavefronthq/wavefront-sdk-go v0.15.0
 )
 
