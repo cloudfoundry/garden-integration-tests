@@ -1,17 +1,17 @@
-# code.cloudfoundry.org/archiver v0.76.0
+# code.cloudfoundry.org/archiver v0.77.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.68.0
+# code.cloudfoundry.org/commandrunner v0.69.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20260617020226-a9e754564bb5 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20260624020405-8f632509f05f => ../garden
 ## explicit; go 1.25.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
 code.cloudfoundry.org/garden/client/connection
 code.cloudfoundry.org/garden/routes
 code.cloudfoundry.org/garden/transport
-# code.cloudfoundry.org/guardian v0.0.0-20260617020628-23df023654fd => ../guardian
+# code.cloudfoundry.org/guardian v0.0.0-20260701021004-3db44f7a3a61 => ../guardian
 ## explicit; go 1.26.3
 code.cloudfoundry.org/guardian/gardener
 code.cloudfoundry.org/guardian/gardener/container-spec
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.75.0
+# code.cloudfoundry.org/lager/v3 v3.76.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -210,7 +210,7 @@ golang.org/x/text/internal/utf8internal
 golang.org/x/text/language
 golang.org/x/text/runes
 golang.org/x/text/transform
-# golang.org/x/tools v0.46.0
+# golang.org/x/tools v0.47.0
 ## explicit; go 1.25.0
 golang.org/x/tools/cover
 golang.org/x/tools/go/ast/edge
