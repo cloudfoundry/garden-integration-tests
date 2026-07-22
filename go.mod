@@ -10,10 +10,10 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.79.0
-	code.cloudfoundry.org/garden v0.0.0-20260708020641-3ee0e5230510
+	code.cloudfoundry.org/archiver v0.80.0
+	code.cloudfoundry.org/garden v0.0.0-20260715020742-79c9837591af
 	code.cloudfoundry.org/guardian v0.0.0-20260715021209-9fa226ae0308
-	github.com/cloudfoundry/gosigar v1.3.124
+	github.com/cloudfoundry/gosigar v1.3.125
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.32.0
 	github.com/onsi/gomega v1.42.1
@@ -21,16 +21,16 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/commandrunner v0.71.0 // indirect
-	code.cloudfoundry.org/lager/v3 v3.78.0 // indirect
+	code.cloudfoundry.org/commandrunner v0.72.0 // indirect
+	code.cloudfoundry.org/lager/v3 v3.79.0 // indirect
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/bmizerany/pat v0.0.0-20210406213842-e4b6760bdd6f // indirect
 	github.com/caio/go-tdigest/v4 v4.1.0 // indirect
 	github.com/cloudfoundry/dropsonde v1.1.0 // indirect
-	github.com/cloudfoundry/sonde-go v0.0.0-20260706112804-cd2c61a47573 // indirect
+	github.com/cloudfoundry/sonde-go v0.0.0-20260720065356-6728909ed72b // indirect
 	github.com/coreos/go-systemd/v22 v22.7.0 // indirect
 	github.com/cyphar/filepath-securejoin v0.7.0 // indirect
-	github.com/go-logr/logr v1.4.3 // indirect
+	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/nxadm/tail v1.4.11 // indirect
-	github.com/opencontainers/cgroups v0.0.7 // indirect
+	github.com/opencontainers/cgroups v0.0.8 // indirect
 	github.com/opencontainers/runtime-spec v1.3.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect

@@ -1,10 +1,10 @@
-# code.cloudfoundry.org/archiver v0.79.0
+# code.cloudfoundry.org/archiver v0.80.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/archiver/extractor/test_helper
-# code.cloudfoundry.org/commandrunner v0.71.0
+# code.cloudfoundry.org/commandrunner v0.72.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/commandrunner
-# code.cloudfoundry.org/garden v0.0.0-20260708020641-3ee0e5230510 => ../garden
+# code.cloudfoundry.org/garden v0.0.0-20260715020742-79c9837591af => ../garden
 ## explicit; go 1.25.0
 code.cloudfoundry.org/garden
 code.cloudfoundry.org/garden/client
@@ -21,7 +21,7 @@ code.cloudfoundry.org/guardian/rundmc/cgroups
 code.cloudfoundry.org/guardian/rundmc/cgroups/fs
 code.cloudfoundry.org/guardian/rundmc/event
 code.cloudfoundry.org/guardian/rundmc/goci
-# code.cloudfoundry.org/lager/v3 v3.78.0
+# code.cloudfoundry.org/lager/v3 v3.79.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/lager/v3
 code.cloudfoundry.org/lager/v3/internal/truncate
@@ -38,11 +38,11 @@ github.com/caio/go-tdigest/v4
 ## explicit; go 1.18
 github.com/cloudfoundry/dropsonde/metric_sender
 github.com/cloudfoundry/dropsonde/metrics
-# github.com/cloudfoundry/gosigar v1.3.124
+# github.com/cloudfoundry/gosigar v1.3.125
 ## explicit; go 1.25.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20260706112804-cd2c61a47573
+# github.com/cloudfoundry/sonde-go v0.0.0-20260720065356-6728909ed72b
 ## explicit; go 1.23
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.7.0
@@ -52,7 +52,7 @@ github.com/coreos/go-systemd/v22/dbus
 ## explicit; go 1.18
 github.com/cyphar/filepath-securejoin
 github.com/cyphar/filepath-securejoin/internal/consts
-# github.com/go-logr/logr v1.4.3
+# github.com/go-logr/logr v1.4.4
 ## explicit; go 1.18
 github.com/go-logr/logr
 github.com/go-logr/logr/funcr
@@ -131,7 +131,7 @@ github.com/onsi/gomega/matchers/support/goraph/edge
 github.com/onsi/gomega/matchers/support/goraph/node
 github.com/onsi/gomega/matchers/support/goraph/util
 github.com/onsi/gomega/types
-# github.com/opencontainers/cgroups v0.0.7
+# github.com/opencontainers/cgroups v0.0.8
 ## explicit; go 1.24.0
 github.com/opencontainers/cgroups
 github.com/opencontainers/cgroups/devices/config
