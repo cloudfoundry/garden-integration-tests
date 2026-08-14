@@ -41,7 +41,7 @@ require (
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
 	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/moby/sys/userns v0.2.0 // indirect
-	github.com/opencontainers/cgroups v0.0.8 // indirect
+	github.com/opencontainers/cgroups v0.0.9 // indirect
 	github.com/opencontainers/runtime-spec v1.3.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/sirupsen/logrus v1.10.0 // indirect
@@ -49,7 +49,7 @@ require (
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/mod v0.39.0 // indirect
+	golang.org/x/mod v0.40.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
