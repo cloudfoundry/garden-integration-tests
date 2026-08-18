@@ -1,4 +1,4 @@
-# code.cloudfoundry.org/archiver v0.83.0
+# code.cloudfoundry.org/archiver v0.84.0
 ## explicit; go 1.25.0
 code.cloudfoundry.org/archiver/extractor/test_helper
 # code.cloudfoundry.org/commandrunner v0.73.0
@@ -42,7 +42,7 @@ github.com/cloudfoundry/dropsonde/metrics
 ## explicit; go 1.25.0
 github.com/cloudfoundry/gosigar
 github.com/cloudfoundry/gosigar/sys/windows
-# github.com/cloudfoundry/sonde-go v0.0.0-20260720065356-6728909ed72b
+# github.com/cloudfoundry/sonde-go v0.0.0-20260818080958-d46298cd8513
 ## explicit; go 1.23
 github.com/cloudfoundry/sonde-go/events
 # github.com/coreos/go-systemd/v22 v22.7.0
