@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/archiver v0.84.0
 	code.cloudfoundry.org/garden v0.0.0-20260814181737-66902029982f
-	code.cloudfoundry.org/guardian v0.0.0-20260730115415-6f75b111856e
+	code.cloudfoundry.org/guardian v0.0.0-20260818152501-8ea7fb3095cb
 	github.com/cloudfoundry/gosigar v1.3.126
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.32.1
@@ -41,7 +41,7 @@ require (
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
 	github.com/moby/sys/reexec v0.1.0 // indirect
 	github.com/moby/sys/userns v0.2.0 // indirect
-	github.com/opencontainers/cgroups v0.0.9 // indirect
+	github.com/opencontainers/cgroups v0.1.0 // indirect
 	github.com/opencontainers/runtime-spec v1.3.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/sirupsen/logrus v1.10.0 // indirect
