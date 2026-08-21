@@ -1,3 +1,4 @@
+//lint:file-ignore SA1019 LimitInShares is deprecated but still tested until Weight migration completes
 package garden_integration_tests_test
 
 import (
@@ -30,7 +31,6 @@ var _ = Describe("Limits", func() {
 		It("reports the CPU limit", func() {
 			cpuLimits, err := container.CurrentCPULimits()
 			Expect(err).NotTo(HaveOccurred())
-			//lint:ignore SA1019 - we still specify this to make the deprecated logic work until we get rid of the code in garden
 			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(100))
 		})
 	})
@@ -48,7 +48,6 @@ var _ = Describe("Limits", func() {
 		It("reports the CPU limit", func() {
 			cpuLimits, err := container.CurrentCPULimits()
 			Expect(err).NotTo(HaveOccurred())
-			//lint:ignore SA1019 - we still specify this to make the deprecated logic work until we get rid of the code in garden
 			Expect(cpuLimits.LimitInShares).To(BeEquivalentTo(cgroups.ConvertCPUSharesToCgroupV2Value(limits.CPU.Weight)))
 		})
 	})

@@ -1,3 +1,4 @@
+//lint:file-ignore SA1019 LimitInShares is deprecated but still tested until Weight migration completes
 package garden_integration_tests_test
 
 import (
