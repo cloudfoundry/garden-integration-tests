@@ -10,9 +10,9 @@ replace (
 )
 
 require (
-	code.cloudfoundry.org/archiver v0.84.0
+	code.cloudfoundry.org/archiver v0.85.0
 	code.cloudfoundry.org/garden v0.0.0-20260814181737-66902029982f
-	code.cloudfoundry.org/guardian v0.0.0-20260818152501-8ea7fb3095cb
+	code.cloudfoundry.org/guardian v0.0.0-20260820194234-c2d9348cfdee
 	github.com/cloudfoundry/gosigar v1.3.126
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/onsi/ginkgo/v2 v2.32.1
@@ -35,7 +35,7 @@ require (
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20260802141513-ef3492d7dac3 // indirect
+	github.com/google/pprof v0.0.0-20260825171938-4d453200e7d9 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
@@ -44,7 +44,7 @@ require (
 	github.com/opencontainers/cgroups v0.1.0 // indirect
 	github.com/opencontainers/runtime-spec v1.3.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
-	github.com/sirupsen/logrus v1.10.1 // indirect
+	github.com/sirupsen/logrus v1.10.2 // indirect
 	github.com/tedsuo/rata v1.0.0 // indirect
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
